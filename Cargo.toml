@@ -8,5 +8,6 @@ license = "MIT OR Apache-2.0"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-
-[build-dependencies]
+image = "0.25"
+tray-icon = {version = "0.14.3"}
+tao = "0.27"
