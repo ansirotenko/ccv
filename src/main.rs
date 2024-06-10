@@ -1,106 +1,154 @@
+// Application code for a splashscreen system that waits on a Rust initialization script
+// mod rust {
+//     use std::{thread::sleep, time::Duration};
+//     use tauri::Manager;
 
-// to make console be hidden at release
-#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+//     // this command is here just so the example doesn't throw an error
+//     #[tauri::command]
+//     fn close_splashscreen() {}
 
-use tao::event_loop::{ControlFlow, EventLoopBuilder};
-use tray_icon::{
-    Icon,
-    menu::{AboutMetadata, Menu, MenuEvent, MenuItem, PredefinedMenuItem},
-    TrayIconBuilder, TrayIconEvent
+//     pub fn main() {
+//         tauri::Builder::default()
+//             .setup(|app| {
+//                 let splashscreen_window = app.get_webview_window("splashscreen").unwrap();
+//                 let main_window = app.get_webview_window("main").unwrap();
+//                 // we perform the initialization code on a new task so the app doesn't crash
+//                 tauri::async_runtime::spawn(async move {
+//                     println!("Initializing...");
+//                     sleep(Duration::from_secs(2));
+//                     println!("Done initializing.");
+
+//                     // After it's done, close the splashscreen and display the main window
+//                     splashscreen_window.close().unwrap();
+//                     main_window.show().unwrap();
+//                 });
+//                 Ok(())
+//             })
+//             .invoke_handler(tauri::generate_handler![close_splashscreen])
+//             .run(super::context())
+//             .expect("failed to run app");
+//     }
+// }
+
+// // Application code for a splashscreen system that waits for the UI
+// mod ui {
+//     use std::sync::{Arc, Mutex};
+//     use tauri::{Manager, State, WebviewWindow};
+
+//     // wrappers around each Window
+//     // we use a dedicated type because Tauri can only manage a single instance of a given type
+//     struct SplashscreenWindow(Arc<Mutex<WebviewWindow>>);
+//     struct MainWindow(Arc<Mutex<WebviewWindow>>);
+
+//     #[tauri::command]
+//     fn close_splashscreen(
+//         _: WebviewWindow, // force inference of P
+//         splashscreen: State<SplashscreenWindow>,
+//         main: State<MainWindow>,
+//     ) {
+//         // Close splashscreen
+//         splashscreen.0.lock().unwrap().close().unwrap();
+//         // Show main window
+//         main.0.lock().unwrap().show().unwrap();
+//     }
+
+//     pub fn main() {
+//         let context = super::context();
+//         tauri::Builder::default()
+//             .menu(tauri::menu::Menu::default)
+//             .setup(|app| {
+//                 // set the splashscreen and main windows to be globally available with the tauri state API
+//                 app.manage(SplashscreenWindow(Arc::new(Mutex::new(
+//                     app.get_webview_window("splashscreen").unwrap(),
+//                 ))));
+//                 app.manage(MainWindow(Arc::new(Mutex::new(
+//                     app.get_webview_window("main").unwrap(),
+//                 ))));
+//                 Ok(())
+//             })
+//             .invoke_handler(tauri::generate_handler![close_splashscreen])
+//             .run(context)
+//             .expect("error while running tauri application");
+//     }
+// }
+
+// fn context() -> tauri::Context {
+//     tauri::generate_context!("../../examples/splashscreen/tauri.conf.json")
+// }
+
+// fn main() {
+//     // toggle this flag to experiment with different splashscreen usages
+//     let ui = false;
+//     if ui {
+//         ui::main();
+//     } else {
+//         rust::main();
+//     }
+// }
+
+use tauri::{
+    CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem,
 };
 
 fn main() {
-    let path = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/icon.png");
-    let event_loop = EventLoopBuilder::new().build();
+    let quit = CustomMenuItem::new("quit".to_string(), "Quit");
+    let hide = CustomMenuItem::new("hide".to_string(), "Hide");
+    let show = CustomMenuItem::new("show".to_string(), "Show");
+    let tray_menu = SystemTrayMenu::new()
+        .add_item(hide)
+        .add_item(show)
+        .add_native_item(SystemTrayMenuItem::Separator)
+        .add_item(quit);
 
-    let tray_menu = Menu::new();
-    let quit_i = MenuItem::new("Quit", true, None);
-    let custom_menu = MenuItem::new("Custom", true, None);
-    tray_menu.append_items(&[
-        &PredefinedMenuItem::about(
-            Some("1111"),
-            Some(AboutMetadata {
-                name: Some("tao".to_string()),
-                copyright: Some("Copyright tao".to_string()),
-                ..Default::default()
-            }),
-        ),
-        &PredefinedMenuItem::separator(),
-        &quit_i,
-        &PredefinedMenuItem::separator(),
-        &custom_menu,
-        &PredefinedMenuItem::maximize(Option::Some("asdada"))
-    ]).expect("Failed to append menu items");
-
-    let mut tray_icon = None;
-   
-    let menu_channel = MenuEvent::receiver();
-    let tray_channel = TrayIconEvent::receiver();
-
-    event_loop.run(move |event, _, control_flow| {
-        // We add delay of 16 ms (60fps) to event_loop to reduce cpu load.
-        // This can be removed to allow ControlFlow::Poll to poll on each cpu cycle
-        // Alternatively, you can set ControlFlow::Wait or use TrayIconEvent::set_event_handler,
-        // see https://github.com/tauri-apps/tray-icon/issues/83#issuecomment-1697773065
-        *control_flow = ControlFlow::WaitUntil(
-            std::time::Instant::now() + std::time::Duration::from_millis(16),
-        );
-
-        if let tao::event::Event::NewEvents(tao::event::StartCause::Init) = event {
-            let icon = load_icon(std::path::Path::new(path));
-
-            // We create the icon once the event loop is actually running
-            // to prevent issues like https://github.com/tauri-apps/tray-icon/issues/90
-            tray_icon = Some(
-                TrayIconBuilder::new()
-                    .with_menu(Box::new(tray_menu.clone()))
-                    .with_tooltip("tao - awesome windowing lib")
-                    .with_icon(icon)
-                    .build()
-                    .unwrap(),
-            );
-
-            // We have to request a redraw here to have the icon actually show up.
-            // Tao only exposes a redraw method on the Window so we use core-foundation directly.
-            #[cfg(target_os = "macos")]
-            unsafe {
-                use core_foundation::runloop::{CFRunLoopGetMain, CFRunLoopWakeUp};
-
-                let rl = CFRunLoopGetMain();
-                CFRunLoopWakeUp(rl);
+    let system_tray = SystemTray::new().with_menu(tray_menu);
+    tauri::Builder::default()
+        .system_tray(system_tray)
+        .on_window_event(|event| match event.event() {
+            tauri::WindowEvent::CloseRequested { api, .. } => {
+                event.window().hide().unwrap();
+                api.prevent_close();
             }
-        }
-
-        if let Ok(event) = menu_channel.try_recv() {
-            if event.id == quit_i.id() {
-                tray_icon.take();
-                *control_flow = ControlFlow::Exit;
+            _ => {}
+        })
+        .on_system_tray_event(|app, event| match event {
+            SystemTrayEvent::LeftClick {
+                position: _,
+                size: _,
+                ..
+            } => {
+                println!("system tray received a left click");
             }
-            if event.id == custom_menu.id() {
-                tray_icon.take();
-                *control_flow = ControlFlow::Exit;
+            SystemTrayEvent::RightClick {
+                position: _,
+                size: _,
+                ..
+            } => {
+                println!("system tray received a right click");
             }
+            SystemTrayEvent::DoubleClick {
+                position: _,
+                size: _,
+                ..
+            } => {
+                println!("system tray received a double click");
+            }
+            SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
+                "quit" => {
+                    std::process::exit(0);
+                }
+                "hide" => {
+                    let window = app.get_window("main").unwrap();
+                    window.hide().unwrap();
+                }
 
-
-            println!("{event:?}");
-        }
-
-        if let Ok(event) = tray_channel.try_recv() {
-            println!("{event:?}");
-        }
-    })
-
-}
-
-
-fn load_icon(path: &std::path::Path) -> Icon {
-    let (icon_rgba, icon_width, icon_height) = {
-        let image = image::open(path)
-            .expect("Failed to open icon path")
-            .into_rgba8();
-        let (width, height) = image.dimensions();
-        let rgba = image.into_raw();
-        (rgba, width, height)
-    };
-    Icon::from_rgba(icon_rgba, icon_width, icon_height).expect("Failed to open icon")
+                "show" => {
+                    let window = app.get_window("main").unwrap();
+                    window.show().unwrap();
+                }
+                _ => {}
+            },
+            _ => {}
+        })
+        .run(tauri::generate_context!())
+        .expect("error while running tauri application");
 }
