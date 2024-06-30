@@ -1,0 +1,18 @@
+[package]
+name = "ccv"
+version = "0.1.0"
+authors = ["Andrei Sirotenko <panshirotenski@gmail.com>"]
+edition = "2021"
+license = "MIT"
+
+# Needed to set up some things for Tauri at build time
+[build-dependencies]
+tauri-build = { version = "1.5.2", features = [] }
+
+[dependencies]
+tauri = {version = "1.6.8", features = [ "shell-open", "system-tray"] }
+
+[features]
+# This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!
+custom-protocol = ["tauri/custom-protocol"]
+
