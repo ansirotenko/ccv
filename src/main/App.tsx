@@ -1,11 +1,22 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import logo from '../assets/logo256.png';
 import { invoke } from '@tauri-apps/api/tauri';
+import { listen } from '@tauri-apps/api/event';
 import './App.css';
 
 function App() {
     const [greetMsg, setGreetMsg] = useState('');
     const [name, setName] = useState('');
+
+    useEffect(() => {
+        const unlisten = listen<string>('show', (event) => {
+            console.log(`Got error in window ${event.windowLabel}, payload: ${event.payload}`);
+        });
+
+        return () => {
+            unlisten.then(f => f());
+        };
+    }, [])
 
     async function greet() {
         // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command

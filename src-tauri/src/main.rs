@@ -75,7 +75,11 @@ fn main() {
                 }
 
                 "show" => {
+
                     let window = app.get_window(screens::MAIN).unwrap();
+                    
+                    window.emit("show", "shown windows").unwrap();
+
                     window.show().unwrap();
                 }
                 _ => {}
