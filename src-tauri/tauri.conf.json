@@ -44,7 +44,9 @@
                 "resizable": true,
                 "fullscreen": false,
                 "visible": false,
-                "skipTaskbar": true
+                "skipTaskbar": true,
+                "url": "screens/main.html",
+                "label": "main"
             },
             {
                 "center": true,
@@ -52,7 +54,7 @@
                 "height": 315,
                 "decorations": false,
                 "resizable": false,
-                "url": "splashscreen.html",
+                "url": "screens/splashscreen.html",
                 "label": "splashscreen"
             }
         ]

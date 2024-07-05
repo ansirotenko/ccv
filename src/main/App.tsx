@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import logo from './assets/logo256.png';
+import logo from '../assets/logo256.png';
 import { invoke } from '@tauri-apps/api/tauri';
 import './App.css';
 

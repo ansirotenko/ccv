@@ -5,6 +5,8 @@ use tauri::{
     CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem,
 };
 
+mod screens;
+
 fn main() {
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
     let hide = CustomMenuItem::new("hide".to_string(), "Hide");
@@ -18,8 +20,8 @@ fn main() {
     let system_tray = SystemTray::new().with_menu(tray_menu);
     tauri::Builder::default()
         .setup(|app| {
-            let splashscreen_window = app.get_window("splashscreen").unwrap();
-            let main_window = app.get_window("main").unwrap();
+            let splashscreen_window = app.get_window(screens::SPLASHSCREEN).unwrap();
+            let main_window = app.get_window(screens::MAIN).unwrap();
             // we perform the initialization code on a new task so the app doesn't freeze
             tauri::async_runtime::spawn(async move {
                 // TODO initialize app here instead of sleeping :)
@@ -68,12 +70,12 @@ fn main() {
                     std::process::exit(0);
                 }
                 "hide" => {
-                    let window = app.get_window("main").unwrap();
+                    let window = app.get_window(screens::MAIN).unwrap();
                     window.hide().unwrap();
                 }
 
                 "show" => {
-                    let window = app.get_window("main").unwrap();
+                    let window = app.get_window(screens::MAIN).unwrap();
                     window.show().unwrap();
                 }
                 _ => {}
