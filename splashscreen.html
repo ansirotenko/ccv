@@ -2,25 +2,10 @@
 <html>
   <head>
     <title>Splashscreen</title>
-    <style>
-      body {
-        margin: 0;
-      }
-
-      .splashscreen-image {
-        background-color: #d7fafa;
-        background-image: url('icon256.png');
-        background-position: center;
-        background-repeat: no-repeat;
-        background-size: 50%;
-        width: 100vw !important;
-        height: 100vh !important;
-        overflow: hidden;
-      }
-    </style>
   </head>
 
   <body>
-    <div class="splashscreen-image" />
+    <div id="root"></div>
+    <script type="module" src="/src/splashscreen/main.tsx"></script>
   </body>
 </html>

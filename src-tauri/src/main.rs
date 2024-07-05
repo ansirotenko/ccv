@@ -22,9 +22,9 @@ fn main() {
             let main_window = app.get_window("main").unwrap();
             // we perform the initialization code on a new task so the app doesn't freeze
             tauri::async_runtime::spawn(async move {
-                // initialize your app here instead of sleeping :)
+                // TODO initialize app here instead of sleeping :)
                 println!("Initializing...");
-                std::thread::sleep(std::time::Duration::from_secs(3));
+                std::thread::sleep(std::time::Duration::from_secs(1));
                 println!("Done initializing.");
 
                 // After it's done, close the splashscreen and display the main window

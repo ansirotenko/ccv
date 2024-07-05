@@ -1,0 +1,14 @@
+body {
+    margin: 0;
+}
+
+.splashscreen {
+    background-color: #ebf3f3;
+    background-image: url('../assets/logo256.png');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    width: 100vw !important;
+    height: 100vh !important;
+    overflow: hidden;
+}
