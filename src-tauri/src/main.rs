@@ -7,6 +7,11 @@ use tauri::{
 
 mod screens;
 
+#[tauri::command]
+fn my_custom_command() {
+  println!("I was invoked from JS!");
+}
+
 fn main() {
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
     let hide = CustomMenuItem::new("hide".to_string(), "Hide");
@@ -86,6 +91,7 @@ fn main() {
             },
             _ => {}
         })
+        .invoke_handler(tauri::generate_handler![my_custom_command])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
