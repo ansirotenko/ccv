@@ -1,8 +1,3 @@
-.searchSign {
-    border-left: 0;
-    border-top: 0;
-}
-
 .searchInputGroup {
     position: relative;
 }
@@ -10,6 +5,7 @@
 .searchInput {
     border-top: 0;
     border-color: var(--text-color-secondary);
+    font-size: 0.8rem;
 
     &:hover,
     &:active,
@@ -17,6 +13,7 @@
         border-color: var(--text-color-secondary);
     }
 
+    height: 24px;
     &::placeholder {
         color: var(--surface-border);
     }
@@ -25,17 +22,28 @@
 .clearSearch {
     z-index: 1;
     position: absolute;
+    font-size: 0.8rem;
     right: 8px;
-    top: 8px;
+    top: 6px;
     color: var(--text-color-secondary);
     cursor: pointer;
 }
 
 .buttons {
+    font-size: 0.8rem;
+    padding: 0 5px;
     border-left: 0;
     border-top: 0;
+    border-color: var(--text-color-secondary);
 
     &:last-child {
         border-right: 0;
+        border-radius: 0 2px 0 0;
+    }
+
+    &:first-child {
+        padding-top: 3px;
+        border-right: 0;
+        border-radius: 2px 0 0 0;
     }
 }

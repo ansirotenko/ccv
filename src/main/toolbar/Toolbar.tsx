@@ -21,14 +21,15 @@ export function Toolbar({ onChange, onSettings, onClose, value }: ToolbarProps) 
     }, 200);
 
     return (
-        <div className="p-inputgroup flex-1">
-            <span className={`p-inputgroup-addon ${styles.searchSign}`}>
-                <i className="pi pi-search"></i>
-            </span>
+        <div className="p-inputgroup">
+            <Button
+                className={`pi pi-search ${styles.buttons}`}
+                disabled={true}
+            />
             <span className={`p-inputgroup ${styles.searchInputGroup}`}>
                 <InputText
                     className={`${styles.searchInput}`}
-                    placeholder="search"
+                    placeholder="Search..."
                     value={inputValue}
                     onChange={(e) => {
                         setInputValue(e.target.value);
