@@ -31,7 +31,7 @@
 
 .buttons {
     font-size: 0.8rem;
-    padding: 0 5px;
+    padding: 3px 5px 0 5px;
     border-left: 0;
     border-top: 0;
     border-color: var(--text-color-secondary);
@@ -42,7 +42,6 @@
     }
 
     &:first-child {
-        padding-top: 3px;
         border-right: 0;
         border-radius: 2px 0 0 0;
     }
