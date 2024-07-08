@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Toolbar } from './toolbar/Toolbar';
-import { searchCopyItems, CopyItem, listenGlobalEvents } from './api';
+import { searchCopyItems, hideWindow, CopyItem, listenGlobalEvents } from './api';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { Message } from 'primereact/message';
 
@@ -59,7 +59,7 @@ function App() {
                     search(q);
                 }}
                 onClose={() => {
-                    //TODO
+                    hideWindow()
                 }}
                 onSettings={() => {
                     //TODO

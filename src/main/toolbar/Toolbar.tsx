@@ -22,11 +22,12 @@ export function Toolbar({ onChange, onSettings, onClose, value }: ToolbarProps) 
 
     return (
         <div className="p-inputgroup flex-1">
-            <span className="p-inputgroup-addon">
+            <span className={`p-inputgroup-addon ${styles.searchSign}`}>
                 <i className="pi pi-search"></i>
             </span>
-            <span className={`p-inputgroup ${styles.searchGroup}`}>
+            <span className={`p-inputgroup ${styles.searchInputGroup}`}>
                 <InputText
+                    className={`${styles.searchInput}`}
                     placeholder="search"
                     value={inputValue}
                     onChange={(e) => {

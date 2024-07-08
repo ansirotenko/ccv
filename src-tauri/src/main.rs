@@ -4,28 +4,9 @@
 use tauri::{
     CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem,
 };
-use serde::Serialize;
 
 mod screens;
-
-#[derive(Serialize)]
-struct CopyItem {
-    #[serde(rename = "id")]
-    id: String,
-    #[serde(rename = "displayName")]
-    display_name: String,
-}
-
-#[tauri::command]
-fn search_copy_items(query: String) -> Vec<CopyItem> {
-    let mut ret = vec![]; 
-    ret.push(CopyItem{id: "it1".to_string(), display_name: format!("{query} 1")});
-    ret.push(CopyItem{id: "it2".to_string(), display_name: format!("{query} 2")});
-    ret.push(CopyItem{id: "it3".to_string(), display_name: format!("{query} 3")});
-    ret.push(CopyItem{id: "it4".to_string(), display_name: format!("{query} 4")});
-    ret.push(CopyItem{id: "it5".to_string(), display_name: format!("{query} 5")});
-    return ret;
-}
+mod commands;
 
 fn main() {
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
@@ -106,7 +87,11 @@ fn main() {
             },
             _ => {}
         })
-        .invoke_handler(tauri::generate_handler![search_copy_items])
+        .invoke_handler(tauri::generate_handler![
+            commands::search_copy_items,
+            commands::hide_window,
+            commands::show_window,
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

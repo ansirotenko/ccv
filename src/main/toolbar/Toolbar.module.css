@@ -1,5 +1,25 @@
-.searchGroup {
+.searchSign {
+    border-left: 0;
+    border-top: 0;
+}
+
+.searchInputGroup {
     position: relative;
+}
+
+.searchInput {
+    border-top: 0;
+    border-color: var(--text-color-secondary);
+
+    &:hover,
+    &:active,
+    &:focus {
+        border-color: var(--text-color-secondary);
+    }
+
+    &::placeholder {
+        color: var(--surface-border);
+    }
 }
 
 .clearSearch {
@@ -14,4 +34,8 @@
 .buttons {
     border-left: 0;
     border-top: 0;
+
+    &:last-child {
+        border-right: 0;
+    }
 }
