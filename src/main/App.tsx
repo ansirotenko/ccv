@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Toolbar } from './toolbar/Toolbar';
-import { searchCopyItems, CopyItem } from './api';
+import { searchCopyItems, CopyItem, listenGlobalEvents } from './api';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { Message } from 'primereact/message';
 
@@ -19,15 +19,15 @@ function App() {
         try {
             const items = await searchCopyItems(query);
             setItems(items);
-        } catch(e) {
-            setError("Failed to fetch clipboard history");
-        } 
-        finally {
+        } catch (e) {
+            setError('Failed to fetch clipboard history');
+        } finally {
             setLoading(false);
         }
     }
 
     useEffect(() => {
+        listenGlobalEvents();
         search(initialSearchQuery);
     }, []);
 
@@ -42,17 +42,30 @@ function App() {
             return <em className={styles.empty}>Nothing was found</em>;
         }
 
-        return <ul>
-            {items.map(item => <li>{`id: ${item.id}, displayName: ${item.displayName}`}</li>)}
-        </ul>
+        return (
+            <ul>
+                {items.map((item) => (
+                    <li key={item.id}>{`id: ${item.id}, displayName: ${item.displayName}`}</li>
+                ))}
+            </ul>
+        );
     }
 
     return (
         <div className={`container ${styles.container}`}>
-            <Toolbar value={initialSearchQuery} onChange={(q) => { search(q); }} />
-            {
-                content()
-            }
+            <Toolbar
+                value={initialSearchQuery}
+                onChange={(q) => {
+                    search(q);
+                }}
+                onClose={() => {
+                    //TODO
+                }}
+                onSettings={() => {
+                    //TODO
+                }}
+            />
+            {content()}
         </div>
     );
 }

@@ -10,6 +10,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     // <React.StrictMode>
     <PrimeReactProvider>
         <App />
-    </PrimeReactProvider>
+    </PrimeReactProvider>,
     // </React.StrictMode>,
 );

@@ -1,5 +1,9 @@
 body {
-    margin: 1px;
+    width: 380px;
+    height: 450px;
+    margin: 0;
+    padding: 0px;
+    border: 1px solid var(--surface-border);
 }
 
 .container {
