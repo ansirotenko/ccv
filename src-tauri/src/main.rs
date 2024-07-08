@@ -1,24 +1,13 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use tauri::{
-    CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem,
-};
-
 mod screens;
 mod commands;
+mod tray;
+
+use tauri::Manager;
 
 fn main() {
-    let quit = CustomMenuItem::new("quit".to_string(), "Quit");
-    let hide = CustomMenuItem::new("hide".to_string(), "Hide");
-    let show = CustomMenuItem::new("show".to_string(), "Show");
-    let tray_menu = SystemTrayMenu::new()
-        .add_item(hide)
-        .add_item(show)
-        .add_native_item(SystemTrayMenuItem::Separator)
-        .add_item(quit);
-
-    let system_tray = SystemTray::new().with_menu(tray_menu);
     tauri::Builder::default()
         .setup(|app| {
             let splashscreen_window = app.get_window(screens::SPLASHSCREEN).unwrap();
@@ -36,7 +25,7 @@ fn main() {
             });
             Ok(())
         })
-        .system_tray(system_tray)
+        .system_tray(tray::get_tray_menu())
         .on_window_event(|event| match event.event() {
             tauri::WindowEvent::CloseRequested { api, .. } => {
                 event.window().hide().unwrap();
@@ -44,45 +33,7 @@ fn main() {
             }
             _ => {}
         })
-        .on_system_tray_event(|app, event| match event {
-            SystemTrayEvent::LeftClick {
-                position: _,
-                size: _,
-                ..
-            } => {
-                println!("system tray received a left click");
-            }
-            SystemTrayEvent::RightClick {
-                position: _,
-                size: _,
-                ..
-            } => {
-                println!("system tray received a right click");
-            }
-            SystemTrayEvent::DoubleClick {
-                position: _,
-                size: _,
-                ..
-            } => {
-                println!("system tray received a double click");
-            }
-            SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
-                "quit" => {
-                    std::process::exit(0);
-                }
-                "hide" => {
-                    let window = app.get_window(screens::MAIN).unwrap();
-                    window.hide().unwrap();
-                }
-
-                "show" => {
-                    let window = app.get_window(screens::MAIN).unwrap();
-                    window.show().unwrap();
-                }
-                _ => {}
-            },
-            _ => {}
-        })
+        .on_system_tray_event(tray::tray_event_handler)
         .invoke_handler(tauri::generate_handler![
             commands::search_copy_items,
             commands::hide_window,
