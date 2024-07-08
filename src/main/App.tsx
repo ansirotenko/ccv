@@ -1,52 +1,58 @@
 import { useEffect, useState } from 'react';
-import logo from '../assets/logo256.png';
-import { invoke } from '@tauri-apps/api/tauri';
-import { listen } from '@tauri-apps/api/event';
-import './App.css';
+import { Toolbar } from './toolbar/Toolbar';
+import { searchCopyItems, CopyItem } from './api';
+import { ProgressSpinner } from 'primereact/progressspinner';
+import { Message } from 'primereact/message';
+
+import styles from './App.module.css';
+
+const initialSearchQuery = null;
 
 function App() {
-    const [greetMsg, setGreetMsg] = useState('');
-    const [name, setName] = useState('');
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [items, setItems] = useState<CopyItem[]>([]);
+
+    async function search(query: string | null) {
+        setLoading(true);
+        setError(null);
+        try {
+            const items = await searchCopyItems(query);
+            setItems(items);
+        } catch(e) {
+            setError("Failed to fetch clipboard history");
+        } 
+        finally {
+            setLoading(false);
+        }
+    }
 
     useEffect(() => {
-        const unlisten = listen<string>('show', (event) => {
-            console.log(`Got error in window ${event.windowLabel}, payload: ${event.payload}`);
-        });
+        search(initialSearchQuery);
+    }, []);
 
-        return () => {
-            unlisten.then(f => f());
-        };
-    }, [])
+    function content() {
+        if (loading) {
+            return <ProgressSpinner className={styles.loading} />;
+        }
+        if (error) {
+            return <Message severity="error" className={styles.failed} text={error} />;
+        }
+        if (!items.length) {
+            return <em className={styles.empty}>Nothing was found</em>;
+        }
 
-    async function greet() {
-        // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-        setGreetMsg(await invoke('my_custom_command', { name }));
+        return <ul>
+            {items.map(item => <li>{`id: ${item.id}, displayName: ${item.displayName}`}</li>)}
+        </ul>
     }
 
     return (
-        <div className="container">
-            <h1>Welcome to Tauri!</h1>
-
-            <div className="row">
-                <a href="https://reactjs.org" target="_blank">
-                    <img src={logo} className="logo react" alt="React logo" />
-                </a>
-            </div>
-
-            <p>Click on the Tauri, Vite, and React logos to learn more.</p>
-
-            <form
-                className="row"
-                onSubmit={(e) => {
-                    e.preventDefault();
-                    greet();
-                }}
-            >
-                <input id="greet-input" onChange={(e) => setName(e.currentTarget.value)} placeholder="Enter a name..." />
-                <button type="submit">Greet</button>
-            </form>
-
-            <p>{greetMsg}</p>
+        <div className={`container ${styles.container}`}>
+            <Toolbar value={initialSearchQuery} onChange={(q) => { search(q); }} />
+            {
+                content()
+            }
         </div>
     );
 }

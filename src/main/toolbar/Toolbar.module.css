@@ -1,0 +1,17 @@
+
+.searchGroup {
+    position: relative;
+}
+
+.clearSearch {
+    z-index: 1;
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    color: var(--text-color-secondary);
+    cursor: pointer;
+}
+
+.buttons {
+    border-left: 0;
+}

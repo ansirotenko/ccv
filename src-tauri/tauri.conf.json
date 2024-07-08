@@ -46,6 +46,7 @@
                 "visible": false,
                 "skipTaskbar": true,
                 "url": "screens/main.html",
+                "decorations": false,
                 "label": "main"
             },
             {

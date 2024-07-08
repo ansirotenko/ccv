@@ -1,0 +1,26 @@
+body {
+    margin: 1px;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+}
+
+.loading {
+    stroke-width: 3px;
+    align-self: center;
+    height: 50px;
+    line-height: 50px;
+    margin: 20px 0;
+}
+
+.failed {
+    padding: 8px;
+    margin: 5px 5px;
+}
+
+.empty {
+    margin: 5px 5px;
+    align-self: center;
+}
