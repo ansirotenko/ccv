@@ -6,6 +6,9 @@ use std::io;
 use arboard::{Clipboard};
 use clipboard_files::{read};
 
+#[cfg(target_os = "macos")]
+mod mac;
+
 struct Handler{
 }
 
