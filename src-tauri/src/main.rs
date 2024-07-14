@@ -9,6 +9,7 @@ use tauri::Manager;
 
 fn main() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_clipboard::init())
         .setup(|app| {
             let splashscreen_window = app.get_window(screens::SPLASHSCREEN).unwrap();
             let main_window = app.get_window(screens::MAIN).unwrap();
@@ -23,6 +24,11 @@ fn main() {
                 splashscreen_window.close().unwrap();
                 main_window.show().unwrap();
             });
+
+            let handle = app.handle();
+            let clipboard = handle.state::<tauri_plugin_clipboard::ClipboardManager>();
+            clipboard.write_text("huakun zui shuai".to_string()).unwrap();
+        
             Ok(())
         })
         .system_tray(tray::get_tray_menu())

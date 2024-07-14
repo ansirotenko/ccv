@@ -16,7 +16,8 @@
     "primereact": "^10.7.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-hook-form": "^7.49.1"
+    "react-hook-form": "^7.49.1",
+    "tauri-plugin-clipboard-api": "^1.1.3"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1.5.14",

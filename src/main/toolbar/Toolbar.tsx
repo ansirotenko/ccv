@@ -2,7 +2,7 @@ import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { ComponentProps, useState } from 'react';
 import styles from './Toolbar.module.css';
-import { useDebouncedCallback } from '../utils/useDebouncedCallback';
+import { useDebouncedCallback } from './useDebouncedCallback';
 
 interface ToolbarProps extends Omit<ComponentProps<'div'>, 'onChange'> {
     value: string | null;

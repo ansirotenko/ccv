@@ -1,0 +1,20 @@
+
+.loading {
+    stroke-width: 3px;
+    align-self: center;
+    width: 50px;
+    line-height: 50px;
+    margin: 20px 0;
+    height: 100%;
+}
+
+.failed {
+    padding: 8px;
+    margin: 0;
+    height: 100%;
+}
+
+.empty {
+    margin: 5px 5px;
+    align-self: center;
+}

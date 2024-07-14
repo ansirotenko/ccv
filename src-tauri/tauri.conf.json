@@ -43,7 +43,7 @@
             {
                 "title": "ccv",
                 "width": 380,
-                "height": 450,
+                "height": 520,
                 "center": true,
                 "resizable": true,
                 "fullscreen": false,

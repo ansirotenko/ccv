@@ -4,16 +4,16 @@
 
 .searchInput {
     border-top: 0;
-    border-color: var(--text-color-secondary);
+    border-color: var(--surface-border);
     font-size: 0.8rem;
 
     &:hover,
     &:active,
     &:focus {
-        border-color: var(--text-color-secondary);
+        border-color: var(--surface-border);
     }
 
-    height: 24px;
+    height: 22px;
     &::placeholder {
         color: var(--surface-border);
     }
@@ -25,7 +25,7 @@
     font-size: 0.8rem;
     right: 8px;
     top: 6px;
-    color: var(--text-color-secondary);
+    color: var(--surface-border);
     cursor: pointer;
 }
 
@@ -34,7 +34,7 @@
     padding: 3px 5px 0 5px;
     border-left: 0;
     border-top: 0;
-    border-color: var(--text-color-secondary);
+    border-color: var(--surface-border);
 
     &:last-child {
         border-right: 0;
