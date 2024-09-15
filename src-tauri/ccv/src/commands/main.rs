@@ -66,16 +66,32 @@ fn write_reused_copy_item(
 
     match copy_item.value.category {
         Files => {
-            let file_uris = copy_item
+            let files_paths: Vec<String> = copy_item
                 .value
                 .files
                 .as_ref()
                 .unwrap()
                 .iter()
-                .map(|x| format!("file://{}", x.full_path))
+                .map(|x|  x.full_path.clone())
                 .collect();
+
+            let mut files_uris: Vec<String> = vec![];
+            #[cfg(any(target_os = "linux", target_os = "macos"))]
+            {
+                for file in &files_paths {
+                    files_uris.push(format!("file://{}", file))
+                }
+            }
+        
+            #[cfg(target_os = "windows")]
+            {
+                for file in &files_paths {
+                    files_uris.push(file.clone())
+                }
+            }
+
             state_clipboard
-                .write_files_uris(file_uris)
+                .write_files_uris(files_uris)
                 .map_err(|e| app_error!("{e}"))?;
         }
         Image => {
