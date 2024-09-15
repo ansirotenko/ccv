@@ -1,9 +1,10 @@
-import { ComponentProps, useEffect, useRef } from 'react';
+import { ComponentProps, useContext, useEffect, useRef } from 'react';
 import { CopyItem } from '../../api';
 import { Message } from 'primereact/message';
 import { Image } from 'primereact/image';
 import DOMPurify from 'dompurify';
 import { Tooltip } from 'primereact/tooltip';
+import { SearchContext, textToHighlightedHtml, htmlToHighlightedHtml } from '../SearchContext';
 
 import styles from './Item.module.css';
 
@@ -17,6 +18,7 @@ interface ItemProps extends Omit<ComponentProps<'div'>, 'onSelect'> {
 }
 
 export function Item({ item, index, selectedIndex, newlyActivedId, onSelect, onActivate }: ItemProps) {
+    const search = useContext(SearchContext);
     const ref = useRef<HTMLDivElement>(null);
     useEffect(() => {
         if (index === selectedIndex) {
@@ -39,10 +41,12 @@ export function Item({ item, index, selectedIndex, newlyActivedId, onSelect, onA
         if (item.value.files) {
             const fileClass = item.value.files.length === 1 ? styles.singleLineFile : styles.multiLineFiles;
             return (
-                <div className={`highlight ${fileClass}`}>
+                <div className={fileClass}>
                     {item.value.files.map((f) => (
                         <div key={f.fullPath}>
-                            <em>{`${f.fileName} @ ${f.directoryPath}`}</em>
+                            <em dangerouslySetInnerHTML={{ __html: textToHighlightedHtml(f.fileName, search) }}></em>
+                            <em> @ </em>
+                            <em dangerouslySetInnerHTML={{ __html: textToHighlightedHtml(f.directoryPath, search) }}></em>
                         </div>
                     ))}
                 </div>
@@ -51,14 +55,14 @@ export function Item({ item, index, selectedIndex, newlyActivedId, onSelect, onA
 
         if (item.value.text) {
             const textClass = item.value.text.indexOf('\n') === -1 ? styles.singleLineText : styles.multiLineText;
-            return <div className={`highlight ${textClass}`}>{item.value.text}</div>;
+            return <div className={textClass} dangerouslySetInnerHTML={{ __html: textToHighlightedHtml(item.value.text, search) }}></div>;
         }
 
         if (item.value.rtf) {
             return (
                 <div
-                    className={`highlight ${styles.htmlContent}`}
-                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(item.value.rtf) }}
+                    className={styles.htmlContent}
+                    dangerouslySetInnerHTML={{ __html: htmlToHighlightedHtml(DOMPurify.sanitize(item.value.rtf), search) }}
                 />
             );
         }
@@ -66,8 +70,8 @@ export function Item({ item, index, selectedIndex, newlyActivedId, onSelect, onA
         if (item.value.html) {
             return (
                 <div
-                    className={`highlight ${styles.htmlContent}`}
-                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(item.value.html) }}
+                    className={styles.htmlContent}
+                    dangerouslySetInnerHTML={{ __html: htmlToHighlightedHtml(DOMPurify.sanitize(item.value.html), search) }}
                 />
             );
         }

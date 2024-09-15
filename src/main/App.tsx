@@ -6,7 +6,7 @@ import { ItemPreview } from './itemPreview/ItemPreview';
 import { useDebouncedCallback } from '../common/useDebouncedCallback';
 import { useBackend } from './useBackend';
 import { error as logError } from 'tauri-plugin-log-api';
-import { highlightSearchTerm } from 'highlight-search-term';
+import { SearchContext, escapeSearch } from './SearchContext';
 
 import styles from './App.module.css';
 
@@ -38,10 +38,6 @@ function App() {
         containerRef.current?.focus();
         onToolbarChange(initialQuery, initialCategories);
     }, []);
-
-    useEffect(() => {
-        highlightSearchTerm({ search: query || '', selector: `.highlight` });
-    }, [query, result.items, result.items[selectedIndex]]);
 
     const delayedResetNewlyActive = useDebouncedCallback(() => {
         setNewlyActivedId(null);
@@ -147,7 +143,7 @@ function App() {
             return;
         }
     };
-
+    
     return (
         <div className={styles.container} onKeyDown={keyDown} tabIndex={0} ref={containerRef}>
             <Toolbar
@@ -159,17 +155,19 @@ function App() {
                 onSettings={backend.showSettingsWindow}
                 onReportIssue={backend.showAboutWindow}
             />
-            <ItemsList
-                loading={loading}
-                error={error}
-                result={result}
-                selectedIndex={selectedIndex}
-                newlyActivedId={newlyActivedId}
-                onSelect={select}
-                onActivate={activate}
-                onLoadMore={loadMore}
-            />
-            <ItemPreview item={result.items[selectedIndex]} />
+            <SearchContext.Provider value={escapeSearch(query)} >
+                <ItemsList
+                    loading={loading}
+                    error={error}
+                    result={result}
+                    selectedIndex={selectedIndex}
+                    newlyActivedId={newlyActivedId}
+                    onSelect={select}
+                    onActivate={activate}
+                    onLoadMore={loadMore}
+                />
+                <ItemPreview item={result.items[selectedIndex]} />
+            </SearchContext.Provider>
         </div>
     );
 }

@@ -2,9 +2,9 @@
     position: relative;
     height: 100%;
     outline-style: none;
-}
 
-::highlight(search) {
-    background-color: var(--yellow-400);
-    color: var(--blue-900);
+    & [class~='highlight'] {
+        background-color: var(--yellow-400);
+        color: var(--blue-900);
+    }
 }

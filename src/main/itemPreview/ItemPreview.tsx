@@ -1,18 +1,21 @@
-import { ComponentProps } from 'react';
+import { ComponentProps, useContext } from 'react';
 import { CopyItem } from '../../api';
 import { Message } from 'primereact/message';
 import { Image } from 'primereact/image';
 import { FilePreview } from './FilePreview';
 import DOMPurify from 'dompurify';
+import { RtfPreview } from './RtfPreview';
+import { SearchContext, textToHighlightedHtml, htmlToHighlightedHtml } from '../SearchContext';
 
 import styles from './ItemPreview.module.css';
-import { RtfPreview } from './RtfPreview';
 
 interface ItemPreviewProps extends ComponentProps<'div'> {
     item: CopyItem;
 }
 
 export function ItemPreview({ item }: ItemPreviewProps) {
+    const search = useContext(SearchContext);
+
     function content() {
         if (item.value.image) {
             return (
@@ -37,11 +40,11 @@ export function ItemPreview({ item }: ItemPreviewProps) {
         }
 
         if (item.value.html) {
-            return <div className={styles.htmlContent} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(item.value.html) }} />;
+            return <div className={styles.htmlContent} dangerouslySetInnerHTML={{ __html: htmlToHighlightedHtml(DOMPurify.sanitize(item.value.html), search) }} />;
         }
 
         if (item.value.text) {
-            return <div className={styles.textContent}>{item.value.text}</div>;
+            return <div className={styles.textContent} dangerouslySetInnerHTML={{ __html: textToHighlightedHtml(item.value.text, search) }}></div>;
         }
 
         return <Message severity="error" className={styles.failed} text={`Copy item has empty content or format is unknown`} />;
@@ -56,7 +59,7 @@ export function ItemPreview({ item }: ItemPreviewProps) {
         info += `, last use: ${item.lastReuse.toLocaleString()}`;
     }
     return (
-        <div className={`highlight ${styles.container}`}>
+        <div className={styles.container}>
             <div className={styles.contentContainer}>{content()}</div>
             <div className={styles.infoContainer}>{info}</div>
         </div>
