@@ -72,7 +72,7 @@ fn write_reused_copy_item(
                 .as_ref()
                 .unwrap()
                 .iter()
-                .map(|x| x.full_path.clone())
+                .map(|x| format!("file://{}", x.full_path))
                 .collect();
             state_clipboard
                 .write_files_uris(file_uris)
@@ -259,7 +259,9 @@ pub fn show_main_window(app: AppHandle) -> Result<(), AppError> {
     let window = app.get_window(MAIN);
     if let Some(window) = window {
         log_error(window.show(), "Unable to show main window")?;
+        log_error(window.set_always_on_top(true), "Unable to focus about window")?;
         log_error(window.set_focus(), "Unable to focus main window")?;
+        log_error(window.set_always_on_top(false), "Unable to focus about window")?;
         Ok(())
     } else {
         log_error(

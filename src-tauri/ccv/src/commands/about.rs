@@ -54,7 +54,9 @@ pub fn show_about_window(app: AppHandle) -> Result<(), AppError> {
     let window = app.get_window(ABOUT);
     if let Some(window) = window {
         log_error(window.show(), "Unable to show about window")?;
+        log_error(window.set_always_on_top(true), "Unable to focus about window")?;
         log_error(window.set_focus(), "Unable to focus about window")?;
+        log_error(window.set_always_on_top(false), "Unable to focus about window")?;
         Ok(())
     } else {
         log_error(
