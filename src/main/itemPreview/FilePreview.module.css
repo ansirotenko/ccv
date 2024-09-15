@@ -1,0 +1,12 @@
+.container {
+    white-space: nowrap;
+    line-height: 18px;
+}
+
+.image {
+    margin: 0 4px;
+}
+
+.icon {
+    margin: 0 2px;
+}

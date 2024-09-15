@@ -1,15 +1,14 @@
 // import React from "react";
 import ReactDOM from 'react-dom/client';
-import { PrimeReactProvider } from 'primereact/api';
-import App from './App.tsx';
-
-import 'primereact/resources/themes/nano/theme.css';
-import 'primeicons/primeicons.css';
+import logo from '../assets/logo256.png';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     // <React.StrictMode>
-    <PrimeReactProvider>
-        <App />
-    </PrimeReactProvider>,
+    <>
+        <style>{'body { margin: 0}'}</style>
+        <div className="splashscreen" style={{ backgroundColor: '#d0f0f7', textAlign: 'center', height: '100vh' }}>
+            <img src={logo} />
+        </div>
+    </>,
     // </React.StrictMode>,
 );

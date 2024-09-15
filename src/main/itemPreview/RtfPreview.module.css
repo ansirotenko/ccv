@@ -1,0 +1,18 @@
+.failed {
+    height: 100%;
+    width: 100%;
+}
+
+.loading {
+    stroke-width: 3px;
+    height: 50px;
+    width: 50px;
+    margin: 12px auto;
+    display: block;
+}
+
+.rtfContent {
+    margin: 2px 6px;
+    user-select: none;
+    display: inline-block;
+}

@@ -1,0 +1,90 @@
+{
+    "build": {
+        "beforeDevCommand": "npm run dev",
+        "beforeBuildCommand": "npm run build",
+        "devPath": "http://localhost:1420",
+        "distDir": "../../dist"
+    },
+    "package": {
+        "productName": "ccv",
+        "version": "0.1.0"
+    },
+    "tauri": {
+        "systemTray": {
+            "iconPath": "icons/icon.ico",
+            "iconAsTemplate": true
+        },
+        "bundle": {
+            "active": true,
+            "targets": "all",
+            "identifier": "ansirotenko.ccv",
+            "icon": [
+                "icons/32x32.png",
+                "icons/128x128.png",
+                "icons/128x128@2x.png",
+                "icons/icon.icns",
+                "icons/icon.ico"
+            ]
+        },
+        "allowlist": {
+            "all": false,
+            "shell": {
+                "all": false,
+                "open": true
+            },
+            "globalShortcut": {
+                "all": true
+            },
+            "window": {
+                "all": true
+            }
+        },
+        "security": {
+            "csp": null
+        },
+        "windows": [
+            {
+                "title": "ccv",
+                "width": 380,
+                "height": 520,
+                "center": true,
+                "resizable": false,
+                "fullscreen": false,
+                "visible": false,
+                "skipTaskbar": true,
+                "url": "screens/main.html",
+                "decorations": false,
+                "label": "main"
+            },
+            {
+                "center": true,
+                "width": 530,
+                "height": 285,
+                "decorations": false,
+                "resizable": false,
+                "url": "screens/splashscreen.html",
+                "label": "splashscreen"
+            },
+            {
+                "center": true,
+                "width": 610,
+                "height": 360,
+                "visible": false,
+                "decorations": false,
+                "resizable": false,
+                "url": "screens/about.html",
+                "label": "about"
+            },
+            {
+                "center": true,
+                "width": 510,
+                "height": 680,
+                "visible": false,
+                "decorations": false,
+                "resizable": false,
+                "url": "screens/settings.html",
+                "label": "settings"
+            }
+        ]
+    }
+}

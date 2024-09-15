@@ -1,0 +1,94 @@
+.container {
+    width: 100%;
+    height: 100%;
+    outline-style: none;
+    font-size: 14px;
+}
+
+.toolbar {
+    background-color: var(--surface-b);
+    display: flex;
+    border-bottom: 1px solid var(--surface-border);
+    height: 22px;
+    line-height: 22px;
+    width: 100%;
+}
+
+.toolbarTitle {
+    text-align: center;
+    flex-grow: 1;
+    cursor: default;
+}
+
+.toolbarButton {
+    align-self: flex-end;
+    padding: 3px 3px 2px 3px;
+    border: 0;
+    border-left: 1px solid var(--surface-border);
+    font-size: 11px;
+    min-width: 21px;
+    height: 100%;
+    flex-shrink: 0;
+    border-radius: 1px;
+
+    & > [class~='p-button-label'] {
+        display: none;
+    }
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 22px);
+
+    > div {
+        padding: 8px 10px;
+
+        > section {
+            > strong {
+                font-weight: 300;
+                margin-right: 3px;
+                font-size: 13px;
+            }
+
+            em {
+                cursor: pointer;
+                &:hover {
+                    color: var(--text-color-secondary);
+                }
+            }
+        }
+    }
+
+    > div:last-child {
+        flex-grow: 1;
+    }
+
+    & [class~='p-skeleton'] {
+        margin-bottom: -3px;
+        display: inline-block;
+    }
+}
+
+.contentButtonContainer {
+    display: flex;
+    justify-content: center;
+    align-items: end;
+    height: 100%;
+}
+
+.contentButton {
+    border-color: var(--surface-border);
+    font-size: 16px;
+    min-width: 21px;
+    margin: 15px;
+    width: 75px;
+    justify-content: center;
+    padding: 4px;
+    border-radius: 2px;
+}
+
+.reportBug {
+    padding: 8px 4px;
+    margin: 0 -4px;
+}

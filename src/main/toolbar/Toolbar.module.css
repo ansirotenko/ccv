@@ -1,5 +1,22 @@
+.container {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+}
+
 .searchInputGroup {
     position: relative;
+}
+
+.searchIcon {
+    cursor: move;
+    padding: 5px 5px 2px 3px;
+    border-bottom: 1px solid var(--surface-border);
+    background-color: var(--surface-ground);
+    color: var(--text-color-secondary);
+    width: 21px;
+    font-size: 11px;
 }
 
 .searchInput {
@@ -15,7 +32,7 @@
 
     height: 22px;
     &::placeholder {
-        color: var(--surface-border);
+        color: var(--text-color-secondary);
     }
 }
 
@@ -25,16 +42,65 @@
     font-size: 0.8rem;
     right: 8px;
     top: 6px;
-    color: var(--surface-border);
+    color: var(--text-color-secondary);
     cursor: pointer;
 }
 
-.buttons {
+.filterPopup {
+    z-index: 1;
+    position: absolute;
     font-size: 0.8rem;
-    padding: 3px 5px 0 5px;
+    right: 2px;
+    top: 22px;
+    display: none;
+    width: 90px;
+    background-color: var(--surface-i);
+    padding: 4px 6px;
+    box-shadow: var(--surface-border) 0px 5px 15px;
+}
+
+.filterItem {
+    margin: 2px 0;
+    display: inline-block;
+}
+
+.filterItemLabel {
+    margin: 0 4px;
+    user-select: none;
+    cursor: pointer;
+}
+
+.visibleFilterPopup {
+    display: block;
+}
+
+.tooltip {
+    font-size: 13px;
+}
+
+.buttons {
+    padding: 0 3px 0 3px;
     border-left: 0;
     border-top: 0;
     border-color: var(--surface-border);
+    font-size: 11px;
+    min-width: 21px;
+    flex-shrink: 0;
+    justify-content: center;
+    border-radius: 1px;
+    height: 22px;
+    line-height: 22px;
+    padding: 3px;
+
+    & img {
+        width: 13px;
+        height: 13px;
+        margin: 2px 0;
+    }
+
+    & > [class~='p-button-label'] {
+        display: none;
+    }
 
     &:last-child {
         border-right: 0;

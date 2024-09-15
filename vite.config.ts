@@ -24,6 +24,8 @@ export default defineConfig(async () => ({
       input: {
         main: resolve(__dirname, "screens/main.html"),
         splashscreen: resolve(__dirname, "screens/splashscreen.html"),
+        about: resolve(__dirname, "screens/about.html"),
+        settings: resolve(__dirname, "screens/settings.html"),
       },
     },
   }

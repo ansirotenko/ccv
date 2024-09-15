@@ -1,0 +1,11 @@
+[package]
+name = "ccv_in_memory"
+version.workspace = true
+authors.workspace = true
+license.workspace = true
+homepage.workspace = true
+edition = "2021"
+
+[dependencies]
+chrono = { workspace = true, features = ["now"] }
+ccv_contract = { path = "../ccv_contract"}
