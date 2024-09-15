@@ -39,7 +39,7 @@
 .content {
     padding: 8px;
     overflow-y: auto;
-    height: calc(100vh - 22px);
+    height: calc(100% - 22px);
 
     & [class~='p-fieldset'] {
         margin-bottom: 13px;

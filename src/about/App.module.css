@@ -39,7 +39,8 @@
 .content {
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 22px);
+    overflow: hidden;
+    height: calc(100% - 22px);
 
     > div {
         padding: 8px 10px;

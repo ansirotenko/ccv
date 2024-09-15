@@ -4,7 +4,6 @@ import { ComponentProps, useEffect, useRef, useState } from 'react';
 import { useDebouncedCallback } from '../../common/useDebouncedCallback';
 import { CopyCategory } from '../../api';
 import { Checkbox } from 'primereact/checkbox';
-import { Image } from 'primereact/image';
 import bugImage from '../../assets/bug.png';
 
 import styles from './Toolbar.module.css';
@@ -93,7 +92,7 @@ export function Toolbar({
 
     const onInputValueChange = useDebouncedCallback((query: string | undefined) => {
         somethingChanged(query, categoriesNumber);
-    }, 300);
+    }, 200);
 
     function somethingChanged(query: string | undefined, categoriesNumber: number) {
         console.log(toCategoriesArray(categoriesNumber, possibleCategories).join(', '));
