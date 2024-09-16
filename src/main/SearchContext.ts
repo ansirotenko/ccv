@@ -14,7 +14,7 @@ export function escapeSearch(search: string | null): string | null {
 // TODO can be improved
 export function htmlToHighlightedHtml(html: string, search: string | null): string {
     if (!search) {
-        return makeSafeHtml(html);
+        return html;
     }
     return html.replace(/>([^<]+)</g, function(_, p1) {
         return `>${textToHighlightedHtml(makeUnsafeText(p1), search)}<`
