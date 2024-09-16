@@ -72,7 +72,7 @@ pub struct SettingsState {
     pub settings: Mutex<Option<Settings>>,
 }
 
-const SETTINGS_FILE_NAME: &str = "./settings.json";
+const SETTINGS_FILE_NAME: &str = "settings.json";
 
 impl SettingsState {
     pub fn new() -> SettingsState {
@@ -82,7 +82,7 @@ impl SettingsState {
     }
 
     pub fn read_settings(app_data_dir: &PathBuf) -> Result<Settings, AppError> {
-        let mut file = File::options()
+                let mut file = File::options()
             .read(true)
             .write(true)
             .create(true)

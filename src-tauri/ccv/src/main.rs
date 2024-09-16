@@ -46,6 +46,9 @@ fn main() {
             if let Some(app_data_dir) = app.app_handle().path_resolver().app_data_dir() {
                 if let Some(splashscreen_window) = app.get_window(SPLASHSCREEN) {
                     if let Some(main_window) = app.get_window(MAIN) {
+                        if !app_data_dir.exists() {
+                            std::fs::create_dir_all(app_data_dir.clone()).unwrap();
+                        }
                         let state_settings = app.state::<SettingsState>();
                         let mut settings = state_settings.settings.lock().unwrap();
                         match SettingsState::read_settings(&app_data_dir) {
