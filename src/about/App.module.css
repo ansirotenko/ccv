@@ -69,6 +69,16 @@
         margin-bottom: -3px;
         display: inline-block;
     }
+
+    a {
+        color: var(--text-color);
+        &:hover {
+            color: var(--text-color-secondary)
+        }
+        &:active, &:visited {
+            color: var(--text-color);
+        }
+    }
 }
 
 .contentButtonContainer {
