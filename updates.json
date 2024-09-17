@@ -1,0 +1,23 @@
+{
+    "version": "v0.1.0",
+    "notes": "Latest ccv",
+    "pub_date": "2024-09-17T22:55:01Z",
+    "platforms": {
+      "darwin-x86_64": {
+        "signature": "Content of app.tar.gz.sig",
+        "url": "https://github.com/ansirotenko/ccv/releases/download/v0.1.0/ccv-x86_64.app.tar.gz"
+      },
+      "darwin-aarch64": {
+        "signature": "Content of app.tar.gz.sig",
+        "url": "https://github.com/ansirotenko/ccv/releases/download/v0.1.0/app-aarch64.app.tar.gz"
+      },
+      "linux-x86_64": {
+        "signature": "Content of app.AppImage.tar.gz.sig",
+        "url": "https://github.com/ansirotenko/ccv/releases/download/v0.1.0/app-amd64.AppImage.tar.gz"
+      },
+      "windows-x86_64": {
+        "signature": "Content of app-setup.nsis.sig or app.msi.sig, depending on the chosen format",
+        "url": "https://github.com/ansirotenko/ccv/releases/download/v0.1.0/app-x64-setup.nsis.zip"
+      }
+    }
+  }
