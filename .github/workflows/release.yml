@@ -6,6 +6,7 @@ on:
 
 env:
   TAURI_PRIVATE_KEY: ${{ secrets.CCV_UPDATER_PRIVATE_KEY }}
+  TAURI_KEY_PASSWORD: ${{ secrets.CCV_UPDATER_PASSWORD }}
 
 jobs:
   publish-tauri:
