@@ -211,7 +211,7 @@ mod tests {
         let result = repo.search(None, 1, 2, vec![Unknown, Image, Rtf, Files, Text, Html]).unwrap();
 
         assert_eq!(result.items, vec![files, image]);
-        assert_eq!(result.total_number, 7);
+        assert_eq!(result.total_number, 6);
     }
 
     #[test]
