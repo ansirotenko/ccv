@@ -94,19 +94,21 @@ impl SettingsState {
         file.read_to_string(&mut file_content)
             .map_err(|err| app_error!("Unable to read settings file. {err}"))?;
 
-        if let Ok(result) = serde_json::from_str(&file_content) {
-            Ok(result)
-        } else {
-            let default_settings = Settings {
-                theme: Light,
-                keybindings: Keybindings {
-                    open_ccv: vec!["Alt".to_string(), "V".to_string()],
-                },
-            };
+        if let Ok(settings) = serde_json::from_str::<Settings>(&file_content) {
+            if settings.keybindings.open_ccv.len() <= 4 {
+                return Ok(settings);
+            }
+        } 
 
-            SettingsState::write_settings(app_data_dir, &default_settings)?;
-            Ok(default_settings)
-        }
+        let default_settings = Settings {
+            theme: Light,
+            keybindings: Keybindings {
+                open_ccv: vec!["Alt".to_string(), "V".to_string()],
+            },
+        };
+
+        SettingsState::write_settings(app_data_dir, &default_settings)?;
+        Ok(default_settings)
     }
 
     pub fn write_settings(app_data_dir: &PathBuf, settings: &Settings) -> Result<(), AppError> {
