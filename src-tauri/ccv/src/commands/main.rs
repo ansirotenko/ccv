@@ -14,6 +14,8 @@ use std::path::Path;
 use tauri::{command, AppHandle, Manager, State};
 use tauri_plugin_clipboard::ClipboardManager;
 
+use super::utils::show_window;
+
 #[command]
 pub fn search_copy_items(
     query: Option<String>,
@@ -72,7 +74,7 @@ fn write_reused_copy_item(
                 .as_ref()
                 .unwrap()
                 .iter()
-                .map(|x|  x.full_path.clone())
+                .map(|x| x.full_path.clone())
                 .collect();
 
             let mut files_uris: Vec<String> = vec![];
@@ -82,7 +84,7 @@ fn write_reused_copy_item(
                     files_uris.push(format!("file://{}", file))
                 }
             }
-        
+
             #[cfg(target_os = "windows")]
             {
                 for file in &files_paths {
@@ -274,11 +276,7 @@ pub fn hide_main_window(app: AppHandle) -> Result<(), AppError> {
 pub fn show_main_window(app: AppHandle) -> Result<(), AppError> {
     let window = app.get_window(MAIN);
     if let Some(window) = window {
-        log_error(window.show(), "Unable to show main window")?;
-        log_error(window.set_always_on_top(true), "Unable to focus about window")?;
-        log_error(window.set_focus(), "Unable to focus main window")?;
-        log_error(window.set_always_on_top(false), "Unable to focus about window")?;
-        Ok(())
+        log_error(show_window(&window), "Unable to show main window")
     } else {
         log_error(
             Err(app_error!("Window option returns None")),

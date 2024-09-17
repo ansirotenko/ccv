@@ -34,7 +34,7 @@ export interface FileInfo {
 }
 
 export interface Keybindings {
-    openCcv: string;
+    openCcv: string[];
 }
 
 export type Theme = 'Light' | 'Dark';

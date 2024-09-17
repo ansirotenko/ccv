@@ -7,6 +7,8 @@ use ccv_contract::{
 use std::env::current_exe;
 use tauri::{command, AppHandle, Manager};
 
+use super::utils::show_window;
+
 #[command]
 pub fn get_about_data(app: AppHandle) -> Result<AboutData, AppError> {
     let major_version = env!("CARGO_PKG_VERSION_MAJOR");
@@ -53,11 +55,7 @@ pub fn hide_about_window(app: AppHandle) -> Result<(), AppError> {
 pub fn show_about_window(app: AppHandle) -> Result<(), AppError> {
     let window = app.get_window(ABOUT);
     if let Some(window) = window {
-        log_error(window.show(), "Unable to show about window")?;
-        log_error(window.set_always_on_top(true), "Unable to focus about window")?;
-        log_error(window.set_focus(), "Unable to focus about window")?;
-        log_error(window.set_always_on_top(false), "Unable to focus about window")?;
-        Ok(())
+        log_error(show_window(&window), "Unable to show about window")
     } else {
         log_error(
             Err(app_error!("Window option returns None")),

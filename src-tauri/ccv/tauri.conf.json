@@ -32,9 +32,6 @@
                 "all": false,
                 "open": true
             },
-            "globalShortcut": {
-                "all": true
-            },
             "window": {
                 "all": true
             }

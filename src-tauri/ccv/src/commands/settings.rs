@@ -11,6 +11,8 @@ use chrono::{DateTime, Utc};
 use tauri::{command, AppHandle, Manager, State};
 use tauri_plugin_clipboard::ClipboardManager;
 
+use super::utils::show_window;
+
 #[command]
 pub fn get_settings(state: State<SettingsState>) -> Result<Option<Settings>, AppError> {
     let settings = state.settings.lock().unwrap();
@@ -62,11 +64,7 @@ pub fn hide_settings_window(app: AppHandle) -> Result<(), AppError> {
 pub fn show_settings_window(app: AppHandle) -> Result<(), AppError> {
     let window = app.get_window(SETTINGS);
     if let Some(window) = window {
-        log_error(window.show(), "Unable to show settings window")?;
-        log_error(window.set_always_on_top(true), "Unable to focus about window")?;
-        log_error(window.set_focus(), "Unable to focus settings window")?;
-        log_error(window.set_always_on_top(false), "Unable to focus about window")?;
-        Ok(())
+        log_error(show_window(&window), "Unable to show settings")
     } else {
         log_error(
             Err(app_error!("Window option returns None")),

@@ -4,6 +4,7 @@
 mod commands;
 mod events;
 mod screens;
+mod shortcut;
 mod state;
 mod tray;
 
@@ -21,9 +22,10 @@ use commands::{
     settings::{
         get_settings, hide_settings_window, remove_copy_items, remove_copy_items_older,
         set_settings, show_settings_window,
-    },
+    }, utils::show_window,
 };
 use screens::{MAIN, SPLASHSCREEN};
+use shortcut::listen_shortcut;
 use state::{CopyItemState, SettingsState};
 use tauri::{
     async_runtime, generate_context, generate_handler, Builder, Manager,
@@ -59,7 +61,7 @@ fn main() {
                                 log::error!("Unable to read settings file. {err}");
                             }
                         }
-    
+
                         let state_clipboard = app.state::<ClipboardManager>();
                         let state = app.state::<CopyItemState>();
                         let mut repository = state.repository.lock().unwrap();
@@ -102,14 +104,19 @@ fn main() {
                         // {
                         //     main_window.open_devtools();
                         // }
-    
+
                         async_runtime::spawn(async move {
                             thread::sleep(std::time::Duration::from_millis(200));
                             if let Err(err) = splashscreen_window.close() {
                                 log::error!("Unable to hide splashscreen window. {err}");
                             }
-                            if let Err(err) = main_window.show() {
+                            if let Err(err) = show_window(&main_window) {
                                 log::error!("Unable to show main window. {err}");
+                            }
+                            
+                            // this will block
+                            if let Err(_) = listen_shortcut(main_window) {
+                                log::error!("Unable to listen shortcuts");
                             }
                         });
                     } else {

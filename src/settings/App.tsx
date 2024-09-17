@@ -13,6 +13,10 @@ import SettingsContext from '../common/SettingsContext';
 
 import styles from './App.module.css';
 
+function shortcutToString(shortcut: string[]) {
+    return shortcut.join(' + ');
+}
+
 function App() {
     const settings = useContext(SettingsContext);
     const [deleteDate, setDeleteDate] = useState<Date | null>(null);
@@ -20,7 +24,7 @@ function App() {
     const keybindingDialog = useRef<HTMLDivElement>(null);
     const keyBindingValue = useRef<HTMLSpanElement>(null);
     const toast = useRef<Toast>(null);
-    const newCombination = useRef<string>();
+    const newCombination = useRef<string[]>();
     const backend = useBackend();
 
     const saveSettings = async (newSettings: Settings) => {
@@ -70,7 +74,7 @@ function App() {
             }
         }
 
-        onCombinationChanged(keys.join(' + '));
+        onCombinationChanged(keys);
         event.preventDefault();
     };
 
@@ -85,13 +89,13 @@ function App() {
             header: 'Press new keybinding',
             message: (
                 <div className={styles.keybindingEdit} onKeyDown={keyDown} tabIndex={0} ref={keybindingDialog}>
-                    <label>Old combination:</label> <span>{settings?.keybindings.openCcv}</span>
+                    <label>Old combination:</label> <span>{shortcutToString(settings?.keybindings.openCcv)}</span>
                     <label>New combination:</label> <span ref={keyBindingValue}></span>
                 </div>
             ),
             onShow: () => {
                 keybindingDialog.current?.focus();
-                onCombinationChanged('');
+                onCombinationChanged([]);
             },
             onClick: () => {
                 keybindingDialog.current?.focus();
@@ -99,10 +103,10 @@ function App() {
         });
     };
 
-    const onCombinationChanged = (combination: string | undefined) => {
+    const onCombinationChanged = (combination: string[]) => {
         newCombination.current = combination;
         if (keyBindingValue.current) {
-            keyBindingValue.current.innerHTML = combination || '';
+            keyBindingValue.current.innerHTML = shortcutToString(combination);
         }
         (document.getElementsByClassName('acceptButton')[0] as HTMLButtonElement).disabled = !combination;
     };
@@ -198,7 +202,7 @@ function App() {
                 <Fieldset legend="Key bindings">
                     <div className="p-inputgroup">
                         <span className="p-inputgroup-addon">Open ccv</span>
-                        <InputText value={settings?.keybindings.openCcv || ''} disabled={true} />
+                        <InputText value={shortcutToString(settings?.keybindings.openCcv)} disabled={true} />
                         <Button
                             className={styles.settingsButton}
                             onClick={confirmKeybindings}

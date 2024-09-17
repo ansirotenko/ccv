@@ -88,7 +88,7 @@ pub enum Theme {
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct Keybindings {
     #[serde(rename = "openCcv")]
-    pub open_ccv: String,
+    pub open_ccv: Vec<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]

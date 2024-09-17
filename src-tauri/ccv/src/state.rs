@@ -3,6 +3,7 @@ use std::{
     io::{Read, Write},
     path::PathBuf,
     sync::Mutex,
+    vec,
 };
 
 use ccv_contract::{
@@ -82,7 +83,7 @@ impl SettingsState {
     }
 
     pub fn read_settings(app_data_dir: &PathBuf) -> Result<Settings, AppError> {
-                let mut file = File::options()
+        let mut file = File::options()
             .read(true)
             .write(true)
             .create(true)
@@ -99,7 +100,7 @@ impl SettingsState {
             let default_settings = Settings {
                 theme: Light,
                 keybindings: Keybindings {
-                    open_ccv: "Alt + Backquote".to_string(),
+                    open_ccv: vec!["Alt".to_string(), "V".to_string()],
                 },
             };
 

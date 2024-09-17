@@ -16,7 +16,6 @@ chrono = { workspace = true }
 serde = { workspace = true }
 serde_json = { version = "1.0.127" }
 tauri = { version = "1.6.8", features = [
-    "global-shortcut-all",
     "shell-open",
     "system-tray",
     "window-all",
@@ -30,6 +29,7 @@ ccv_in_memory = { path = "../ccv_in_memory" }
 ccv_sqlite = { path = "../ccv_sqlite", optional = true }
 cfg-if = { workspace = true }
 open = { version = "5.3.0" }
+rdev = { version = "0.5.3" }
 
 [features]
 default = ["sqlite"]
