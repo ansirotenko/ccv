@@ -17,7 +17,7 @@ jobs:
     steps:
     # - uses: actions/checkout@v4
     - name: test sec
-      run: echo "My secret is ${{ secrets.TestSecret }}"
+      run: echo "My secret is ${{ secrets.TestSecret }} !!!"
     # - name: Install dependencies
     #   run: |
     #     sudo apt-get update
