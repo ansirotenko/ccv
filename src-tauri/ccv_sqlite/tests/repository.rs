@@ -54,7 +54,7 @@ fn schema_pre_exists() {
 
     assert_eq!(search_result.items, vec![copy_item_files("4", "ab", t, t),]);
     assert_eq!(search_result.total_number, 1);
-    assert_eq!(insert_result.id, "7".to_string());
+    assert_eq!(insert_result.id, "8".to_string());
 }
 
 #[test]
