@@ -1,5 +1,7 @@
 
-<img style="display: block; margin: auto;" height="150" src="./src/assets/logo256.png"/>
+<p align="center">
+  <img height="150" src="./src/assets/logo256.png"/>
+</p>
 
 **CCV** is a cross-platform clipboard history manager. It uses sqlite to store the entire clipboard history, allows you to search and reuse old items. 
 
