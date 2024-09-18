@@ -47,7 +47,7 @@
         "updater": {
             "active": true,
             "endpoints": [
-                "https://raw.githubusercontent.com/ansirotenko/ccv/main/updates.json"
+                "https://raw.githubusercontent.com/ansirotenko/ccv/main/latest.json"
             ],
             "dialog": true,
             "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDVFNkQ2NUVCQjJEM0FCMjAKUldRZ3E5T3k2MlZ0WGlpeW9ka2kxdTZRV1oxZkphbDdKNWRqaWtOYTdjVThldFdlMUx2dlp1L04K",
