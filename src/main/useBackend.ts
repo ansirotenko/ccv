@@ -1,9 +1,11 @@
-import { useEffect, useRef } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import { onSomethingUpdate, startListening } from 'tauri-plugin-clipboard-api';
+import { registerAll, unregisterAll } from '@tauri-apps/api/globalShortcut';
 import { invoke } from '@tauri-apps/api/tauri';
 import { CopyCategory, CopyItem, EventPayload, SearchResult } from '../api';
 import { emit, listen as subscribe } from '@tauri-apps/api/event';
 import { ITEMS_CHANGED, HIGHLIGHT_REPORT_BUG } from '../events';
+import SettingsContext from '../common/SettingsContext';
 
 type CopyItemRaw = Omit<CopyItem, 'lastReuse' | 'created'> & {
     lastReuse: string;
@@ -68,6 +70,7 @@ export function useBackend(onClipboardChange: ActivatedFunc, onItemsChanged: Ite
     itemsChangedHandler.current = onItemsChanged;
 
     const unlistenSomethingUpdatedRef = useRef<UnlistendClipboardFunc>();
+    const settings = useContext(SettingsContext);
 
     async function reuseCopyItem(itemId: string) {
         await stopListenClipboard();
@@ -99,6 +102,16 @@ export function useBackend(onClipboardChange: ActivatedFunc, onItemsChanged: Ite
     }
 
     useEffect(() => {
+        if (settings) {
+            unregisterAll().then(() => {
+                registerAll([settings.keybindings.openCcv.join(" + ")], async () => {
+                    await showMainWindow();
+                });
+            });
+        }
+    }, [settings]);
+
+    useEffect(() => {
         async function listen() {
             const unsubscribeItemsChanged = await subscribe<EventPayload<string>>(ITEMS_CHANGED, () => {
                 if (itemsChangedHandler.current) {
@@ -110,6 +123,7 @@ export function useBackend(onClipboardChange: ActivatedFunc, onItemsChanged: Ite
 
             return async () => {
                 await stopListenClipboard();
+                await unregisterAll();
                 unsubscribeItemsChanged();
             };
         }
