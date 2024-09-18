@@ -3,7 +3,6 @@ use std::{
     io::{Read, Write},
     path::PathBuf,
     sync::Mutex,
-    vec,
 };
 
 use ccv_contract::{

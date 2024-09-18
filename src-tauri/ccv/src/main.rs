@@ -4,7 +4,6 @@
 mod commands;
 mod events;
 mod screens;
-mod shortcut;
 mod state;
 mod tray;
 
@@ -25,7 +24,6 @@ use commands::{
     }, utils::show_window,
 };
 use screens::{MAIN, SPLASHSCREEN};
-use shortcut::listen_shortcut;
 use state::{CopyItemState, SettingsState};
 use tauri::{
     async_runtime, generate_context, generate_handler, Builder, Manager,
@@ -112,11 +110,6 @@ fn main() {
                             }
                             if let Err(err) = show_window(&main_window) {
                                 log::error!("Unable to show main window. {err}");
-                            }
-                            
-                            // this will block
-                            if let Err(_) = listen_shortcut(main_window) {
-                                log::error!("Unable to listen shortcuts");
                             }
                         });
                     } else {
