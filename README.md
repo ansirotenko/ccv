@@ -4,8 +4,7 @@
 # Intro 
 CCV is lightweight crossplatform clipboard manager
 
-Find sutable installation [here](./https://github.com/ansirotenko/ccv/releases)
-
+Find sutable installation [here](https://github.com/ansirotenko/ccv/releases)
 
 
 
