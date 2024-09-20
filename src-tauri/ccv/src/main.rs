@@ -29,11 +29,13 @@ use tauri::{
     async_runtime, generate_context, generate_handler, Builder, Manager,
     WindowEvent::CloseRequested,
 };
+use tauri_plugin_autostart::MacosLauncher;
 use tauri_plugin_clipboard::ClipboardManager;
 use tray::{get_tray_menu, tray_event_handler};
 
 fn main() {
     let builder = Builder::default()
+        .plugin(tauri_plugin_autostart::init(MacosLauncher::LaunchAgent, None))
         .plugin(tauri_plugin_clipboard::init())
         .plugin(
             tauri_plugin_log::Builder::default()
