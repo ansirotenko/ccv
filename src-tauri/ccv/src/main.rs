@@ -34,6 +34,7 @@ use tray::{get_tray_menu, tray_event_handler};
 
 fn main() {
     let builder = Builder::default()
+        .plugin(tauri_plugin_clipboard::init())
         .plugin(
             tauri_plugin_log::Builder::default()
                 .targets([tauri_plugin_log::LogTarget::LogDir])
@@ -41,7 +42,7 @@ fn main() {
                 .level_for("tao::platform_impl::platform::event_loop::runner", log::LevelFilter::Error)
                 .build(),
         )
-        .plugin(tauri_plugin_clipboard::init())
+        .plugin(tauri_plugin_single_instance::init(|_,_,_| {}))
         .setup(|app| {
             if let Some(app_data_dir) = app.app_handle().path_resolver().app_data_dir() {
                 if let Some(splashscreen_window) = app.get_window(SPLASHSCREEN) {
