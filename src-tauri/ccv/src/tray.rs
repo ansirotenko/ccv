@@ -1,9 +1,9 @@
-use crate::commands::{
-    about::show_about_window,
-    main::{hide_main_window, show_main_window},
-    settings::show_settings_window,
+use ccv::utils::window::{hide_window, show_window};
+use tauri::{
+    CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem,
 };
-use tauri::{CustomMenuItem, SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem};
+
+use crate::screens::{ABOUT, MAIN, SETTINGS};
 
 const ABOUT_MENU: &str = "about";
 const SETTINGS_MENU: &str = "settings";
@@ -59,16 +59,24 @@ pub fn tray_event_handler(app: &tauri::AppHandle, event: SystemTrayEvent) {
                 std::process::exit(0);
             }
             ABOUT_MENU => {
-                show_about_window(app.clone()).unwrap();
+                if let Err(err) = show_window(&app.get_window(ABOUT)) {
+                    log::error!("Unable to show about window from tray. {err}");
+                }
             }
             HIDE_MENU => {
-                hide_main_window(app.clone()).unwrap();
+                if let Err(err) = hide_window(&app.get_window(MAIN)) {
+                    log::error!("Unable to hide main window from tray. {err}");
+                }
             }
             SHOW_MENU => {
-                show_main_window(app.clone()).unwrap();
+                if let Err(err) = show_window(&app.get_window(MAIN)) {
+                    log::error!("Unable to show main window from tray. {err}");
+                }
             }
             SETTINGS_MENU => {
-                show_settings_window(app.clone()).unwrap();
+                if let Err(err) = show_window(&app.get_window(SETTINGS)) {
+                    log::error!("Unable to show settings window from tray. {err}");
+                }
             }
             _ => {}
         },

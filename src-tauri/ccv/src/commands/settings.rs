@@ -2,6 +2,7 @@ use crate::events::{ITEMS_CHANGED, SETTINGS_UPDATED};
 use crate::screens::{MAIN, SETTINGS};
 use crate::state::CopyItemState;
 use crate::{commands::main::insert_copy_item_if_not_found, state::SettingsState};
+use ccv::utils::window::{hide_window, show_window};
 use ccv_contract::models::Shortcut;
 use ccv_contract::{
     app_error,
@@ -12,8 +13,6 @@ use chrono::{DateTime, Utc};
 use global_hotkey::hotkey::{Code, HotKey, Modifiers};
 use tauri::{command, AppHandle, GlobalShortcutManager, Manager, State};
 use tauri_plugin_clipboard::ClipboardManager;
-
-use super::utils::show_window;
 
 #[command]
 pub fn get_settings(state: State<SettingsState>) -> Result<Option<Settings>, AppError> {
@@ -55,7 +54,16 @@ pub fn set_settings(
         #[cfg(target_os = "linux")]
         {
             use global_hotkey::GlobalHotKeyManager;
-            log_error(state.hotkey_change.lock().unwrap().as_ref().unwrap().send(new_settings.clone()), "zalupa")?;
+            log_error(
+                state
+                    .hotkey_change
+                    .lock()
+                    .unwrap()
+                    .as_ref()
+                    .unwrap()
+                    .send(new_settings.clone()),
+                "zalupa",
+            )?;
         }
     }
 
@@ -72,29 +80,18 @@ pub fn set_settings(
 
 #[command]
 pub fn hide_settings_window(app: AppHandle) -> Result<(), AppError> {
-    let window = app.get_window(SETTINGS);
-    if let Some(window) = window {
-        log_error(window.hide(), "Unable to hide settings window")?;
-        Ok(())
-    } else {
-        log_error(
-            Err(app_error!("Window option returns None")),
-            "Unable to find settings window",
-        )
-    }
+    log_error(
+        hide_window(&app.get_window(SETTINGS)),
+        "Unable to hide settings window",
+    )
 }
 
 #[command]
 pub fn show_settings_window(app: AppHandle) -> Result<(), AppError> {
-    let window = app.get_window(SETTINGS);
-    if let Some(window) = window {
-        log_error(show_window(&window), "Unable to show settings")
-    } else {
-        log_error(
-            Err(app_error!("Window option returns None")),
-            "Unable to find settings window",
-        )
-    }
+    log_error(
+        show_window(&app.get_window(SETTINGS)),
+        "Unable to show settings window",
+    )
 }
 
 #[command]
@@ -164,17 +161,13 @@ pub fn remove_copy_items_older(
 pub fn register_keybindings(app: &AppHandle, settings: &Settings) -> Result<(), AppError> {
     let keys = parse_shortcut(&settings.keybindings.open_ccv)?;
     let accelerator = keys.join(" + ");
+    let main_window = app.get_window(MAIN);
 
-    if let Some(main_window) = app.get_window(MAIN) {
-        app.global_shortcut_manager()
-            .register(accelerator.as_str(), move || {
-                println!("show !");
-                log_error(show_window(&main_window), "Unable to show main window").unwrap();
-            })
-            .map_err(|err| app_error!("{err}"))
-    } else {
-        Err(app_error!("Main window option returns None"))
-    }
+    app.global_shortcut_manager()
+        .register(accelerator.as_str(), move || {
+            log_error(show_window(&main_window), "Unable to show main window").unwrap();
+        })
+        .map_err(|err| app_error!("{err}"))
 }
 
 fn parse_shortcut(shortcut: &Shortcut) -> Result<Vec<String>, AppError> {
@@ -222,7 +215,7 @@ pub fn get_hotkey(shortcut: &Shortcut) -> Result<HotKey, AppError> {
                 Ok(HotKey::new(None, code))
             } else {
                 Ok(HotKey::new(Some(modifier), code))
-            }
+            };
         }
     }
 

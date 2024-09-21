@@ -1,4 +1,5 @@
 use crate::{screens::MAIN, state::CopyItemState};
+use ccv::utils::window::{hide_window, show_window};
 use ccv_contract::{
     app_error,
     error::{log_error, AppError},
@@ -13,8 +14,6 @@ use clipboard_rs::{Clipboard, ClipboardContent, ClipboardContext, ContentFormat}
 use std::path::Path;
 use tauri::{command, AppHandle, Manager, State};
 use tauri_plugin_clipboard::ClipboardManager;
-
-use super::utils::show_window;
 
 #[command]
 pub fn search_copy_items(
@@ -260,29 +259,18 @@ fn get_new_copy_item_value(
 
 #[command]
 pub fn hide_main_window(app: AppHandle) -> Result<(), AppError> {
-    let window = app.get_window(MAIN);
-    if let Some(window) = window {
-        log_error(window.hide(), "Unable to hide main window")?;
-        Ok(())
-    } else {
-        log_error(
-            Err(app_error!("Window option returns None")),
-            "Unable to find main window",
-        )
-    }
+    log_error(
+        hide_window(&app.get_window(MAIN)),
+        "Unable to hide main window",
+    )
 }
 
 #[command]
 pub fn show_main_window(app: AppHandle) -> Result<(), AppError> {
-    let window = app.get_window(MAIN);
-    if let Some(window) = window {
-        log_error(show_window(&window), "Unable to show main window")
-    } else {
-        log_error(
-            Err(app_error!("Window option returns None")),
-            "Unable to find main window",
-        )
-    }
+    log_error(
+        show_window(&app.get_window(MAIN)),
+        "Unable to show main window",
+    )
 }
 
 pub fn get_clipboard_category(
