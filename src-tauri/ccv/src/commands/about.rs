@@ -1,13 +1,11 @@
 use crate::screens::ABOUT;
+use ccv::utils::window::{hide_window, show_window};
 use ccv_contract::{
-    app_error,
     error::{log_error, AppError},
     models::AboutData,
 };
 use std::env::current_exe;
 use tauri::{command, AppHandle, Manager};
-
-use super::utils::show_window;
 
 #[command]
 pub fn get_about_data(app: AppHandle) -> Result<AboutData, AppError> {
@@ -39,27 +37,16 @@ pub fn open(target: String) -> Result<(), AppError> {
 
 #[command]
 pub fn hide_about_window(app: AppHandle) -> Result<(), AppError> {
-    let window = app.get_window(ABOUT);
-    if let Some(window) = window {
-        log_error(window.hide(), "Unable to hide about window")?;
-        Ok(())
-    } else {
-        log_error(
-            Err(app_error!("Window option returns None")),
-            "Unable to find about window",
-        )
-    }
+    log_error(
+        hide_window(&app.get_window(ABOUT)),
+        "Unable to hide about window",
+    )
 }
 
 #[command]
 pub fn show_about_window(app: AppHandle) -> Result<(), AppError> {
-    let window = app.get_window(ABOUT);
-    if let Some(window) = window {
-        log_error(show_window(&window), "Unable to show about window")
-    } else {
-        log_error(
-            Err(app_error!("Window option returns None")),
-            "Unable to find about window",
-        )
-    }
+    log_error(
+        show_window(&app.get_window(ABOUT)),
+        "Unable to show about window",
+    )
 }
