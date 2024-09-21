@@ -5,17 +5,16 @@ mod commands;
 mod events;
 mod screens;
 mod state;
-mod tray;
 
 use std::thread;
 
 use ccv::utils::window::{close_window, show_window};
 use ccv::splashscreen;
+use ccv::tray::{get_tray_menu, tray_event_handler};
 use ccv_contract::{error::log_error, models::Settings};
 use ccv_contract::models::CopyCategory::Unknown;
 use cfg_if::cfg_if;
 use commands::{
-    about::{get_about_data, hide_about_window, open, show_about_window},
     main::{
         get_clipboard_category, hide_main_window, insert_copy_item, insert_copy_item_if_not_found,
         reuse_copy_item, search_copy_items, show_main_window,
@@ -33,7 +32,6 @@ use tauri::{
 };
 use tauri_plugin_autostart::MacosLauncher;
 use tauri_plugin_clipboard::ClipboardManager;
-use tray::{get_tray_menu, tray_event_handler};
 
 fn main() {
     let builder = Builder::default()
@@ -182,10 +180,10 @@ fn main() {
             remove_copy_items_older,
             hide_main_window,
             show_main_window,
-            get_about_data,
-            open,
-            hide_about_window,
-            show_about_window,
+            ccv::about::commands::get_about_data,
+            ccv::about::commands::open,
+            ccv::about::commands::hide_about_window,
+            ccv::about::commands::show_about_window,
             hide_settings_window,
             show_settings_window,
             get_settings,

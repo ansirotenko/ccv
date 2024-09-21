@@ -1,5 +1,5 @@
-use crate::screens::ABOUT;
-use ccv::utils::window::{hide_window, show_window};
+use crate::about::SCREEN;
+use crate::utils::window::{hide_window, show_window};
 use ccv_contract::{
     error::{log_error, AppError},
     models::AboutData,
@@ -8,13 +8,13 @@ use std::env::current_exe;
 use tauri::{command, AppHandle, Manager};
 
 #[command]
-pub fn get_about_data(app: AppHandle) -> Result<AboutData, AppError> {
+pub fn get_about_data(app_handle: AppHandle) -> Result<AboutData, AppError> {
     let major_version = env!("CARGO_PKG_VERSION_MAJOR");
     let minor_version = env!("CARGO_PKG_VERSION_MINOR");
     let patch_version = env!("CARGO_PKG_VERSION_PATCH");
     let app_dir = log_error(current_exe(), "Unable to get current app location")?;
-    let app_data_dir = app.app_handle().path_resolver().app_data_dir();
-    let app_logs_dir = app.app_handle().path_resolver().app_log_dir();
+    let app_data_dir = app_handle.path_resolver().app_data_dir();
+    let app_logs_dir = app_handle.path_resolver().app_log_dir();
 
     let about_data = AboutData {
         version: format!("{major_version}.{minor_version}.{patch_version}"),
@@ -36,17 +36,17 @@ pub fn open(target: String) -> Result<(), AppError> {
 }
 
 #[command]
-pub fn hide_about_window(app: AppHandle) -> Result<(), AppError> {
+pub fn hide_about_window(app_handle: AppHandle) -> Result<(), AppError> {
     log_error(
-        hide_window(&app.get_window(ABOUT)),
+        hide_window(&app_handle.get_window(SCREEN)),
         "Unable to hide about window",
     )
 }
 
 #[command]
-pub fn show_about_window(app: AppHandle) -> Result<(), AppError> {
+pub fn show_about_window(app_handle: AppHandle) -> Result<(), AppError> {
     log_error(
-        show_window(&app.get_window(ABOUT)),
+        show_window(&app_handle.get_window(SCREEN)),
         "Unable to show about window",
     )
 }

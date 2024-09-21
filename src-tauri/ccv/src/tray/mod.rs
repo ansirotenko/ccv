@@ -1,15 +1,13 @@
-use ccv::utils::window::{hide_window, show_window};
+mod menus;
+
+use super::utils::window::{hide_window, show_window};
+use super::about;
+use menus::{ABOUT_MENU, HIDE_MENU, QUIT_MENU, SETTINGS_MENU, SHOW_MENU};
 use tauri::{
     CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem,
 };
 
-use crate::screens::{ABOUT, MAIN, SETTINGS};
-
-const ABOUT_MENU: &str = "about";
-const SETTINGS_MENU: &str = "settings";
-const SHOW_MENU: &str = "show";
-const HIDE_MENU: &str = "hide";
-const QUIT_MENU: &str = "quit";
+use crate::screens::{MAIN, SETTINGS};
 
 pub fn get_tray_menu() -> SystemTray {
     let about = CustomMenuItem::new(ABOUT_MENU.to_string(), "About");
@@ -59,7 +57,7 @@ pub fn tray_event_handler(app: &tauri::AppHandle, event: SystemTrayEvent) {
                 std::process::exit(0);
             }
             ABOUT_MENU => {
-                if let Err(err) = show_window(&app.get_window(ABOUT)) {
+                if let Err(err) = show_window(&app.get_window(about::SCREEN)) {
                     log::error!("Unable to show about window from tray. {err}");
                 }
             }
