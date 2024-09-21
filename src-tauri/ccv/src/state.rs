@@ -11,6 +11,7 @@ use ccv_contract::{
     models::{Keybindings, Settings, Shortcut, Theme::Light},
     repository::Repository,
 };
+use std::sync::mpsc::Sender;
 
 pub struct CopyItemState {
     pub repository: Mutex<Box<dyn Repository + Send + Sync + 'static>>,
@@ -70,6 +71,7 @@ impl Repository for UninitalizedRepository {
 
 pub struct SettingsState {
     pub settings: Mutex<Option<Settings>>,
+    pub hotkey_change: Mutex<Option<Sender<Settings>>>,
 }
 
 const SETTINGS_FILE_NAME: &str = "settings.json";
@@ -78,6 +80,7 @@ impl SettingsState {
     pub fn new() -> SettingsState {
         SettingsState {
             settings: Mutex::new(None),
+            hotkey_change: Mutex::new(None),
         }
     }
 

@@ -18,6 +18,7 @@ ccv_sqlite = { path = "../ccv_sqlite", optional = true }
 cfg-if = { workspace = true }
 clipboard-rs = { version = "0.1.11" }
 chrono = { workspace = true }
+global-hotkey = { version = "0.6.2" }
 log = { workspace = true }
 open = { version = "5.3.0" }
 serde = { workspace = true }
