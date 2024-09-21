@@ -9,7 +9,6 @@ mod tray;
 
 use std::thread;
 
-use ccv_contract::models::Shortcut;
 use ccv_contract::{error::log_error, models::Settings};
 use ccv_contract::models::CopyCategory::Unknown;
 use cfg_if::cfg_if;
@@ -125,12 +124,13 @@ fn main() {
                                 log::error!("Unable to register initial shortcuts. {err}");
                             }
                         }
-
+                        
                         #[cfg(target_os = "linux")]
                         {
-                            use std::sync::mpsc::{ channel, Receiver, Sender};
+                            use std::sync::mpsc::channel;
                             use global_hotkey::{GlobalHotKeyEvent, GlobalHotKeyManager};
 
+                            let main_window = app.get_window(MAIN).unwrap();
                             let (tx, rx) = channel::<Settings>();
                             let mut hotkey_change = state_settings.hotkey_change.lock().unwrap();
                             *hotkey_change = Some(tx);
@@ -140,8 +140,10 @@ fn main() {
                                 let mut hotkey = get_hotkey(&settings.keybindings.open_ccv).unwrap();
                                 manager.register(hotkey).unwrap();
                                 loop {
-                                    if let Ok(event) = GlobalHotKeyEvent::receiver().try_recv() {
-                                        println!("{:?}", event);
+                                    if let Ok(_) = GlobalHotKeyEvent::receiver().try_recv() {
+                                        if let Err(err) = show_window(&main_window) {
+                                            log::error!("Unable to show main window. {err}");
+                                        }
                                     }
     
                                     if let Ok(settings) = rx.try_recv() {
