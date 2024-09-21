@@ -46,7 +46,7 @@ function App() {
         }
     };
 
-    const keyDown = async (event: KeyboardEvent<HTMLDivElement>) => {
+    const keyDown = (event: KeyboardEvent<HTMLDivElement>) => {
         const newShortcut: Shortcut = {
             altKey: event.altKey,
             ctrlKey: event.ctrlKey,

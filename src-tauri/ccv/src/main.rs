@@ -9,7 +9,8 @@ mod tray;
 
 use std::thread;
 
-use ccv_contract::error::log_error;
+use ccv_contract::models::Shortcut;
+use ccv_contract::{error::log_error, models::Settings};
 use ccv_contract::models::CopyCategory::Unknown;
 use cfg_if::cfg_if;
 use commands::{
@@ -20,7 +21,7 @@ use commands::{
     },
     settings::{
         get_settings, hide_settings_window, remove_copy_items, remove_copy_items_older,
-        set_settings, show_settings_window, register_keybindings
+        set_settings, show_settings_window, register_keybindings, get_hotkey
     }, utils::show_window,
 };
 use screens::{MAIN, SPLASHSCREEN};
@@ -56,9 +57,6 @@ fn main() {
                         let mut settings = state_settings.settings.lock().unwrap();
                         match SettingsState::read_settings(&app_data_dir) {
                             Ok(new_settings) => {
-                                if let Err(err) = register_keybindings(&app.app_handle(), &new_settings) {
-                                    log::error!("Unable to register initial shortcuts. {err}");
-                                }
                                 *settings = Some(new_settings);
                             },
                             Err(err) => {
@@ -118,6 +116,45 @@ fn main() {
                                 log::error!("Unable to show main window. {err}");
                             }
                         });
+
+  
+                        #[cfg(not(target_os = "linux"))]
+                        {
+                            let settings = settings.clone().unwrap();
+                            if let Err(err) = register_keybindings(&app.app_handle(), &settings) {
+                                log::error!("Unable to register initial shortcuts. {err}");
+                            }
+                        }
+
+                        #[cfg(target_os = "linux")]
+                        {
+                            use std::sync::mpsc::{ channel, Receiver, Sender};
+                            use global_hotkey::{GlobalHotKeyEvent, GlobalHotKeyManager};
+
+                            let (tx, rx) = channel::<Settings>();
+                            let mut hotkey_change = state_settings.hotkey_change.lock().unwrap();
+                            *hotkey_change = Some(tx);
+                            let settings = settings.clone().unwrap();
+                            async_runtime::spawn(async move {
+                                let manager = GlobalHotKeyManager::new().unwrap();
+                                let mut hotkey = get_hotkey(&settings.keybindings.open_ccv).unwrap();
+                                manager.register(hotkey).unwrap();
+                                loop {
+                                    if let Ok(event) = GlobalHotKeyEvent::receiver().try_recv() {
+                                        println!("{:?}", event);
+                                    }
+    
+                                    if let Ok(settings) = rx.try_recv() {
+                                        manager.unregister(hotkey).unwrap();
+                                        hotkey = get_hotkey(&settings.keybindings.open_ccv).unwrap();
+                                        manager.register(hotkey).unwrap();
+                                    }
+                                    
+                                    // TODO
+                                    // tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
+                                }
+                            });
+                        }
                     } else {
                         log::error!("Unable get main window");
                     }
