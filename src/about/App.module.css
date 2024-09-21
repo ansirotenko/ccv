@@ -12,12 +12,13 @@
     height: 22px;
     line-height: 22px;
     width: 100%;
+    cursor: move;
 }
 
 .toolbarTitle {
     text-align: center;
     flex-grow: 1;
-    cursor: default;
+    cursor: move;
 }
 
 .toolbarButton {
@@ -30,6 +31,7 @@
     height: 100%;
     flex-shrink: 0;
     border-radius: 1px;
+    cursor: pointer;
 
     & > [class~='p-button-label'] {
         display: none;
