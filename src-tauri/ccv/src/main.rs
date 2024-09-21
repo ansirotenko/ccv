@@ -20,7 +20,7 @@ use commands::{
     },
     settings::{
         get_settings, hide_settings_window, remove_copy_items, remove_copy_items_older,
-        set_settings, show_settings_window,
+        set_settings, show_settings_window, register_keybindings
     }, utils::show_window,
 };
 use screens::{MAIN, SPLASHSCREEN};
@@ -56,6 +56,9 @@ fn main() {
                         let mut settings = state_settings.settings.lock().unwrap();
                         match SettingsState::read_settings(&app_data_dir) {
                             Ok(new_settings) => {
+                                if let Err(err) = register_keybindings(&app.app_handle(), &new_settings) {
+                                    log::error!("Unable to register initial shortcuts. {err}");
+                                }
                                 *settings = Some(new_settings);
                             },
                             Err(err) => {

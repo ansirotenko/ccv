@@ -2,7 +2,7 @@ import { createContext } from 'react';
 import { Settings } from '../api';
 
 const defaultSettings: Settings = {
-    keybindings: { openCcv: [] },
+    keybindings: { openCcv: { altKey: false, ctrlKey: false, shiftKey: false, metaKey: false, code: undefined } },
     theme: 'Light',
 };
 const SettingsContext = createContext<Settings>(defaultSettings);

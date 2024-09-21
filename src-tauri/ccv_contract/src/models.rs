@@ -79,16 +79,30 @@ pub struct AboutData {
     pub text: String,
 }
 
-#[derive(Serialize, Deserialize, Clone, Copy, PartialEq, Debug)]
-pub enum Theme {
-    Light,
-    Dark,
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+pub struct Shortcut {
+    #[serde(rename = "altKey")]
+    pub alt_key: bool,
+    #[serde(rename = "ctrlKey")]
+    pub ctrl_key: bool,
+    #[serde(rename = "shiftKey")]
+    pub shift_key: bool,
+    #[serde(rename = "metaKey")]
+    pub meta_key: bool,
+    #[serde(rename = "code")]
+    pub code: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct Keybindings {
     #[serde(rename = "openCcv")]
-    pub open_ccv: Vec<String>,
+    pub open_ccv: Shortcut,
+}
+
+#[derive(Serialize, Deserialize, Clone, Copy, PartialEq, Debug)]
+pub enum Theme {
+    Light,
+    Dark,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]

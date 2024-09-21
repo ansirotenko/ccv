@@ -33,8 +33,16 @@ export interface FileInfo {
     isDirectory: boolean;
 }
 
+export interface Shortcut {
+    altKey: boolean;
+    ctrlKey: boolean;
+    code: string | undefined;
+    metaKey: boolean;
+    shiftKey: boolean;
+}
+
 export interface Keybindings {
-    openCcv: string[];
+    openCcv: Shortcut;
 }
 
 export type Theme = 'Light' | 'Dark';

@@ -8,14 +8,10 @@ import { RadioButton } from 'primereact/radiobutton';
 import { Toast } from 'primereact/toast';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { error as logError } from 'tauri-plugin-log-api';
-import { AppError, Settings } from '../api';
+import { AppError, Settings, Shortcut } from '../api';
 import SettingsContext from '../common/SettingsContext';
 
 import styles from './App.module.css';
-
-function shortcutToString(shortcut: string[]) {
-    return shortcut.join(' + ');
-}
 
 function App() {
     const settings = useContext(SettingsContext);
@@ -24,7 +20,7 @@ function App() {
     const keybindingDialog = useRef<HTMLDivElement>(null);
     const keyBindingValue = useRef<HTMLSpanElement>(null);
     const toast = useRef<Toast>(null);
-    const newCombination = useRef<string[]>();
+    const newShortcutRef = useRef<Shortcut | null>();
     const backend = useBackend();
 
     const saveSettings = async (newSettings: Settings) => {
@@ -50,38 +46,24 @@ function App() {
         }
     };
 
-    const keyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-        const keys: string[] = [];
-        if (event.ctrlKey) {
-            keys.push('Ctrl');
+    const keyDown = async (event: KeyboardEvent<HTMLDivElement>) => {
+        const newShortcut: Shortcut = {
+            altKey: event.altKey,
+            ctrlKey: event.ctrlKey,
+            shiftKey: event.shiftKey,
+            metaKey: event.metaKey,
+            code: !event.key || event.key == 'Control' || event.key == 'Alt' || event.key == 'Shift'
+                ? undefined
+                : event.code 
         }
-        if (event.altKey) {
-            keys.push('Alt');
-        }
-        if (event.shiftKey) {
-            keys.push('Shift');
-        }
-        if (event.key && event.key != 'Control' && event.key != 'Alt' && event.key != 'Shift') {
-            const codes = ['Space', 'Backquote'];
-            if (codes.indexOf(event.code) !== -1) {
-                keys.push(event.code);
-            } else {
-                if (event.code.startsWith('Digit')) {
-                    keys.push(event.code.substring(5));
-                } else {
-                    keys.push(event.key.toUpperCase());
-                }
-            }
-        }
-
-        onCombinationChanged(keys);
+        onShortcutChanged(newShortcut);
         event.preventDefault();
     };
 
     const confirmKeybindings = () => {
         confirmDialog({
             accept: () => {
-                saveSettings({ ...settings!, keybindings: { ...settings?.keybindings, openCcv: newCombination.current! } });
+                saveSettings({ ...settings!, keybindings: { ...settings?.keybindings, openCcv: newShortcutRef.current! } });
             },
             acceptLabel: 'Apply',
             acceptClassName: 'acceptButton',
@@ -89,13 +71,13 @@ function App() {
             header: 'Press new keybinding',
             message: (
                 <div className={styles.keybindingEdit} onKeyDown={keyDown} tabIndex={0} ref={keybindingDialog}>
-                    <label>Old combination:</label> <span>{shortcutToString(settings?.keybindings.openCcv)}</span>
+                    <label>Old combination:</label> <span>{backend.getShortcutDisplay(settings?.keybindings.openCcv)}</span>
                     <label>New combination:</label> <span ref={keyBindingValue}></span>
                 </div>
             ),
             onShow: () => {
                 keybindingDialog.current?.focus();
-                onCombinationChanged([]);
+                onShortcutChanged(null);
             },
             onClick: () => {
                 keybindingDialog.current?.focus();
@@ -103,12 +85,19 @@ function App() {
         });
     };
 
-    const onCombinationChanged = (combination: string[]) => {
-        newCombination.current = combination;
-        if (keyBindingValue.current) {
-            keyBindingValue.current.innerHTML = shortcutToString(combination);
+    const onShortcutChanged = (newShortcut: Shortcut | null) => {
+        newShortcutRef.current = newShortcut;
+        if (!newShortcut) {
+            if (keyBindingValue.current) {
+                keyBindingValue.current.innerHTML = "";
+            }
+            (document.getElementsByClassName('acceptButton')[0] as HTMLButtonElement).disabled = true;
+        } else {
+            if (keyBindingValue.current) {
+                keyBindingValue.current.innerHTML = backend.getShortcutDisplay(newShortcut);
+            }
+            (document.getElementsByClassName('acceptButton')[0] as HTMLButtonElement).disabled = false;
         }
-        (document.getElementsByClassName('acceptButton')[0] as HTMLButtonElement).disabled = !combination;
     };
 
     const confirmDeleteIds = () => {
@@ -202,7 +191,7 @@ function App() {
                 <Fieldset legend="Key bindings">
                     <div className="p-inputgroup">
                         <span className="p-inputgroup-addon">Open ccv</span>
-                        <InputText value={shortcutToString(settings?.keybindings.openCcv)} disabled={true} />
+                        <InputText value={backend.getShortcutDisplay(settings?.keybindings.openCcv)} disabled={true} />
                         <Button
                             className={styles.settingsButton}
                             onClick={confirmKeybindings}
