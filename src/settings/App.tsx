@@ -36,13 +36,13 @@ function App() {
 
     const showSuccess = (message: string) => {
         if (toast.current) {
-            toast.current.show({ severity: 'success', summary: 'Success', detail: message, life: 2000 });
+            toast.current.show({ severity: 'success', summary: 'Success', detail: message, life: 500 });
         }
     };
 
     const showError = (message: string) => {
         if (toast.current) {
-            toast.current.show({ severity: 'error', summary: 'Failure', detail: message, life: 2000 });
+            toast.current.show({ severity: 'error', summary: 'Failure', detail: message, life: 4000 });
         }
     };
 
