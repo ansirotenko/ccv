@@ -3,7 +3,7 @@ use ccv_contract::{error::AppError, models::Settings};
 use std::{path::PathBuf, sync::mpsc::channel};
 use tauri::{AppHandle, Manager};
 
-pub fn read_settings_and_register_keybindings(
+pub fn read_settings_and_register_shortcuts(
     app_handle: AppHandle,
     app_data_dir: &PathBuf,
 ) -> Result<(), AppError> {

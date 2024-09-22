@@ -94,7 +94,7 @@
     }
 }
 
-.keybindingEdit {
+.shortcutEdit {
     outline-style: none;
     grid-template-columns: 1fr 2fr;
     margin-left: -10px;
@@ -104,6 +104,17 @@
 
     label {
         font-size: 14px;
+        line-height: 30px;
+    }
+
+    input {
+        height: 30px;
+        padding: 7px;
+    }
+
+    span {
+        line-height: 23px;
+        margin-left: 9px;
     }
 }
 

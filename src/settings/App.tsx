@@ -17,8 +17,8 @@ function App() {
     const settings = useContext(SettingsContext);
     const [deleteDate, setDeleteDate] = useState<Date | null>(null);
     const [selectedIds, setSelectedIds] = useState<string>('');
-    const keybindingDialog = useRef<HTMLDivElement>(null);
-    const keyBindingValue = useRef<HTMLSpanElement>(null);
+    const shortcutDialog = useRef<HTMLDivElement>(null);
+    const shortcutValue = useRef<HTMLInputElement>(null);
     const toast = useRef<Toast>(null);
     const newShortcutRef = useRef<Shortcut | null>();
     const backend = useBackend();
@@ -60,27 +60,27 @@ function App() {
         event.preventDefault();
     };
 
-    const confirmKeybindings = () => {
+    const confirmShortcuts = () => {
         confirmDialog({
             accept: () => {
-                saveSettings({ ...settings!, keybindings: { ...settings?.keybindings, openCcv: newShortcutRef.current! } });
+                saveSettings({ ...settings!, allShortcuts: { ...settings?.allShortcuts, openCcv: newShortcutRef.current! } });
             },
             acceptLabel: 'Apply',
             acceptClassName: 'acceptButton',
             rejectLabel: 'Cancel',
-            header: 'Press new keybinding',
+            header: 'Press new shortcut',
             message: (
-                <div className={styles.keybindingEdit} onKeyDown={keyDown} tabIndex={0} ref={keybindingDialog}>
-                    <label>Old combination:</label> <span>{backend.getShortcutDisplay(settings?.keybindings.openCcv)}</span>
-                    <label>New combination:</label> <span ref={keyBindingValue}></span>
+                <div className={styles.shortcutEdit} onKeyDown={keyDown} tabIndex={0} ref={shortcutDialog}>
+                    <label>Old combination:</label> <span>{backend.getShortcutDisplay(settings?.allShortcuts.openCcv)}</span>
+                    <label>New combination:</label> <InputText ref={shortcutValue} disabled={true}/>
                 </div>
             ),
             onShow: () => {
-                keybindingDialog.current?.focus();
+                shortcutDialog.current?.focus();
                 onShortcutChanged(null);
             },
             onClick: () => {
-                keybindingDialog.current?.focus();
+                shortcutDialog.current?.focus();
             },
         });
     };
@@ -88,13 +88,13 @@ function App() {
     const onShortcutChanged = (newShortcut: Shortcut | null) => {
         newShortcutRef.current = newShortcut;
         if (!newShortcut) {
-            if (keyBindingValue.current) {
-                keyBindingValue.current.innerHTML = "";
+            if (shortcutValue.current) {
+                shortcutValue.current.value = "";
             }
             (document.getElementsByClassName('acceptButton')[0] as HTMLButtonElement).disabled = true;
         } else {
-            if (keyBindingValue.current) {
-                keyBindingValue.current.innerHTML = backend.getShortcutDisplay(newShortcut);
+            if (shortcutValue.current) {
+                shortcutValue.current.value = backend.getShortcutDisplay(newShortcut);
             }
             (document.getElementsByClassName('acceptButton')[0] as HTMLButtonElement).disabled = false;
         }
@@ -188,14 +188,14 @@ function App() {
                         </div>
                     </div>
                 </Fieldset>
-                <Fieldset legend="Key bindings">
+                <Fieldset legend="Shortcuts">
                     <div className="p-inputgroup">
                         <span className="p-inputgroup-addon">Open ccv</span>
-                        <InputText value={backend.getShortcutDisplay(settings?.keybindings.openCcv)} disabled={true} />
+                        <InputText value={backend.getShortcutDisplay(settings?.allShortcuts.openCcv)} disabled={true} />
                         <Button
                             className={styles.settingsButton}
-                            onClick={confirmKeybindings}
-                            tooltip="Change keybinding to open ccv"
+                            onClick={confirmShortcuts}
+                            tooltip="Change shortcut to open ccv"
                             tooltipOptions={{ position: 'left', style: { fontSize: 13 } }}
                         >
                             Change

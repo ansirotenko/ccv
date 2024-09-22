@@ -15,7 +15,7 @@ pub fn main_loop_hotkey_change(
     let mut old_settings = init_settings;
 
     let primary_window = app_handle.get_window(primary::SCREEN);
-    let initial_accelerator = parse_shortcut(&old_settings.keybindings.open_ccv);
+    let initial_accelerator = parse_shortcut(&old_settings.all_shortcuts.open_ccv);
     global_shortcut_manager
         .register(initial_accelerator.as_str(), move || {
             if let Err(err) = show_window(&primary_window) {
@@ -27,13 +27,13 @@ pub fn main_loop_hotkey_change(
     loop {
         if let Ok(new_settings) = receiver.try_recv() {
             if new_settings != old_settings {
-                let old_accelerator = parse_shortcut(&old_settings.keybindings.open_ccv);
+                let old_accelerator = parse_shortcut(&old_settings.all_shortcuts.open_ccv);
                 global_shortcut_manager
                     .unregister(old_accelerator.as_str())
                     .map_err(|err| app_error!("{err}"))?;
 
                 let primary_window = app_handle.get_window(primary::SCREEN);
-                let new_accelerator = parse_shortcut(&new_settings.keybindings.open_ccv);
+                let new_accelerator = parse_shortcut(&new_settings.all_shortcuts.open_ccv);
                 global_shortcut_manager
                     .register(new_accelerator.as_str(), move || {
                         if let Err(err) = show_window(&primary_window) {

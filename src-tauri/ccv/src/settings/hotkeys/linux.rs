@@ -20,7 +20,7 @@ pub fn main_loop_hotkey_change(
 
     let primary_window = app_handle.get_window(primary::SCREEN);
 
-    let initial_hotkey = get_hotkey(&old_settings.keybindings.open_ccv)?;
+    let initial_hotkey = get_hotkey(&old_settings.allShortcuts.open_ccv)?;
     manager
         .register(initial_hotkey)
         .map_err(|err| app_error!("Unable to register initial hotkey. {err}"))?;
@@ -28,12 +28,12 @@ pub fn main_loop_hotkey_change(
     loop {
         if let Ok(new_settings) = receiver.try_recv() {
             if new_settings != old_settings {
-                let old_hotkey = get_hotkey(&old_settings.keybindings.open_ccv)?;
+                let old_hotkey = get_hotkey(&old_settings.allShortcuts.open_ccv)?;
                 manager
                     .unregister(old_hotkey)
                     .map_err(|err| app_error!("Unable to unregister old hotkey. {err}"))?;
 
-                let new_hotkey = get_hotkey(&new_settings.keybindings.open_ccv)?;
+                let new_hotkey = get_hotkey(&new_settings.allShortcuts.open_ccv)?;
                 manager
                     .register(new_hotkey)
                     .map_err(|err| app_error!("Unable to register new hotkey. {err}"))?;

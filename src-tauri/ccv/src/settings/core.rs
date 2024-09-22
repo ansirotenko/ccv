@@ -1,7 +1,7 @@
 use ccv_contract::{
     app_error,
     error::AppError,
-    models::{Keybindings, Settings, Shortcut, Theme},
+    models::{AllShortcuts, Settings, Shortcut, Theme},
 };
 use std::{
     fs::File,
@@ -28,7 +28,7 @@ pub fn read_settings(app_data_dir: &PathBuf) -> Result<Settings, AppError> {
     } else {
         let default_settings = Settings {
             theme: Theme::Light,
-            keybindings: Keybindings {
+            all_shortcuts: AllShortcuts {
                 open_ccv: Shortcut {
                     alt_key: true,
                     ctrl_key: false,

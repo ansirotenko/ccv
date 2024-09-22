@@ -94,7 +94,7 @@ pub struct Shortcut {
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
-pub struct Keybindings {
+pub struct AllShortcuts {
     #[serde(rename = "openCcv")]
     pub open_ccv: Shortcut,
 }
@@ -107,8 +107,8 @@ pub enum Theme {
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct Settings {
-    #[serde(rename = "keybindings")]
-    pub keybindings: Keybindings,
+    #[serde(rename = "allShortcuts")]
+    pub all_shortcuts: AllShortcuts,
     #[serde(rename = "theme")]
     pub theme: Theme,
 }
