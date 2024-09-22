@@ -10,7 +10,7 @@ use ccv_contract::{
     models::{EventPayload, Settings},
 };
 use chrono::{DateTime, Utc};
-use tauri::{command, AppHandle, GlobalShortcutManager, Manager, State};
+use tauri::{command, AppHandle, Manager, State};
 use tauri_plugin_clipboard::ClipboardManager;
 
 #[command]
@@ -42,8 +42,9 @@ pub fn set_settings(
     )?;
 
     if should_update_shortcuts {
-        #[cfg(any(target_os = "windows", target_os = "macos"))]
+        #[cfg(not(target_os = "linux"))]
         {
+            use tauri::GlobalShortcutManager;
             log_error(
                 app_handle.global_shortcut_manager().unregister_all(),
                 "Unable to unregister shortcut",
