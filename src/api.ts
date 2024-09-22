@@ -41,14 +41,14 @@ export interface Shortcut {
     shiftKey: boolean;
 }
 
-export interface Keybindings {
+export interface AllShortcuts {
     openCcv: Shortcut;
 }
 
 export type Theme = 'Light' | 'Dark';
 
 export interface Settings {
-    keybindings: Keybindings;
+    allShortcuts: AllShortcuts;
     theme: Theme;
 }
 

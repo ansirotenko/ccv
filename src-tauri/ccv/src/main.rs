@@ -48,7 +48,7 @@ fn main() {
                 }
 
                 if let Err(err) =
-                    settings::setup::read_settings_and_register_keybindings(app.app_handle(), &app_data_dir)
+                    settings::setup::read_settings_and_register_shortcuts(app.app_handle(), &app_data_dir)
                 {
                     log::error!("Unable to initialize settings. {err}");
                     return Err(Box::new(err));
