@@ -102,7 +102,6 @@ function App() {
                     </section>
                 </BlockUI>
                 <div className={`${styles.reportBug}`}>
-                    {/* TODO fix url for report bug on github */}
                     Feel free to report any issue or bug found on{' '}
                     <a
                         href="#"

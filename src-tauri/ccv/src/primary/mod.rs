@@ -1,4 +1,6 @@
 pub mod commands;
+pub mod core;
+pub mod setup;
 pub mod state;
 
 pub const SCREEN: &str = "primary";

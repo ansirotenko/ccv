@@ -11,5 +11,4 @@ license = "MIT"
 [workspace.dependencies]
 serde = { version = "1.0.204", features = ["derive"] }
 chrono = { version = "0.4.38", features = ["serde"] }
-cfg-if = { version = "1.0.0"}
 log = { version = "0.4"}

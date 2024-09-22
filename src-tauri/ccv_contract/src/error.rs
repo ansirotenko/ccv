@@ -1,11 +1,14 @@
 use serde::Serialize;
 use std::fmt::{self, Display};
+use std::error::Error;
 
 #[derive(Serialize, Clone, Debug)]
 pub struct AppError {
     #[serde(rename = "message")]
     pub message: String,
 }
+
+impl Error for AppError {}
 
 impl fmt::Display for AppError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
