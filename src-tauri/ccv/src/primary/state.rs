@@ -2,14 +2,13 @@ use std::sync::Mutex;
 
 use ccv_contract::{app_error, error::AppError, repository::Repository};
 
-// TODO rename to PrimaryState
-pub struct CopyItemState {
+pub struct PrimaryState {
     pub repository: Mutex<Box<dyn Repository + Send + Sync + 'static>>,
 }
 
-impl CopyItemState {
-    pub fn new_uninitialized() -> CopyItemState {
-        CopyItemState {
+impl PrimaryState {
+    pub fn new_uninitialized() -> PrimaryState {
+        PrimaryState {
             repository: Mutex::new(Box::new(UninitalizedRepository {})),
         }
     }

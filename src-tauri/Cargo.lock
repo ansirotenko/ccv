@@ -635,7 +635,6 @@ dependencies = [
  "ccv_contract",
  "ccv_in_memory",
  "ccv_sqlite",
- "cfg-if",
  "chrono",
  "clipboard-rs",
  "global-hotkey",

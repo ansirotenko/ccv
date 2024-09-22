@@ -29,7 +29,7 @@ pub fn get_menu() -> SystemTray {
     SystemTray::new().with_menu(tray_menu)
 }
 
-pub fn event_handler(app: &tauri::AppHandle, event: SystemTrayEvent) {
+pub fn event_handler(app_handle: &tauri::AppHandle, event: SystemTrayEvent) {
     match event {
         SystemTrayEvent::LeftClick {
             position: _,
@@ -57,22 +57,22 @@ pub fn event_handler(app: &tauri::AppHandle, event: SystemTrayEvent) {
                 std::process::exit(0);
             }
             ABOUT_MENU => {
-                if let Err(err) = show_window(&app.get_window(about::SCREEN)) {
+                if let Err(err) = show_window(&app_handle.get_window(about::SCREEN)) {
                     log::error!("Unable to show about window from tray. {err}");
                 }
             }
             HIDE_MENU => {
-                if let Err(err) = hide_window(&app.get_window(primary::SCREEN)) {
+                if let Err(err) = hide_window(&app_handle.get_window(primary::SCREEN)) {
                     log::error!("Unable to hide primary window from tray. {err}");
                 }
             }
             SHOW_MENU => {
-                if let Err(err) = show_window(&app.get_window(primary::SCREEN)) {
+                if let Err(err) = show_window(&app_handle.get_window(primary::SCREEN)) {
                     log::error!("Unable to show primary window from tray. {err}");
                 }
             }
             SETTINGS_MENU => {
-                if let Err(err) = show_window(&app.get_window(settings::SCREEN)) {
+                if let Err(err) = show_window(&app_handle.get_window(settings::SCREEN)) {
                     log::error!("Unable to show settings window from tray. {err}");
                 }
             }
