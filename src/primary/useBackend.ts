@@ -43,12 +43,12 @@ function toCopyItem(rawCopyItem: CopyItemRaw): CopyItem {
     };
 }
 
-async function hideMainWindow() {
-    await invoke<void>('hide_main_window');
+async function hidePrimaryWindow() {
+    await invoke<void>('hide_primary_window');
 }
 
-async function showMainWindow() {
-    await invoke<void>('show_main_window');
+async function showPrimaryWindow() {
+    await invoke<void>('show_primary_window');
 }
 
 async function showSettingsWindow() {
@@ -121,8 +121,8 @@ export function useBackend(onClipboardChange: ActivatedFunc, onItemsChanged: Ite
     }, []);
 
     return {
-        showMainWindow,
-        hideMainWindow,
+        showPrimaryWindow,
+        hidePrimaryWindow,
         showSettingsWindow,
         insertCopyItem,
         reuseCopyItem,

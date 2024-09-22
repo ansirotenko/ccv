@@ -22,7 +22,7 @@ export default defineConfig(async () => ({
   build: {
     rollupOptions: {
       input: {
-        main: resolve(__dirname, "screens/main.html"),
+        primary: resolve(__dirname, "screens/primary.html"),
         splashscreen: resolve(__dirname, "screens/splashscreen.html"),
         about: resolve(__dirname, "screens/about.html"),
         settings: resolve(__dirname, "screens/settings.html"),
