@@ -79,6 +79,7 @@ pub struct AboutData {
     pub text: String,
 }
 
+// TODO rename to hotkey
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct Shortcut {
     #[serde(rename = "altKey")]

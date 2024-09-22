@@ -1,10 +1,10 @@
 use crate::settings;
-use ccv_contract::error::AppError;
-use std::path::PathBuf;
+use ccv_contract::{error::AppError, models::Settings};
+use std::{path::PathBuf, sync::mpsc::channel};
 use tauri::{AppHandle, Manager};
 
 pub fn read_settings_and_register_keybindings(
-    app_handle: &AppHandle,
+    app_handle: AppHandle,
     app_data_dir: &PathBuf,
 ) -> Result<(), AppError> {
     let state_settings = app_handle.state::<settings::state::SettingsState>();
@@ -18,29 +18,12 @@ pub fn read_settings_and_register_keybindings(
         }
     }
 
+    let (tx, rx) = channel::<Settings>();
+    let mut hotkey_change = state_settings.settings_change.lock().unwrap();
+    *hotkey_change = Some(tx);
+
     let settings = settings.clone().unwrap();
-    if let Err(err) = settings::core::register_keybindings(app_handle, &settings, &None) {
-        log::error!("Unable to register initial shortcuts. {err}");
-    }
-
-    // TODO change to linux
-    #[cfg(target_os = "linux")]
-    {
-        use global_hotkey::GlobalHotKeyEvent;
-        use tauri::async_runtime;
-
-        let primary_window = app_handle.get_window(crate::primary::SCREEN);
-        
-        async_runtime::spawn(async move {
-            loop {
-                if let Ok(_) = GlobalHotKeyEvent::receiver().try_recv() {
-                    if let Err(err) = crate::utils::window::show_window(&primary_window) {
-                        log::error!("Unable to show primary window. {err}");
-                    }
-                }
-            }
-        });
-    } 
+    settings::hotkeys::listen_hotkey_change(app_handle.clone(), settings, rx);
 
     Ok(())
 }
