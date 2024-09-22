@@ -26,12 +26,9 @@ pub fn set_settings(
     state: State<SettingsState>,
 ) -> Result<(), AppError> {
     let mut settings = state.settings.lock().unwrap();
-    let old_settings = settings.clone();
-
     *settings = Some(new_settings.clone());
 
     let app_data_dir = app_handle
-        .app_handle()
         .path_resolver()
         .app_data_dir()
         .unwrap();
@@ -41,8 +38,14 @@ pub fn set_settings(
     )?;
 
     log_error(
-        settings::core::register_keybindings(&app_handle, &new_settings, &old_settings),
-        "Unable to register shortcut",
+        state
+            .settings_change
+            .lock()
+            .unwrap() // TODO
+            .as_ref()
+            .unwrap()
+            .send(new_settings.clone()),
+        "Unable notify settings changed",
     )?;
 
     log_error(

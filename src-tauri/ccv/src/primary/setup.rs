@@ -4,7 +4,7 @@ use std::path::PathBuf;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_clipboard::ClipboardManager;
 
-pub fn init_repository(app_handle: &AppHandle, app_data_dir: &PathBuf) -> Result<(), AppError> {
+pub fn init_repository(app_handle: AppHandle, app_data_dir: &PathBuf) -> Result<(), AppError> {
     let state_clipboard = app_handle.state::<ClipboardManager>();
     let state = app_handle.state::<primary::state::PrimaryState>();
     let mut repository = state.repository.lock().unwrap();

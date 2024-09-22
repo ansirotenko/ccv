@@ -42,15 +42,14 @@ fn main() {
                         return Err(Box::new(err));
                     }
                 }
-                if let Err(err) = primary::setup::init_repository(&app_handle, &app_data_dir) {
+                if let Err(err) = primary::setup::init_repository(app.app_handle(), &app_data_dir) {
                     log::error!("Unable to initialize repository. {err}");
                     return Err(Box::new(err));
                 }
 
-                if let Err(err) = settings::setup::read_settings_and_register_keybindings(
-                    &app_handle,
-                    &app_data_dir,
-                ) {
+                if let Err(err) =
+                    settings::setup::read_settings_and_register_keybindings(app.app_handle(), &app_data_dir)
+                {
                     log::error!("Unable to initialize settings. {err}");
                     return Err(Box::new(err));
                 }
