@@ -8,7 +8,6 @@ use std::{
     io::{Read, Write},
     path::PathBuf,
 };
-#[cfg(not(target_os = "linux"))]
 
 const SETTINGS_FILE_NAME: &str = "settings.json";
 

@@ -3,13 +3,13 @@ use crate::utils::window::show_window;
 use ccv_contract::app_error;
 use ccv_contract::models::Settings;
 use ccv_contract::{error::AppError, models::Shortcut};
-use std::sync::mpsc::Receiver;
+use std::{sync::mpsc::Receiver, thread, time::Duration};
 use tauri::{AppHandle, GlobalShortcutManager, Manager};
 
 pub fn main_loop_hotkey_change(
     app_handle: AppHandle,
     init_settings: Settings,
-    receiver: Receiver<Settings>
+    receiver: Receiver<Settings>,
 ) -> Result<(), AppError> {
     let mut global_shortcut_manager = app_handle.global_shortcut_manager();
     let mut old_settings = init_settings;
@@ -46,8 +46,7 @@ pub fn main_loop_hotkey_change(
             }
         }
 
-        // TODO
-        // tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
+        thread::sleep(Duration::from_millis(50)) // TODO maybe async
     }
 }
 
