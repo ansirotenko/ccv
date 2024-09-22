@@ -26,8 +26,7 @@ pub fn set_settings(
     state: State<SettingsState>,
 ) -> Result<(), AppError> {
     let mut settings = state.settings.lock().unwrap();
-    let should_update_shortcuts = settings.is_some()
-        && settings.clone().unwrap().keybindings.open_ccv != new_settings.keybindings.open_ccv;
+    let old_settings = settings.clone();
 
     *settings = Some(new_settings.clone());
 
@@ -41,35 +40,10 @@ pub fn set_settings(
         "Unable to save settings",
     )?;
 
-    if should_update_shortcuts {
-        #[cfg(not(target_os = "linux"))]
-        {
-            use tauri::GlobalShortcutManager;
-            log_error(
-                app_handle.global_shortcut_manager().unregister_all(),
-                "Unable to unregister shortcut",
-            )?;
-            log_error(
-                settings::core::register_keybindings(&app_handle, &new_settings),
-                "Unable to register shortcut",
-            )?;
-        }
-
-        // TODO change to linux
-        #[cfg(target_os = "linux")]
-        {
-            log_error(
-                state
-                    .hotkey_change
-                    .lock()
-                    .unwrap()
-                    .as_ref()
-                    .unwrap()
-                    .send(new_settings.clone()),
-                "Unable to register shortcut",
-            )?;
-        }
-    }
+    log_error(
+        settings::core::register_keybindings(&app_handle, &new_settings, &old_settings),
+        "Unable to register shortcut",
+    )?;
 
     log_error(
         app_handle.emit_all(

@@ -8,10 +8,8 @@ use std::{
     io::{Read, Write},
     path::PathBuf,
 };
-use crate::primary;
-use crate::utils::window::show_window;
 #[cfg(not(target_os = "linux"))]
-use tauri::{AppHandle, Manager};
+use tauri::AppHandle;
 
 // TODO change to linux
 #[cfg(target_os = "linux")]
@@ -67,62 +65,72 @@ pub fn write_settings(app_data_dir: &PathBuf, settings: &Settings) -> Result<(),
         .map_err(|err| app_error!("Unable to write settings file content. {err}"))
 }
 
-pub fn register_keybindings(app_handle: &AppHandle, settings: &Settings) -> Result<(), AppError> {
-    
-    let primary_window = app_handle.get_window(primary::SCREEN);
+pub fn register_keybindings(
+    _app_handle: &AppHandle,
+    new_settings: &Settings,
+    old_settings: &Option<Settings>,
+) -> Result<(), AppError> {
+    if let Some(old_settings) = old_settings {
+        if old_settings.keybindings == new_settings.keybindings {
+            return Ok(());
+        }
+    }
 
-    #[cfg(not(target_os = "linux"))] 
+    // TODO change to linux
+    #[cfg(not(target_os = "linux"))]
     {
+        use crate::primary;
+        use crate::utils::window::show_window;
         use ccv_contract::error::log_error;
-        use tauri::GlobalShortcutManager;
+        use tauri::{GlobalShortcutManager, Manager};
 
-        let keys = parse_shortcut(&settings.keybindings.open_ccv)?;
-        let accelerator = keys.join(" + ");
+        let primary_window = _app_handle.get_window(primary::SCREEN);
 
-        app_handle
-            .global_shortcut_manager()
-            .register(accelerator.as_str(), move || {
+        let mut global_shortcut_manager = _app_handle.global_shortcut_manager();
+
+        if let Some(old_settings) = old_settings {
+            let old_keys = parse_shortcut(&old_settings.keybindings.open_ccv)?;
+            let old_accelerator = old_keys.join(" + ");
+
+            global_shortcut_manager
+                .unregister(old_accelerator.as_str())
+                .map_err(|err| app_error!("{err}"))?;
+        }
+
+        let new_keys = parse_shortcut(&new_settings.keybindings.open_ccv)?;
+        let new_accelerator = new_keys.join(" + ");
+
+        global_shortcut_manager
+            .register(new_accelerator.as_str(), move || {
                 log_error(
                     show_window(&primary_window),
                     "Unable to show primary window",
                 )
                 .unwrap();
             })
-            .map_err(|err| app_error!("{err}"))
+            .map_err(|err| app_error!("{err}"))?;
     }
 
     // TODO change to linux
     #[cfg(target_os = "linux")]
     {
-        use global_hotkey::{GlobalHotKeyEvent, GlobalHotKeyManager};
+        use global_hotkey::GlobalHotKeyManager;
 
-        let primary_window = app_handle.get_window(primary::SCREEN);
-        let (tx, rx) = channel::<Settings>();
-        let mut hotkey_change = state_settings.hotkey_change.lock().unwrap();
-        *hotkey_change = Some(tx);
-        let settings = settings.clone().unwrap();
-        async_runtime::spawn(async move {
-            let manager = GlobalHotKeyManager::new().unwrap();
-            let mut hotkey = settings::core::get_hotkey(&settings.keybindings.open_ccv).unwrap();
-            manager.register(hotkey).unwrap();
-            loop {
-                if let Ok(_) = GlobalHotKeyEvent::receiver().try_recv() {
-                    if let Err(err) = show_window(&primary_window) {
-                        log::error!("Unable to show primary window. {err}");
-                    }
-                }
+        let manager = GlobalHotKeyManager::new()
+            .map_err(|err| app_error!("Unable to create GlobalHotKeyManager. {err}"))?;
 
-                if let Ok(settings) = rx.try_recv() {
-                    manager.unregister(hotkey).unwrap();
-                    hotkey = settings::core::get_hotkey(&settings.keybindings.open_ccv).unwrap();
-                    manager.register(hotkey).unwrap();
-                }
+        if let Some(old_settings) = old_settings {
+            let old_hotkey = get_hotkey(&old_settings.keybindings.open_ccv)?;
+            manager.unregister(old_hotkey).unwrap();
+        }
 
-                // TODO
-                // tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
-            }
-        });
-    } 
+        let new_hotkey = get_hotkey(&new_settings.keybindings.open_ccv)?;
+        manager
+            .register(new_hotkey)
+            .map_err(|err| app_error!("Unable to register hotkey. {err}"))?;
+    }
+
+    Ok(())
 }
 
 // TODO change to linux
@@ -258,6 +266,7 @@ fn get_hotkey_code(code: &str) -> Option<Code> {
     }
 }
 
+// TODO change to linux
 #[cfg(not(target_os = "linux"))]
 fn parse_shortcut(shortcut: &Shortcut) -> Result<Vec<String>, AppError> {
     let mut result = vec![];
@@ -283,6 +292,7 @@ fn parse_shortcut(shortcut: &Shortcut) -> Result<Vec<String>, AppError> {
     Ok(result)
 }
 
+// TODO change to linux
 #[cfg(not(target_os = "linux"))]
 fn get_key_maps(code: &str) -> Option<&'static str> {
     match code {
