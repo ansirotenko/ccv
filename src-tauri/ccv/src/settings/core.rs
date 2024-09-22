@@ -8,6 +8,9 @@ use std::{
     io::{Read, Write},
     path::PathBuf,
 };
+use crate::primary;
+use crate::utils::window::show_window;
+#[cfg(not(target_os = "linux"))]
 use tauri::{AppHandle, Manager};
 
 // TODO change to linux
@@ -62,6 +65,64 @@ pub fn write_settings(app_data_dir: &PathBuf, settings: &Settings) -> Result<(),
 
     file.write_all(json.as_bytes())
         .map_err(|err| app_error!("Unable to write settings file content. {err}"))
+}
+
+pub fn register_keybindings(app_handle: &AppHandle, settings: &Settings) -> Result<(), AppError> {
+    
+    let primary_window = app_handle.get_window(primary::SCREEN);
+
+    #[cfg(not(target_os = "linux"))] 
+    {
+        use ccv_contract::error::log_error;
+        use tauri::GlobalShortcutManager;
+
+        let keys = parse_shortcut(&settings.keybindings.open_ccv)?;
+        let accelerator = keys.join(" + ");
+
+        app_handle
+            .global_shortcut_manager()
+            .register(accelerator.as_str(), move || {
+                log_error(
+                    show_window(&primary_window),
+                    "Unable to show primary window",
+                )
+                .unwrap();
+            })
+            .map_err(|err| app_error!("{err}"))
+    }
+
+    // TODO change to linux
+    #[cfg(target_os = "linux")]
+    {
+        use global_hotkey::{GlobalHotKeyEvent, GlobalHotKeyManager};
+
+        let primary_window = app_handle.get_window(primary::SCREEN);
+        let (tx, rx) = channel::<Settings>();
+        let mut hotkey_change = state_settings.hotkey_change.lock().unwrap();
+        *hotkey_change = Some(tx);
+        let settings = settings.clone().unwrap();
+        async_runtime::spawn(async move {
+            let manager = GlobalHotKeyManager::new().unwrap();
+            let mut hotkey = settings::core::get_hotkey(&settings.keybindings.open_ccv).unwrap();
+            manager.register(hotkey).unwrap();
+            loop {
+                if let Ok(_) = GlobalHotKeyEvent::receiver().try_recv() {
+                    if let Err(err) = show_window(&primary_window) {
+                        log::error!("Unable to show primary window. {err}");
+                    }
+                }
+
+                if let Ok(settings) = rx.try_recv() {
+                    manager.unregister(hotkey).unwrap();
+                    hotkey = settings::core::get_hotkey(&settings.keybindings.open_ccv).unwrap();
+                    manager.register(hotkey).unwrap();
+                }
+
+                // TODO
+                // tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
+            }
+        });
+    } 
 }
 
 // TODO change to linux
@@ -195,28 +256,6 @@ fn get_hotkey_code(code: &str) -> Option<Code> {
         "KeyM" => Some(Code::KeyM),
         _ => None,
     }
-}
-
-#[cfg(not(target_os = "linux"))]
-pub fn register_keybindings(app_handle: &AppHandle, settings: &Settings) -> Result<(), AppError> {
-    use crate::{primary, utils::window::show_window};
-    use ccv_contract::error::log_error;
-    use tauri::GlobalShortcutManager;
-
-    let keys = parse_shortcut(&settings.keybindings.open_ccv)?;
-    let accelerator = keys.join(" + ");
-    let primary_window = app_handle.get_window(primary::SCREEN);
-
-    app_handle
-        .global_shortcut_manager()
-        .register(accelerator.as_str(), move || {
-            log_error(
-                show_window(&primary_window),
-                "Unable to show primary window",
-            )
-            .unwrap();
-        })
-        .map_err(|err| app_error!("{err}"))
 }
 
 #[cfg(not(target_os = "linux"))]

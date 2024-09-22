@@ -16,7 +16,7 @@ pub fn init_repository(app_handle: &AppHandle, app_data_dir: &PathBuf) -> Result
         *repository = Box::new(sqlite_repo);
     }
 
-    #[cfg(feature = "inmemory")]
+    #[cfg(not(feature = "sqlite"))]
     {
         let data: Vec<ccv_contract::models::CopyItem>;
         use ccv_in_memory;
