@@ -65,9 +65,9 @@
                 "fullscreen": false,
                 "visible": false,
                 "skipTaskbar": true,
-                "url": "screens/main.html",
+                "url": "screens/primary.html",
                 "decorations": false,
-                "label": "main"
+                "label": "primary"
             },
             {
                 "center": true,

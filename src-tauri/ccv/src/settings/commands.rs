@@ -1,8 +1,10 @@
-use crate::events::{ITEMS_CHANGED, SETTINGS_UPDATED};
-use crate::screens::{MAIN, SETTINGS};
-use crate::state::CopyItemState;
-use crate::{commands::main::insert_copy_item_if_not_found, state::SettingsState};
-use ccv::utils::window::{hide_window, show_window};
+use crate::primary;
+use crate::settings;
+
+use crate::primary::commands::insert_copy_item_if_not_found;
+use crate::primary::state::CopyItemState;
+use crate::settings::state::SettingsState;
+use crate::utils::window::{hide_window, show_window};
 use ccv_contract::models::Shortcut;
 use ccv_contract::{
     app_error,
@@ -23,7 +25,7 @@ pub fn get_settings(state: State<SettingsState>) -> Result<Option<Settings>, App
 #[command]
 pub fn set_settings(
     new_settings: Settings,
-    app: AppHandle,
+    app_handle: AppHandle,
     state: State<SettingsState>,
 ) -> Result<(), AppError> {
     let mut settings = state.settings.lock().unwrap();
@@ -32,7 +34,7 @@ pub fn set_settings(
 
     *settings = Some(new_settings.clone());
 
-    let app_data_dir = app.app_handle().path_resolver().app_data_dir().unwrap();
+    let app_data_dir = app_handle.app_handle().path_resolver().app_data_dir().unwrap();
     log_error(
         SettingsState::write_settings(&app_data_dir, &new_settings),
         "Unable to save settings",
@@ -42,11 +44,11 @@ pub fn set_settings(
         #[cfg(any(target_os = "windows", target_os = "macos"))]
         {
             log_error(
-                app.global_shortcut_manager().unregister_all(),
+                app_handle.global_shortcut_manager().unregister_all(),
                 "Unable to unregister shortcut",
             )?;
             log_error(
-                register_keybindings(&app, &new_settings),
+                register_keybindings(&app_handle, &new_settings),
                 "Unable to register shortcut",
             )?;
         }
@@ -62,14 +64,14 @@ pub fn set_settings(
                     .as_ref()
                     .unwrap()
                     .send(new_settings.clone()),
-                "zalupa",
+                "Unable to register shortcut",
             )?;
         }
     }
 
     log_error(
-        app.emit_all(
-            SETTINGS_UPDATED,
+        app_handle.emit_all(
+            settings::SETTINGS_UPDATED_EVENT,
             EventPayload {
                 data: settings.clone(),
             },
@@ -79,17 +81,17 @@ pub fn set_settings(
 }
 
 #[command]
-pub fn hide_settings_window(app: AppHandle) -> Result<(), AppError> {
+pub fn hide_settings_window(app_handle: AppHandle) -> Result<(), AppError> {
     log_error(
-        hide_window(&app.get_window(SETTINGS)),
+        hide_window(&app_handle.get_window(settings::SCREEN)),
         "Unable to hide settings window",
     )
 }
 
 #[command]
-pub fn show_settings_window(app: AppHandle) -> Result<(), AppError> {
+pub fn show_settings_window(app_handle: AppHandle) -> Result<(), AppError> {
     log_error(
-        show_window(&app.get_window(SETTINGS)),
+        show_window(&app_handle.get_window(settings::SCREEN)),
         "Unable to show settings window",
     )
 }
@@ -97,7 +99,7 @@ pub fn show_settings_window(app: AppHandle) -> Result<(), AppError> {
 #[command]
 pub fn remove_copy_items(
     item_ids: String,
-    app: AppHandle,
+    app_handle: AppHandle,
     state: State<CopyItemState>,
     state_clipboard: State<ClipboardManager>,
 ) -> Result<(), AppError> {
@@ -116,8 +118,8 @@ pub fn remove_copy_items(
     )?;
 
     log_error(
-        app.emit_all(
-            ITEMS_CHANGED,
+        app_handle.emit_all(
+            primary::ITEMS_CHANGED_EVENT,
             EventPayload {
                 data: format!("Delete items with ids '{item_ids}'"),
             },
@@ -131,7 +133,7 @@ pub fn remove_copy_items(
 #[command]
 pub fn remove_copy_items_older(
     sinse: DateTime<Utc>,
-    app: AppHandle,
+    app_handle: AppHandle,
     state: State<CopyItemState>,
     state_clipboard: State<ClipboardManager>,
 ) -> Result<(), AppError> {
@@ -146,8 +148,8 @@ pub fn remove_copy_items_older(
     )?;
 
     log_error(
-        app.emit_all(
-            ITEMS_CHANGED,
+        app_handle.emit_all(
+            primary::ITEMS_CHANGED_EVENT,
             EventPayload {
                 data: format!("Delete items older {sinse}"),
             },
@@ -158,14 +160,18 @@ pub fn remove_copy_items_older(
     Ok(())
 }
 
-pub fn register_keybindings(app: &AppHandle, settings: &Settings) -> Result<(), AppError> {
+pub fn register_keybindings(app_handle: &AppHandle, settings: &Settings) -> Result<(), AppError> {
     let keys = parse_shortcut(&settings.keybindings.open_ccv)?;
     let accelerator = keys.join(" + ");
-    let main_window = app.get_window(MAIN);
+    let primary_window = app_handle.get_window(primary::SCREEN);
 
-    app.global_shortcut_manager()
+    app_handle.global_shortcut_manager()
         .register(accelerator.as_str(), move || {
-            log_error(show_window(&main_window), "Unable to show main window").unwrap();
+            log_error(
+                show_window(&primary_window),
+                "Unable to show primary window",
+            )
+            .unwrap();
         })
         .map_err(|err| app_error!("{err}"))
 }
