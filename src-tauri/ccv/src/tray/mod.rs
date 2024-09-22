@@ -1,15 +1,15 @@
 mod menus;
 
-use super::utils::window::{hide_window, show_window};
-use super::about;
+use crate::about;
+use crate::primary;
+use crate::settings;
+use crate::utils::window::{hide_window, show_window};
 use menus::{ABOUT_MENU, HIDE_MENU, QUIT_MENU, SETTINGS_MENU, SHOW_MENU};
 use tauri::{
     CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem,
 };
 
-use crate::screens::{MAIN, SETTINGS};
-
-pub fn get_tray_menu() -> SystemTray {
+pub fn get_menu() -> SystemTray {
     let about = CustomMenuItem::new(ABOUT_MENU.to_string(), "About");
     let settings = CustomMenuItem::new(SETTINGS_MENU.to_string(), "Settings");
     let show = CustomMenuItem::new(SHOW_MENU.to_string(), "Show");
@@ -29,7 +29,7 @@ pub fn get_tray_menu() -> SystemTray {
     SystemTray::new().with_menu(tray_menu)
 }
 
-pub fn tray_event_handler(app: &tauri::AppHandle, event: SystemTrayEvent) {
+pub fn event_handler(app: &tauri::AppHandle, event: SystemTrayEvent) {
     match event {
         SystemTrayEvent::LeftClick {
             position: _,
@@ -62,17 +62,17 @@ pub fn tray_event_handler(app: &tauri::AppHandle, event: SystemTrayEvent) {
                 }
             }
             HIDE_MENU => {
-                if let Err(err) = hide_window(&app.get_window(MAIN)) {
-                    log::error!("Unable to hide main window from tray. {err}");
+                if let Err(err) = hide_window(&app.get_window(primary::SCREEN)) {
+                    log::error!("Unable to hide primary window from tray. {err}");
                 }
             }
             SHOW_MENU => {
-                if let Err(err) = show_window(&app.get_window(MAIN)) {
-                    log::error!("Unable to show main window from tray. {err}");
+                if let Err(err) = show_window(&app.get_window(primary::SCREEN)) {
+                    log::error!("Unable to show primary window from tray. {err}");
                 }
             }
             SETTINGS_MENU => {
-                if let Err(err) = show_window(&app.get_window(SETTINGS)) {
+                if let Err(err) = show_window(&app.get_window(settings::SCREEN)) {
                     log::error!("Unable to show settings window from tray. {err}");
                 }
             }

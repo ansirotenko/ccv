@@ -1,5 +1,5 @@
-use crate::{screens::MAIN, state::CopyItemState};
-use ccv::utils::window::{hide_window, show_window};
+use crate::primary;
+use crate::utils::window::{hide_window, show_window};
 use ccv_contract::{
     app_error,
     error::{log_error, AppError},
@@ -21,7 +21,7 @@ pub fn search_copy_items(
     page: i32,
     page_size: i32,
     categories: Vec<CopyCategory>,
-    state: State<CopyItemState>,
+    state: State<primary::state::CopyItemState>,
 ) -> Result<SearchResult, AppError> {
     let repository = state.repository.lock().unwrap();
     log_error(
@@ -38,7 +38,7 @@ pub fn search_copy_items(
 #[command]
 pub fn reuse_copy_item(
     item_id: String,
-    state: State<CopyItemState>,
+    state: State<primary::state::CopyItemState>,
     state_clipboard: State<ClipboardManager>,
 ) -> Result<CopyItem, AppError> {
     let repository = state.repository.lock().unwrap();
@@ -139,7 +139,7 @@ fn write_reused_copy_item(
 
 #[command]
 pub fn insert_copy_item(
-    state: State<CopyItemState>,
+    state: State<primary::state::CopyItemState>,
     state_clipboard: State<ClipboardManager>,
 ) -> Result<CopyItem, AppError> {
     let repository = state.repository.lock().unwrap();
@@ -258,18 +258,18 @@ fn get_new_copy_item_value(
 }
 
 #[command]
-pub fn hide_main_window(app: AppHandle) -> Result<(), AppError> {
+pub fn hide_primary_window(app_handle: AppHandle) -> Result<(), AppError> {
     log_error(
-        hide_window(&app.get_window(MAIN)),
-        "Unable to hide main window",
+        hide_window(&app_handle.get_window(primary::SCREEN)),
+        "Unable to hide primary window",
     )
 }
 
 #[command]
-pub fn show_main_window(app: AppHandle) -> Result<(), AppError> {
+pub fn show_primary_window(app_handle: AppHandle) -> Result<(), AppError> {
     log_error(
-        show_window(&app.get_window(MAIN)),
-        "Unable to show main window",
+        show_window(&app_handle.get_window(primary::SCREEN)),
+        "Unable to show primary window",
     )
 }
 

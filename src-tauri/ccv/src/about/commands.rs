@@ -1,4 +1,4 @@
-use crate::about::SCREEN;
+use crate::about;
 use crate::utils::window::{hide_window, show_window};
 use ccv_contract::{
     error::{log_error, AppError},
@@ -38,7 +38,7 @@ pub fn open(target: String) -> Result<(), AppError> {
 #[command]
 pub fn hide_about_window(app_handle: AppHandle) -> Result<(), AppError> {
     log_error(
-        hide_window(&app_handle.get_window(SCREEN)),
+        hide_window(&app_handle.get_window(about::SCREEN)),
         "Unable to hide about window",
     )
 }
@@ -46,7 +46,7 @@ pub fn hide_about_window(app_handle: AppHandle) -> Result<(), AppError> {
 #[command]
 pub fn show_about_window(app_handle: AppHandle) -> Result<(), AppError> {
     log_error(
-        show_window(&app_handle.get_window(SCREEN)),
+        show_window(&app_handle.get_window(about::SCREEN)),
         "Unable to show about window",
     )
 }

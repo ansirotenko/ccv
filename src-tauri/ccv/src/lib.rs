@@ -1,5 +1,5 @@
 pub mod about;
-pub mod screens;
+pub mod primary;
 pub mod settings;
 pub mod splashscreen;
 pub mod tray;
