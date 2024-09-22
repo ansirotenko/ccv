@@ -36,21 +36,21 @@ pub fn event_handler(app_handle: &tauri::AppHandle, event: SystemTrayEvent) {
             size: _,
             ..
         } => {
-            println!("system tray received a left click");
         }
         SystemTrayEvent::RightClick {
             position: _,
             size: _,
             ..
         } => {
-            println!("system tray received a right click");
         }
         SystemTrayEvent::DoubleClick {
             position: _,
             size: _,
             ..
         } => {
-            println!("system tray received a double click");
+            if let Err(err) = show_window(&app_handle.get_window(primary::SCREEN)) {
+                log::error!("Unable to show primary window from tray. {err}");
+            }
         }
         SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
             QUIT_MENU => {
