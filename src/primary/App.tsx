@@ -151,7 +151,7 @@ function App() {
                 initialCategories={initialCategories}
                 possibleCategories={possibleCategories}
                 onChange={onToolbarChange}
-                onClose={backend.hideMainWindow}
+                onClose={backend.hidePrimaryWindow}
                 onSettings={backend.showSettingsWindow}
                 onReportIssue={backend.showAboutWindow}
             />
