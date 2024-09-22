@@ -6,7 +6,7 @@ use global_hotkey::{
     hotkey::{Code, HotKey, Modifiers},
     GlobalHotKeyEvent, GlobalHotKeyManager,
 };
-use std::sync::mpsc::Receiver;
+use std::{sync::mpsc::Receiver, thread, time::Duration};
 use tauri::{AppHandle, Manager};
 
 pub fn main_loop_hotkey_change(
@@ -48,8 +48,7 @@ pub fn main_loop_hotkey_change(
             }
         }
 
-        // TODO
-        // tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
+        thread::sleep(Duration::from_millis(50)) // TODO maybe async
     }
 }
 

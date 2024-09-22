@@ -1,3 +1,5 @@
+use std::sync::mpsc::Sender;
+
 use crate::primary;
 use crate::settings;
 
@@ -28,35 +30,38 @@ pub fn set_settings(
     let mut settings = state.settings.lock().unwrap();
     *settings = Some(new_settings.clone());
 
-    let app_data_dir = app_handle
-        .path_resolver()
-        .app_data_dir()
-        .unwrap();
+    let app_data_dir = app_handle.path_resolver().app_data_dir().unwrap();
     log_error(
         settings::core::write_settings(&app_data_dir, &new_settings),
         "Unable to save settings",
     )?;
 
+    let settings_change = state.settings_change.lock().unwrap();
     log_error(
-        state
-            .settings_change
-            .lock()
-            .unwrap() // TODO
-            .as_ref()
-            .unwrap()
-            .send(new_settings.clone()),
+        notify_settings_change(app_handle, &settings_change, new_settings),
         "Unable notify settings changed",
-    )?;
-
-    log_error(
-        app_handle.emit_all(
-            settings::SETTINGS_UPDATED_EVENT,
-            EventPayload {
-                data: settings.clone(),
-            },
-        ),
-        "Unable to send event",
     )
+}
+
+fn notify_settings_change(
+    app_handle: AppHandle,
+    settings_change: &Option<Sender<Settings>>, 
+    new_settings: Settings
+) -> Result<(), AppError> {
+    if let Some(settings_change) = settings_change.as_ref() {
+        settings_change.send(new_settings.clone()).map_err(|err| app_error!("{err}"))?;
+    } else {
+        return Err(app_error!("Uninitialized settings_change"));
+    }
+
+    app_handle.emit_all(
+        settings::SETTINGS_UPDATED_EVENT,
+        EventPayload {
+            data: new_settings.clone(),
+        },
+    ).map_err(|err| app_error!("{err}"))?;
+
+    Ok(())
 }
 
 #[command]
