@@ -1,4 +1,3 @@
-import { useBackend } from './useBackend';
 import { Button } from 'primereact/button';
 import { Fieldset } from 'primereact/fieldset';
 import { useRef, useState, KeyboardEvent, useContext } from 'react';
@@ -8,9 +7,10 @@ import { RadioButton } from 'primereact/radiobutton';
 import { Toast } from 'primereact/toast';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { error as logError } from 'tauri-plugin-log-api';
-import { AppError, Settings, Shortcut } from '../api';
+import { AppError, Settings, Shortcut } from '../common/contract';
 import SettingsContext from '../common/SettingsContext';
-import { getShortcutDisplay, getShortcutFromEvent } from '../common/keyboard';
+import { shortcutDisplay, shortcutFromEvent } from '../common/keyboard';
+import { hideSettingsWindow, removeCopyItems, removeCopyItemsOlder, setSettings } from '../common/commands';
 
 import styles from './App.module.css';
 
@@ -22,11 +22,10 @@ function App() {
     const shortcutValue = useRef<HTMLInputElement>(null);
     const toast = useRef<Toast>(null);
     const newShortcutRef = useRef<Shortcut | null>();
-    const backend = useBackend();
 
     const saveSettings = async (newSettings: Settings) => {
         try {
-            await backend.setSettings(newSettings);
+            await setSettings(newSettings);
             showSuccess(`Settings were changed`);
         } catch (e) {
             const appError = e as AppError;
@@ -48,7 +47,7 @@ function App() {
     };
 
     const keyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-        const newShortcut = getShortcutFromEvent(event);
+        const newShortcut = shortcutFromEvent(event);
         onShortcutChanged(newShortcut);
         event.preventDefault();
     };
@@ -64,7 +63,7 @@ function App() {
             header: 'Press new shortcut',
             message: (
                 <div className={styles.shortcutEdit} onKeyDown={keyDown} tabIndex={0} ref={shortcutDialog}>
-                    <label>Old combination:</label> <span>{getShortcutDisplay(settings?.allShortcuts.openCcv)}</span>
+                    <label>Old combination:</label> <span>{shortcutDisplay(settings?.allShortcuts.openCcv)}</span>
                     <label>New combination:</label> <InputText ref={shortcutValue} disabled={true}/>
                 </div>
             ),
@@ -87,7 +86,7 @@ function App() {
             (document.getElementsByClassName('acceptButton')[0] as HTMLButtonElement).disabled = true;
         } else {
             if (shortcutValue.current) {
-                shortcutValue.current.value = getShortcutDisplay(newShortcut);
+                shortcutValue.current.value = shortcutDisplay(newShortcut);
             }
             (document.getElementsByClassName('acceptButton')[0] as HTMLButtonElement).disabled = false;
         }
@@ -98,7 +97,7 @@ function App() {
             accept: async () => {
                 try {
                     if (selectedIds) {
-                        await backend.removeCopyItems(selectedIds);
+                        await removeCopyItems(selectedIds);
                         showSuccess(`Deletion completed`);
                     } else {
                         const errorMessage = `Ids are empty`;
@@ -122,7 +121,7 @@ function App() {
             accept: async () => {
                 try {
                     if (deleteDate) {
-                        await backend.removeCopyItemsOlder(deleteDate);
+                        await removeCopyItemsOlder(deleteDate);
                         showSuccess(`Deletion completed`);
                     } else {
                         const errorMessage = `Deletion date is null`;
@@ -149,7 +148,7 @@ function App() {
                 <span className={styles.toolbarTitle} data-tauri-drag-region>
                     Settings
                 </span>
-                <Button className={`pi pi-times ${styles.toolbarButton}`} onClick={backend.hideSettingsWindow} />
+                <Button className={`pi pi-times ${styles.toolbarButton}`} onClick={hideSettingsWindow} />
             </div>
             <div className={styles.content}>
                 <Fieldset legend="Theme">
@@ -184,7 +183,7 @@ function App() {
                 <Fieldset legend="Shortcuts">
                     <div className="p-inputgroup">
                         <span className="p-inputgroup-addon">Open ccv</span>
-                        <InputText value={getShortcutDisplay(settings?.allShortcuts.openCcv)} disabled={true} />
+                        <InputText value={shortcutDisplay(settings?.allShortcuts.openCcv)} disabled={true} />
                         <Button
                             className={styles.settingsButton}
                             onClick={confirmShortcuts}

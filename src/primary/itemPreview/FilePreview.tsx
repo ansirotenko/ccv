@@ -1,5 +1,5 @@
 import { ComponentProps, useContext } from 'react';
-import { FileInfo } from '../../api';
+import { FileInfo } from '../../common/contract';
 import { SearchContext, textToHighlightedHtml } from '../SearchContext';
 
 import styles from './FilePreview.module.css';

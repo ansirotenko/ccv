@@ -1,15 +1,14 @@
 import { ComponentProps, useContext, useEffect, useRef, useState } from 'react';
-import { Settings, Theme } from '../api';
+import { Settings, Theme } from '../../common/contract';
 import { PrimeReactContext } from 'primereact/api';
-import { SETTINGS_UPDATED } from '../events';
-import SettingsContext from './SettingsContext';
+import SettingsContext from '../SettingsContext';
 import { invoke } from '@tauri-apps/api/tauri';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { Message } from 'primereact/message';
+import { useSubscribeEvent, SETTINGS_UPDATED } from '../events';
 
 import 'primeicons/primeicons.css';
 import styles from './AppWrapper.module.css';
-import { useSubscribeEvent } from './useSubscribeEvent';
 
 async function getSettings() {
     return await invoke<Settings>('get_settings');

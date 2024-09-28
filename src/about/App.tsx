@@ -1,22 +1,20 @@
 import { useEffect, useState } from 'react';
-import { AboutData } from '../api';
-import { useBackend } from './useBackend';
+import { AboutData } from '../common/contract';
 import { Button } from 'primereact/button';
 import { Skeleton } from 'primereact/skeleton';
 import { BlockUI } from 'primereact/blockui';
-import { HIGHLIGHT_REPORT_BUG } from '../events';
-import { useSubscribeEvent } from '../common/useSubscribeEvent';
+import { useSubscribeEvent, HIGHLIGHT_REPORT_BUG } from '../common/events';
+import { getAboutData, hideAboutWindow, openAnything as openUri } from '../common/commands';
 
 import styles from './App.module.css';
 
 function App() {
     const [reportBugHightlighted, setReportBugHightlighted] = useState<boolean>(false);
     const [aboutData, setSetAboutData] = useState<AboutData | undefined>();
-    const backend = useBackend();
     useSubscribeEvent<string>(HIGHLIGHT_REPORT_BUG, () => setReportBugHightlighted(true));
 
     useEffect(() => {
-        backend.getAboutData().then((data) => {
+        getAboutData().then((data) => {
             setSetAboutData(data);
         });
     }, []);
@@ -32,7 +30,7 @@ function App() {
                 <span className={styles.toolbarTitle} data-tauri-drag-region>
                     About
                 </span>
-                <Button className={`pi pi-times ${styles.toolbarButton}`} onClick={backend.hideAboutWindow} />
+                <Button className={`pi pi-times ${styles.toolbarButton}`} onClick={hideAboutWindow} />
             </div>
             <div className={styles.content}>
                 <BlockUI blocked={reportBugHightlighted}>
@@ -52,7 +50,7 @@ function App() {
                             <a
                                 href="#"
                                 onClick={() => {
-                                    backend.open(aboutData.homepage);
+                                    openUri(aboutData.homepage);
                                 }}
                             >
                                 {aboutData.homepage}
@@ -66,7 +64,7 @@ function App() {
                         {aboutData?.appDirectory ? (
                             <em
                                 onClick={() => {
-                                    backend.open(aboutData.appDirectory!);
+                                    openUri(aboutData.appDirectory!);
                                 }}
                             >
                                 {aboutData.appDirectory}
@@ -80,7 +78,7 @@ function App() {
                         {aboutData?.appDataDirectory ? (
                             <em
                                 onClick={() => {
-                                    backend.open(aboutData.appDataDirectory!);
+                                    openUri(aboutData.appDataDirectory!);
                                 }}
                             >
                                 {aboutData.appDataDirectory}
@@ -94,7 +92,7 @@ function App() {
                         {aboutData?.appLogsDirectory ? (
                             <em
                                 onClick={() => {
-                                    backend.open(aboutData.appLogsDirectory!);
+                                    openUri(aboutData.appLogsDirectory!);
                                 }}
                             >
                                 {aboutData.appLogsDirectory}
@@ -109,7 +107,7 @@ function App() {
                     <a
                         href="#"
                         onClick={() => {
-                            backend.open('https://github.com/ansirotenko/ccv/issues/new');
+                            openUri('https://github.com/ansirotenko/ccv/issues/new');
                         }}
                     >
                         github
@@ -118,7 +116,7 @@ function App() {
                     <a
                         href="#"
                         onClick={() => {
-                            backend.open('mailto:panshirotenski@gmail.com');
+                            openUri('mailto:panshirotenski@gmail.com');
                         }}
                     >
                         email
@@ -127,7 +125,7 @@ function App() {
                 </div>
                 <BlockUI blocked={reportBugHightlighted}>
                     <section className={styles.contentButtonContainer}>
-                        <Button className={styles.contentButton} onClick={backend.hideAboutWindow}>
+                        <Button className={styles.contentButton} onClick={hideAboutWindow}>
                             Ok
                         </Button>
                     </section>

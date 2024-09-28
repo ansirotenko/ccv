@@ -2,10 +2,9 @@ import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { ComponentProps, useEffect, useRef, useState } from 'react';
 import { useDebouncedCallback } from '../../common/useDebouncedCallback';
-import { CopyCategory } from '../../api';
+import { CopyCategory } from '../../common/contract';
 import { Checkbox } from 'primereact/checkbox';
-import { useSubscribeEvent } from '../../common/useSubscribeEvent';
-import { WINDOW_SHOWN_EVENT } from '../../events';
+import { useSubscribeEvent, WINDOW_SHOWN_EVENT } from '../../common/events';
 import { getCategoriesText, toCategoriesArray, toCategoriesNumber } from './categoryHelper';
 import bugImage from '../../assets/bug.png';
 
@@ -72,7 +71,6 @@ export function Toolbar({
     }, 200);
 
     function somethingChanged(query: string | undefined, categoriesNumber: number) {
-        console.log(toCategoriesArray(categoriesNumber, possibleCategories).join(', '));
         if (onChange != null) {
             onChange(query || null, toCategoriesArray(categoriesNumber, possibleCategories));
         }

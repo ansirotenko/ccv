@@ -1,15 +1,15 @@
 import { useEffect, useState, useRef } from 'react';
 import { Toolbar } from './toolbar/Toolbar';
 import { ItemsList } from './itemsList/ItemsList';
-import { CopyItem, CopyCategory, AppError, SearchResult } from '../api';
+import { CopyItem, CopyCategory, AppError, SearchResult } from '../common/contract';
 import { ItemPreview } from './itemPreview/ItemPreview';
 import { useDebouncedCallback } from '../common/useDebouncedCallback';
-import { useBackend } from './useBackend';
+import { useListenClipboard } from './useListenClipboard';
 import { error as logError } from 'tauri-plugin-log-api';
 import { SearchContext, escapeSearch } from './SearchContext';
-import { ITEMS_CHANGED, WINDOW_HIDDEN_EVENT } from '../events';
-import { useSubscribeEvent } from '../common/useSubscribeEvent';
+import { useSubscribeEvent, emitEvent, ITEMS_CHANGED, WINDOW_HIDDEN_EVENT, HIGHLIGHT_REPORT_BUG } from '../common/events';
 import { Container } from './container/Container';
+import { hidePrimaryWindow, searchCopyItems, showAboutWindow, showSettingsWindow } from '../common/commands';
 
 const initialQuery = '';
 const possibleCategories: CopyCategory[] = ['Files', 'Html', 'Image', 'Rtf', 'Text'];
@@ -31,14 +31,10 @@ function App() {
     useSubscribeEvent<string>(WINDOW_HIDDEN_EVENT, () => {
         // to make refresh in invisible mode
         setSelectedIndex(0);
-        toolbarChange(initialQuery, initialCategories);
+        toolbarChanged(initialQuery, initialCategories);
     });
+    const reuseItemWithoutLoop = useListenClipboard(newItem => applyNewActiveItem(newItem));
 
-    const backend = useBackend(
-        (newItem) => {
-            applyNewActiveItem(newItem);
-        }
-    );
     useEffect(() => {
         search(query, categories);
     }, [query, categories]);
@@ -47,13 +43,13 @@ function App() {
         setNewlyActivedId(null);
     }, 250);
 
-    function toolbarChange(newQuery: string | null, newCategories: CopyCategory[]) {
+    function toolbarChanged(newQuery: string | null, newCategories: CopyCategory[]) {
         setQuery(newQuery);
         setCategories(newCategories);
     }
 
     async function refreshAndHide() {
-        await backend.hidePrimaryWindow();
+        await hidePrimaryWindow();
     }
 
     async function search(searchQuery: string | null, searchCategories: CopyCategory[]) {
@@ -63,7 +59,7 @@ function App() {
         setSelectedIndex(0);
         setResult({ items: [], totalNumber: 0 });
         try {
-            const resultItems = await backend.searchCopyItems(searchQuery, 0, pageSize, searchCategories);
+            const resultItems = await searchCopyItems(searchQuery, 0, pageSize, searchCategories);
             setResult(resultItems);
         } catch (e) {
             logError((e as AppError).message);
@@ -76,7 +72,7 @@ function App() {
     async function loadMore() {
         setLoading(true);
         try {
-            const resultItems = await backend.searchCopyItems(query, page + 1, pageSize, categories);
+            const resultItems = await searchCopyItems(query, page + 1, pageSize, categories);
             setResult({
                 items: [...result.items, ...resultItems.items],
                 totalNumber: resultItems.totalNumber,
@@ -99,7 +95,7 @@ function App() {
     async function activate(index: number) {
         if (index >= 0 && index < result.items.length) {
             const oldItem = result.items[index];
-            await backend.reuseCopyItem(oldItem.id);
+            await reuseItemWithoutLoop(oldItem.id);
         }
     }
     async function applyNewActiveItem(newItem: CopyItem) {
@@ -129,6 +125,11 @@ function App() {
         setNewlyActivedId(newItem.id);
         delayedResetNewlyActive();
     }
+
+    async function reportIssue() {
+        await showAboutWindow();
+        await emitEvent(HIGHLIGHT_REPORT_BUG, 'Highlight bug report');
+    }
     
     return (
         <Container 
@@ -140,10 +141,10 @@ function App() {
                 query={query}
                 categories={categories}
                 possibleCategories={possibleCategories}
-                onChange={toolbarChange}
-                onClose={backend.hidePrimaryWindow}
-                onSettings={backend.showSettingsWindow}
-                onReportIssue={backend.showAboutWindow}
+                onChange={toolbarChanged}
+                onClose={hidePrimaryWindow}
+                onSettings={showSettingsWindow}
+                onReportIssue={reportIssue}
             />
             <SearchContext.Provider value={escapeSearch(query)} >
                 <ItemsList

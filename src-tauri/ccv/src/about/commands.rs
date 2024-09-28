@@ -31,7 +31,7 @@ pub fn get_about_data(app_handle: AppHandle) -> Result<AboutData, AppError> {
 }
 
 #[command]
-pub fn open(target: String) -> Result<(), AppError> {
+pub fn open_uri(target: String) -> Result<(), AppError> {
     log_error(open::that(target), "Unable to open")
 }
 

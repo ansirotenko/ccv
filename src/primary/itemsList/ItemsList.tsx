@@ -1,5 +1,5 @@
 import { ComponentProps, useEffect, useRef } from 'react';
-import { AppError, SearchResult } from '../../api';
+import { AppError, SearchResult } from '../../common/contract';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { Message } from 'primereact/message';
 import { Item } from '../item/Item';

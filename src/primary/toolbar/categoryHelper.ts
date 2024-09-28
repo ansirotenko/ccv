@@ -1,4 +1,4 @@
-import { CopyCategory } from "../../api";
+import { CopyCategory } from "../../common/contract";
 
 export function getCategoriesText(categoriesNumber: number, possibleCategories: CopyCategory[]) {
     if (categoriesNumber === (1 << possibleCategories.length) - 1) {
