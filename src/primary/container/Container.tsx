@@ -1,7 +1,7 @@
-import { KeyboardEvent, useRef, FocusEvent, ComponentProps, useState, useContext } from 'react';
+import { KeyboardEvent, useRef, ComponentProps, useState, useContext } from 'react';
 import { MainShortcutPressedPayload } from '../../api';
 import { useSubscribeEvent } from '../../common/useSubscribeEvent';
-import { MAIN_SHORTCUT_PRESSED_EVENT } from '../../events';
+import { MAIN_SHORTCUT_PRESSED_EVENT, WINDOW_SHOWN_EVENT } from '../../events';
 import { hasModifers, matchShortcutModifiers } from '../../common/keyboard';
 import SettingsContext from '../../common/SettingsContext';
 
@@ -20,8 +20,11 @@ export function Container({ selectedIndex, onSelect, onActivate, onHide, childre
     const [mainShortcutCounter, setMainShortcutCounter] = useState<number>(0);
     const settings = useContext(SettingsContext);
 
-    useSubscribeEvent<MainShortcutPressedPayload>(MAIN_SHORTCUT_PRESSED_EVENT, (mainShortcutPressedPayload) => {
+    useSubscribeEvent<string>(WINDOW_SHOWN_EVENT, () => {
         containerRef.current?.focus();
+    });
+
+    useSubscribeEvent<MainShortcutPressedPayload>(MAIN_SHORTCUT_PRESSED_EVENT, (mainShortcutPressedPayload) => {
         if (mainShortcutPressedPayload.changedFromHiddenToVisile) {
             if (hasModifers(settings.allShortcuts.openCcv)) {
                 setMainShortcutOn(true);
@@ -32,7 +35,7 @@ export function Container({ selectedIndex, onSelect, onActivate, onHide, childre
         }
         setMainShortcutCounter(count => count + 1);
     });
-    
+
     const keyUp = (event: KeyboardEvent<HTMLDivElement>) => {
         if (mainShortcutOn) {
             if (!matchShortcutModifiers(settings.allShortcuts.openCcv, event)) {
@@ -43,16 +46,6 @@ export function Container({ selectedIndex, onSelect, onActivate, onHide, childre
             }
         }
     };
-
-    function blured(event: FocusEvent<HTMLDivElement>) {
-        const currentTarget = event.currentTarget;
-        requestAnimationFrame(() => {
-            // Check if the new focused element is a child of the original container
-            if (!currentTarget.contains(document.activeElement)) {
-                onHide();
-            }
-        });
-    }
 
     const keyDown = (event: KeyboardEvent<HTMLDivElement>) => {
         if (event.key === 'Enter') {
@@ -88,7 +81,6 @@ export function Container({ selectedIndex, onSelect, onActivate, onHide, childre
             className={styles.container} 
             onKeyDown={keyDown}
             onKeyUp={keyUp}
-            onBlur={blured}
             ref={containerRef} 
             tabIndex={0}>
            { children }

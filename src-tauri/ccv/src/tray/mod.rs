@@ -3,8 +3,8 @@ mod menus;
 use crate::about;
 use crate::primary;
 use crate::settings;
-use crate::utils::window::{hide_window, show_window};
-use menus::{ABOUT_MENU, HIDE_MENU, QUIT_MENU, SETTINGS_MENU, SHOW_MENU};
+use crate::utils::window::show_window;
+use menus::{ABOUT_MENU, QUIT_MENU, SETTINGS_MENU, SHOW_MENU};
 use tauri::{
     CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem,
 };
@@ -13,11 +13,9 @@ pub fn get_menu() -> SystemTray {
     let about = CustomMenuItem::new(ABOUT_MENU.to_string(), "About");
     let settings = CustomMenuItem::new(SETTINGS_MENU.to_string(), "Settings");
     let show = CustomMenuItem::new(SHOW_MENU.to_string(), "Show");
-    let hide = CustomMenuItem::new(HIDE_MENU.to_string(), "Hide");
     let quit = CustomMenuItem::new(QUIT_MENU.to_string(), "Quit");
 
     let tray_menu = SystemTrayMenu::new()
-        .add_item(hide)
         .add_item(show)
         .add_native_item(SystemTrayMenuItem::Separator)
         .add_item(settings)
@@ -59,11 +57,6 @@ pub fn event_handler(app_handle: &tauri::AppHandle, event: SystemTrayEvent) {
             ABOUT_MENU => {
                 if let Err(err) = show_window(&app_handle.get_window(about::SCREEN)) {
                     log::error!("Unable to show about window from tray. {err}");
-                }
-            }
-            HIDE_MENU => {
-                if let Err(err) = hide_window(&app_handle.get_window(primary::SCREEN)) {
-                    log::error!("Unable to hide primary window from tray. {err}");
                 }
             }
             SHOW_MENU => {

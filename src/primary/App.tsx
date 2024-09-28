@@ -7,7 +7,7 @@ import { useDebouncedCallback } from '../common/useDebouncedCallback';
 import { useBackend } from './useBackend';
 import { error as logError } from 'tauri-plugin-log-api';
 import { SearchContext, escapeSearch } from './SearchContext';
-import { ITEMS_CHANGED } from '../events';
+import { ITEMS_CHANGED, WINDOW_HIDDEN_EVENT } from '../events';
 import { useSubscribeEvent } from '../common/useSubscribeEvent';
 import { Container } from './container/Container';
 
@@ -28,6 +28,11 @@ function App() {
     const containerRef = useRef<HTMLDivElement>(null);
     
     useSubscribeEvent<string>(ITEMS_CHANGED, () => search(query, categories));
+    useSubscribeEvent<string>(WINDOW_HIDDEN_EVENT, () => {
+        // to make refresh in invisible mode
+        setSelectedIndex(0);
+        toolbarChange(initialQuery, initialCategories);
+    });
 
     const backend = useBackend(
         (newItem) => {
@@ -35,11 +40,6 @@ function App() {
         }
     );
     useEffect(() => {
-        if (containerRef.current) {
-            containerRef.current.onkeydown = () => {
-                console.log("asd");
-            };
-        }
         search(query, categories);
     }, [query, categories]);
 
@@ -53,8 +53,6 @@ function App() {
     }
 
     async function refreshAndHide() {
-        setSelectedIndex(0);
-        toolbarChange(initialQuery, initialCategories);
         await backend.hidePrimaryWindow();
     }
 
@@ -101,8 +99,7 @@ function App() {
     async function activate(index: number) {
         if (index >= 0 && index < result.items.length) {
             const oldItem = result.items[index];
-            const newItem = await backend.reuseCopyItem(oldItem.id);
-            applyNewActiveItem(newItem); // TODO
+            await backend.reuseCopyItem(oldItem.id);
         }
     }
     async function applyNewActiveItem(newItem: CopyItem) {
