@@ -12,7 +12,7 @@ use ccv::utils::window::{close_window, show_window};
 use ccv_contract::error::log_error;
 use tauri::{
     async_runtime, generate_context, generate_handler, Builder, Manager,
-    WindowEvent::CloseRequested,
+    WindowEvent::{CloseRequested, Focused},
 };
 
 fn main() {
@@ -80,8 +80,23 @@ fn main() {
         .system_tray(tray::get_menu())
         .on_window_event(|event| match event.event() {
             CloseRequested { api, .. } => {
-                if let Ok(_) = log_error(event.window().hide(), "Unable to hide primary window") {
-                    api.prevent_close();
+                match event.window().hide() {
+                    Ok(_) => {
+                        api.prevent_close();
+                    },
+                    Err(err) => {
+                        log::error!("Unable to hide window. {err}");
+                    }
+                }
+            },
+            Focused(is_focused) => {
+                if !is_focused {
+                    println!("Window {} blurred", event.window().label());
+                    if let Err(err) = event.window().hide() {
+                        log::error!("Unable to hide window. {err}")
+                    }
+                } else {
+                    println!("Window {} focused", event.window().label());
                 }
             }
             _ => {}
