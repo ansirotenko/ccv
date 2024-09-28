@@ -3,14 +3,17 @@ import { AboutData } from '../api';
 import { useBackend } from './useBackend';
 import { Button } from 'primereact/button';
 import { Skeleton } from 'primereact/skeleton';
+import { BlockUI } from 'primereact/blockui';
+import { HIGHLIGHT_REPORT_BUG } from '../events';
+import { useSubscribeEvent } from '../common/useSubscribeEvent';
 
 import styles from './App.module.css';
-import { BlockUI } from 'primereact/blockui';
 
 function App() {
     const [reportBugHightlighted, setReportBugHightlighted] = useState<boolean>(false);
     const [aboutData, setSetAboutData] = useState<AboutData | undefined>();
-    const backend = useBackend(() => setReportBugHightlighted(true));
+    const backend = useBackend();
+    useSubscribeEvent<string>(HIGHLIGHT_REPORT_BUG, () => setReportBugHightlighted(true));
 
     useEffect(() => {
         backend.getAboutData().then((data) => {

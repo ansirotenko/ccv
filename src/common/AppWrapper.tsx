@@ -1,7 +1,6 @@
 import { ComponentProps, useContext, useEffect, useRef, useState } from 'react';
-import { EventPayload, Settings, Theme } from '../api';
+import { Settings, Theme } from '../api';
 import { PrimeReactContext } from 'primereact/api';
-import { listen } from '@tauri-apps/api/event';
 import { SETTINGS_UPDATED } from '../events';
 import SettingsContext from './SettingsContext';
 import { invoke } from '@tauri-apps/api/tauri';
@@ -10,6 +9,7 @@ import { Message } from 'primereact/message';
 
 import 'primeicons/primeicons.css';
 import styles from './AppWrapper.module.css';
+import { useSubscribeEvent } from './useSubscribeEvent';
 
 async function getSettings() {
     return await invoke<Settings>('get_settings');
@@ -23,6 +23,20 @@ function AppWrapper({ children }: ComponentProps<'div'>) {
     const [oldTheme, setOldTheme] = useState<Theme>('Light');
     const timeout = useRef<ReturnType<typeof setTimeout>>();
     const { changeTheme } = useContext(PrimeReactContext);
+    useSubscribeEvent<Settings>(SETTINGS_UPDATED, (newSettings) => setSettings(newSettings));
+
+    useEffect(() => {
+        loadSettingsAttempt();
+    }, []);
+
+    useEffect(() => {
+        if (settings) {
+            if (oldTheme !== settings.theme) {
+                changeTheme!(oldTheme, settings.theme, 'theme-link', () => {});
+                setOldTheme(settings.theme);
+            }
+        }
+    }, [settings]);
 
     function loadSettingsAttempt() {
         timeout.current = setTimeout(async () => {
@@ -42,31 +56,6 @@ function AppWrapper({ children }: ComponentProps<'div'>) {
             }
         }, 100);
     }
-
-    useEffect(() => {
-        loadSettingsAttempt();
-
-        async function subscribe() {
-            const unlistenSettings = await listen<EventPayload<Settings>>(SETTINGS_UPDATED, (event) => {
-                setSettings(event.payload.data);
-            });
-            return unlistenSettings;
-        }
-
-        const promise = subscribe();
-        return () => {
-            promise.then((c) => c());
-        };
-    }, []);
-
-    useEffect(() => {
-        if (settings) {
-            if (oldTheme !== settings.theme) {
-                changeTheme!(oldTheme, settings.theme, 'theme-link', () => {});
-                setOldTheme(settings.theme);
-            }
-        }
-    }, [settings]);
 
     if (hasError) {
         return (

@@ -1,5 +1,5 @@
+use super::activate_primary_window;
 use crate::primary;
-use crate::utils::window::show_window;
 use ccv_contract::app_error;
 use ccv_contract::models::Settings;
 use ccv_contract::{error::AppError, models::Shortcut};
@@ -18,9 +18,7 @@ pub fn main_loop_hotkey_change(
     let initial_accelerator = parse_shortcut(&old_settings.all_shortcuts.open_ccv);
     global_shortcut_manager
         .register(initial_accelerator.as_str(), move || {
-            if let Err(err) = show_window(&primary_window) {
-                log::error!("Unable to show primary window by initial hotkey. {err}");
-            }
+            activate_primary_window(&primary_window);
         })
         .map_err(|err| app_error!("{err}"))?;
 
@@ -36,9 +34,7 @@ pub fn main_loop_hotkey_change(
                 let new_accelerator = parse_shortcut(&new_settings.all_shortcuts.open_ccv);
                 global_shortcut_manager
                     .register(new_accelerator.as_str(), move || {
-                        if let Err(err) = show_window(&primary_window) {
-                            log::error!("Unable to show primary window by new hotkey. {err}");
-                        }
+                        activate_primary_window(&primary_window);
                     })
                     .map_err(|err| app_error!("{err}"))?;
 

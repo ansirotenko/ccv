@@ -2,15 +2,18 @@ import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { ComponentProps, useEffect, useRef, useState } from 'react';
 import { useDebouncedCallback } from '../../common/useDebouncedCallback';
-import { CopyCategory } from '../../api';
+import { CopyCategory, MainShortcutPressedPayload } from '../../api';
 import { Checkbox } from 'primereact/checkbox';
+import { useSubscribeEvent } from '../../common/useSubscribeEvent';
+import { MAIN_SHORTCUT_PRESSED_EVENT } from '../../events';
+import { getCategoriesText, toCategoriesArray, toCategoriesNumber } from './categoryHelper';
 import bugImage from '../../assets/bug.png';
 
 import styles from './Toolbar.module.css';
 
 interface ToolbarProps extends Omit<ComponentProps<'div'>, 'onChange'> {
-    initialQuery: string | null;
-    initialCategories: CopyCategory[];
+    query: string | null;
+    categories: CopyCategory[];
     possibleCategories: CopyCategory[];
     onChange?: (query: string | null, categories: CopyCategory[]) => void;
     onSettings?: () => void;
@@ -18,59 +21,35 @@ interface ToolbarProps extends Omit<ComponentProps<'div'>, 'onChange'> {
     onClose?: () => void;
 }
 
-function getCategoriesText(categoriesNumber: number, possibleCategories: CopyCategory[]) {
-    if (categoriesNumber === (1 << possibleCategories.length) - 1) {
-        return 'All';
-    }
-    if (categoriesNumber == 0) {
-        return 'None';
-    }
-
-    return toCategoriesArray(categoriesNumber, possibleCategories)
-        .map((c) => c.charAt(0))
-        .sort((a, b) => a.localeCompare(b))
-        .join(',');
-}
-
-function toCategoriesNumber(initialCategories: CopyCategory[], possibleCategories: CopyCategory[]) {
-    let categories = 0;
-    for (let i = 0; i < possibleCategories.length; i++) {
-        if (initialCategories.indexOf(possibleCategories[i]) !== -1) {
-            categories = categories | (1 << i);
-        }
-    }
-    return categories;
-}
-
-function toCategoriesArray(categoriesNumber: number, possibleCategories: CopyCategory[]) {
-    let selectedCategories: CopyCategory[] = [];
-    let index = 0;
-    while (categoriesNumber !== 0) {
-        if (categoriesNumber % 2 === 1) {
-            selectedCategories.push(possibleCategories[index]);
-        }
-        index++;
-        categoriesNumber = categoriesNumber >> 1;
-    }
-
-    return selectedCategories;
-}
-
 export function Toolbar({
     onChange,
     onSettings,
     onReportIssue,
     onClose,
-    initialQuery,
-    initialCategories,
+    query,
+    categories,
     possibleCategories,
 }: ToolbarProps) {
-    const [inputValue, setInputValue] = useState<string | undefined>(initialQuery || '');
-    const [categoriesNumber, setCategoriesNumber] = useState<number>(toCategoriesNumber(initialCategories, possibleCategories));
-    const [categoriesText, setCategoriesText] = useState<string>(getCategoriesText(categoriesNumber, possibleCategories));
     const [isFilterVisible, setIsFilterVisible] = useState<boolean>(false);
     const filterPopupRef = useRef<HTMLDivElement>(null);
     const filterButtonRef = useRef<Button>(null);
+
+    const [counter, setCounter] = useState<number>(0);
+    const [inputValue, setInputValue] = useState<string>(query || '');
+    const categoriesNumber = toCategoriesNumber(categories, possibleCategories);
+    const categoriesText = getCategoriesText(categoriesNumber, possibleCategories);
+
+    useSubscribeEvent<MainShortcutPressedPayload>(MAIN_SHORTCUT_PRESSED_EVENT, (mainShortcutPressedPayload) => {
+        if (mainShortcutPressedPayload.changedFromHiddenToVisile) {
+            setCounter(c => c + 1);
+        }
+    });
+
+    useEffect(() => {
+        setInputValue(query || '');
+    }, [
+        query
+    ])
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -107,8 +86,10 @@ export function Toolbar({
             <span className={`p-inputgroup ${styles.searchInputGroup}`}>
                 <InputText
                     className={`${styles.searchInput}`}
+                    data-counter={counter}
                     placeholder="Search..."
                     value={inputValue}
+                    ref={input => input && input.focus()}
                     onChange={(e) => {
                         setInputValue(e.target.value);
                         onInputValueChange(e.target.value);
@@ -130,8 +111,6 @@ export function Toolbar({
                     className={styles.filterItem}
                     onClick={() => {
                         const newCategoriesNumber = (1 << possibleCategories.length) - 1;
-                        setCategoriesNumber(newCategoriesNumber);
-                        setCategoriesText(getCategoriesText(newCategoriesNumber, possibleCategories));
                         somethingChanged(inputValue, newCategoriesNumber);
                     }}
                 >
@@ -150,8 +129,6 @@ export function Toolbar({
                                 const newCategoriesNumber = hasCategory
                                     ? categoriesNumber | (1 << index)
                                     : categoriesNumber & (((1 << possibleCategories.length) - 1) ^ (1 << index));
-                                setCategoriesNumber(newCategoriesNumber);
-                                setCategoriesText(getCategoriesText(newCategoriesNumber, possibleCategories));
                                 somethingChanged(inputValue, newCategoriesNumber);
                             }}
                         >

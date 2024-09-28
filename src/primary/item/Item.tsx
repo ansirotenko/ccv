@@ -14,7 +14,7 @@ interface ItemProps extends Omit<ComponentProps<'div'>, 'onSelect'> {
     selectedIndex: number;
     newlyActivedId: string | null;
     onSelect: (index: number) => void;
-    onActivate: (item: CopyItem) => void;
+    onActivate: (index: number) => void;
 }
 
 export function Item({ item, index, selectedIndex, newlyActivedId, onSelect, onActivate }: ItemProps) {
@@ -90,7 +90,7 @@ export function Item({ item, index, selectedIndex, newlyActivedId, onSelect, onA
             }}
             onDoubleClick={() => {
                 if (onActivate) {
-                    onActivate(item);
+                    onActivate(index);
                 }
             }}
         >

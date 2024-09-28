@@ -118,3 +118,9 @@ pub struct EventPayload<T> {
     #[serde(rename = "data")]
     pub data: T,
 }
+
+#[derive(Clone, Serialize, Debug)]
+pub struct MainShortcutPressedPayload {
+    #[serde(rename = "changedFromHiddenToVisile")]
+    pub changed_from_hidden_to_visile: bool 
+}
