@@ -46,4 +46,18 @@ fn activate_primary_window(primary_window_option: &Option<Window>) -> () {
             }
         }
     }
+
+    // for some reason on linux app doesnt show form the first attempt
+    #[cfg(target_os = "linux")] {
+        let copy = primary_window_option.clone();
+
+        std::thread::spawn(move || {
+            std::thread::sleep(std::time::Duration::from_millis(50));
+            if let Some(primary_window) = copy {
+                if let Err(err) = show_window(&Some(primary_window.clone())) {
+                    log::error!("Unable to show primary window by shortcut. {err}");
+                }
+            }
+        });
+    }
 }
