@@ -9,7 +9,7 @@ import { error as logError } from 'tauri-plugin-log-api';
 import { SearchContext, escapeSearch } from './SearchContext';
 import { ITEMS_CHANGED } from '../events';
 import { useSubscribeEvent } from '../common/useSubscribeEvent';
-import { Container } from './container/container';
+import { Container } from './container/Container';
 
 const initialQuery = '';
 const possibleCategories: CopyCategory[] = ['Files', 'Html', 'Image', 'Rtf', 'Text'];
