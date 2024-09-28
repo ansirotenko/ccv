@@ -1,5 +1,5 @@
 import { ComponentProps, useEffect, useRef } from 'react';
-import { CopyItem, AppError, SearchResult } from '../../api';
+import { AppError, SearchResult } from '../../api';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { Message } from 'primereact/message';
 import { Item } from '../item/Item';
@@ -13,7 +13,7 @@ interface ItemsListProps extends Omit<ComponentProps<'div'>, 'onSelect'> {
     selectedIndex: number;
     newlyActivedId: string | null;
     onSelect: (index: number) => void;
-    onActivate: (item: CopyItem) => void;
+    onActivate: (index: number) => void;
     onLoadMore: () => void;
 }
 

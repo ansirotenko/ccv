@@ -65,3 +65,7 @@ export interface AboutData {
 export interface EventPayload<T> {
     data: T;
 }
+
+export interface MainShortcutPressedPayload {
+    changedFromHiddenToVisile: boolean;
+}

@@ -1,4 +1,4 @@
-import { useEffect, useState, KeyboardEvent, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Toolbar } from './toolbar/Toolbar';
 import { ItemsList } from './itemsList/ItemsList';
 import { CopyItem, CopyCategory, AppError, SearchResult } from '../api';
@@ -7,10 +7,11 @@ import { useDebouncedCallback } from '../common/useDebouncedCallback';
 import { useBackend } from './useBackend';
 import { error as logError } from 'tauri-plugin-log-api';
 import { SearchContext, escapeSearch } from './SearchContext';
+import { ITEMS_CHANGED } from '../events';
+import { useSubscribeEvent } from '../common/useSubscribeEvent';
+import { Container } from './container/container';
 
-import styles from './App.module.css';
-
-const initialQuery = null;
+const initialQuery = '';
 const possibleCategories: CopyCategory[] = ['Files', 'Html', 'Image', 'Rtf', 'Text'];
 const initialCategories: CopyCategory[] = possibleCategories;
 const pageSize = 100;
@@ -25,28 +26,36 @@ function App() {
     const [query, setQuery] = useState<string | null>(initialQuery);
     const [categories, setCategories] = useState<CopyCategory[]>(initialCategories);
     const containerRef = useRef<HTMLDivElement>(null);
+    
+    useSubscribeEvent<string>(ITEMS_CHANGED, () => search(query, categories));
 
     const backend = useBackend(
         (newItem) => {
             applyNewActiveItem(newItem);
-        },
-        () => {
-            search(query, categories);
-        },
+        }
     );
     useEffect(() => {
-        containerRef.current?.focus();
-        onToolbarChange(initialQuery, initialCategories);
-    }, []);
+        if (containerRef.current) {
+            containerRef.current.onkeydown = () => {
+                console.log("asd");
+            };
+        }
+        search(query, categories);
+    }, [query, categories]);
 
     const delayedResetNewlyActive = useDebouncedCallback(() => {
         setNewlyActivedId(null);
     }, 250);
 
-    async function onToolbarChange(newQuery: string | null, newCategories: CopyCategory[]) {
+    function toolbarChange(newQuery: string | null, newCategories: CopyCategory[]) {
         setQuery(newQuery);
         setCategories(newCategories);
-        await search(newQuery, newCategories);
+    }
+
+    async function refreshAndHide() {
+        setSelectedIndex(0);
+        toolbarChange(initialQuery, initialCategories);
+        await backend.hidePrimaryWindow();
     }
 
     async function search(searchQuery: string | null, searchCategories: CopyCategory[]) {
@@ -85,11 +94,16 @@ function App() {
     }
 
     function select(index: number) {
-        setSelectedIndex(index);
+        if (index >= 0 && index < result.items.length) {
+            setSelectedIndex(index);
+        }
     }
-    async function activate(item: CopyItem) {
-        const newItem = await backend.reuseCopyItem(item.id);
-        applyNewActiveItem(newItem);
+    async function activate(index: number) {
+        if (index >= 0 && index < result.items.length) {
+            const oldItem = result.items[index];
+            const newItem = await backend.reuseCopyItem(oldItem.id);
+            applyNewActiveItem(newItem); // TODO
+        }
     }
     async function applyNewActiveItem(newItem: CopyItem) {
         if (categories.indexOf(newItem.value.category) === -1) {
@@ -118,39 +132,18 @@ function App() {
         setNewlyActivedId(newItem.id);
         delayedResetNewlyActive();
     }
-    const keyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-        if (event.key === 'Enter') {
-            activate(result.items[selectedIndex]);
-            return;
-        }
-        if (event.key === 'ArrowUp') {
-            if (selectedIndex > 0) {
-                setSelectedIndex(selectedIndex - 1);
-            }
-            return;
-        }
-        if (event.key === 'ArrowDown') {
-            if (selectedIndex < result.items.length - 1) {
-                setSelectedIndex(selectedIndex + 1);
-            }
-            return;
-        }
-        if (event.ctrlKey && event.key >= '1' && event.key <= '9') {
-            const index = parseInt(event.key) - 1;
-            if (index < result.items.length) {
-                activate(result.items[index]);
-            }
-            return;
-        }
-    };
     
     return (
-        <div className={styles.container} onKeyDown={keyDown} tabIndex={0} ref={containerRef}>
+        <Container 
+            onHide={refreshAndHide}
+            selectedIndex={selectedIndex}
+            onSelect={select}
+            onActivate={activate}>
             <Toolbar
-                initialQuery={initialQuery}
-                initialCategories={initialCategories}
+                query={query}
+                categories={categories}
                 possibleCategories={possibleCategories}
-                onChange={onToolbarChange}
+                onChange={toolbarChange}
                 onClose={backend.hidePrimaryWindow}
                 onSettings={backend.showSettingsWindow}
                 onReportIssue={backend.showAboutWindow}
@@ -168,7 +161,7 @@ function App() {
                 />
                 <ItemPreview item={result.items[selectedIndex]} />
             </SearchContext.Provider>
-        </div>
+        </Container>
     );
 }
 

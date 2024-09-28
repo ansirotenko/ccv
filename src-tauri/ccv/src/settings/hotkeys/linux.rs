@@ -1,5 +1,5 @@
+use super::activate_primary_window;
 use crate::primary;
-use crate::utils::window::show_window;
 use ccv_contract::models::Settings;
 use ccv_contract::{app_error, error::AppError, models::Shortcut};
 use global_hotkey::{
@@ -43,9 +43,7 @@ pub fn main_loop_hotkey_change(
         }
 
         if let Ok(_) = GlobalHotKeyEvent::receiver().try_recv() {
-            if let Err(err) = show_window(&primary_window) {
-                log::error!("Unable to show primary window. {err}");
-            }
+            activate_primary_window(&primary_window);
         }
 
         thread::sleep(Duration::from_millis(50)) // TODO maybe async

@@ -2,8 +2,8 @@ import { useEffect, useRef } from 'react';
 import { onSomethingUpdate, startListening } from 'tauri-plugin-clipboard-api';
 import { invoke } from '@tauri-apps/api/tauri';
 import { CopyCategory, CopyItem, EventPayload, SearchResult } from '../api';
-import { emit, listen as subscribe } from '@tauri-apps/api/event';
-import { ITEMS_CHANGED, HIGHLIGHT_REPORT_BUG } from '../events';
+import { emit } from '@tauri-apps/api/event';
+import { HIGHLIGHT_REPORT_BUG } from '../events';
 
 type CopyItemRaw = Omit<CopyItem, 'lastReuse' | 'created'> & {
     lastReuse: string;
@@ -12,8 +12,7 @@ type CopyItemRaw = Omit<CopyItem, 'lastReuse' | 'created'> & {
 type SearchResultRaw = Omit<SearchResult, 'items'> & {
     items: CopyItemRaw[];
 };
-type ActivatedFunc = (patch: CopyItem) => void;
-type ItemsChangedHandler = () => void;
+type ClipboardChangedHandler = (patch: CopyItem) => void;
 type UnlistendClipboardFunc = () => Promise<void>;
 
 async function searchCopyItems(query: string | null, page: number, pageSize: number, categories: CopyCategory[]) {
@@ -60,12 +59,11 @@ async function showAboutWindow() {
     await emit(HIGHLIGHT_REPORT_BUG, { data: 'Highlight bug report' } as EventPayload<string>);
 }
 
-export function useBackend(onClipboardChange: ActivatedFunc, onItemsChanged: ItemsChangedHandler) {
-    const onChangeRef = useRef<ActivatedFunc>();
-    onChangeRef.current = onClipboardChange;
-
-    const itemsChangedHandler = useRef<ItemsChangedHandler>();
-    itemsChangedHandler.current = onItemsChanged;
+export function useBackend(
+    onClipboardChanged: ClipboardChangedHandler
+) {
+    const clipboardChangeHandler = useRef<ClipboardChangedHandler>();
+    clipboardChangeHandler.current = onClipboardChanged;
 
     const unlistenSomethingUpdatedRef = useRef<UnlistendClipboardFunc>();
 
@@ -79,9 +77,9 @@ export function useBackend(onClipboardChange: ActivatedFunc, onItemsChanged: Ite
     async function startListenClipboard() {
         const unlistenClipboard = await startListening();
         const unlistenSomethingUpdated = await onSomethingUpdate(async () => {
-            if (onChangeRef.current) {
+            if (clipboardChangeHandler.current) {
                 const newItem = await insertCopyItem();
-                onChangeRef.current(newItem);
+                clipboardChangeHandler.current(newItem);
             }
         });
 
@@ -99,24 +97,9 @@ export function useBackend(onClipboardChange: ActivatedFunc, onItemsChanged: Ite
     }
 
     useEffect(() => {
-        async function listen() {
-            const unsubscribeItemsChanged = await subscribe<EventPayload<string>>(ITEMS_CHANGED, () => {
-                if (itemsChangedHandler.current) {
-                    itemsChangedHandler.current();
-                }
-            });
-
-            await startListenClipboard();
-
-            return async () => {
-                await stopListenClipboard();
-                unsubscribeItemsChanged();
-            };
-        }
-
-        const promise = listen();
+        startListenClipboard();
         return () => {
-            promise.then((c) => c());
+            stopListenClipboard();
         };
     }, []);
 

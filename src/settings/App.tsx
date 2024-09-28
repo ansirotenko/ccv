@@ -10,6 +10,7 @@ import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { error as logError } from 'tauri-plugin-log-api';
 import { AppError, Settings, Shortcut } from '../api';
 import SettingsContext from '../common/SettingsContext';
+import { getShortcutDisplay, getShortcutFromEvent } from '../common/keyboard';
 
 import styles from './App.module.css';
 
@@ -47,15 +48,7 @@ function App() {
     };
 
     const keyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-        const newShortcut: Shortcut = {
-            altKey: event.altKey,
-            ctrlKey: event.ctrlKey,
-            shiftKey: event.shiftKey,
-            metaKey: event.metaKey,
-            code: !event.key || event.key == 'Control' || event.key == 'Alt' || event.key == 'Shift'
-                ? undefined
-                : event.code 
-        }
+        const newShortcut = getShortcutFromEvent(event);
         onShortcutChanged(newShortcut);
         event.preventDefault();
     };
@@ -71,7 +64,7 @@ function App() {
             header: 'Press new shortcut',
             message: (
                 <div className={styles.shortcutEdit} onKeyDown={keyDown} tabIndex={0} ref={shortcutDialog}>
-                    <label>Old combination:</label> <span>{backend.getShortcutDisplay(settings?.allShortcuts.openCcv)}</span>
+                    <label>Old combination:</label> <span>{getShortcutDisplay(settings?.allShortcuts.openCcv)}</span>
                     <label>New combination:</label> <InputText ref={shortcutValue} disabled={true}/>
                 </div>
             ),
@@ -94,7 +87,7 @@ function App() {
             (document.getElementsByClassName('acceptButton')[0] as HTMLButtonElement).disabled = true;
         } else {
             if (shortcutValue.current) {
-                shortcutValue.current.value = backend.getShortcutDisplay(newShortcut);
+                shortcutValue.current.value = getShortcutDisplay(newShortcut);
             }
             (document.getElementsByClassName('acceptButton')[0] as HTMLButtonElement).disabled = false;
         }
@@ -191,7 +184,7 @@ function App() {
                 <Fieldset legend="Shortcuts">
                     <div className="p-inputgroup">
                         <span className="p-inputgroup-addon">Open ccv</span>
-                        <InputText value={backend.getShortcutDisplay(settings?.allShortcuts.openCcv)} disabled={true} />
+                        <InputText value={getShortcutDisplay(settings?.allShortcuts.openCcv)} disabled={true} />
                         <Button
                             className={styles.settingsButton}
                             onClick={confirmShortcuts}
