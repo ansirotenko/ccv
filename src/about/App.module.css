@@ -75,9 +75,10 @@
     a {
         color: var(--text-color);
         &:hover {
-            color: var(--text-color-secondary)
+            color: var(--text-color-secondary);
         }
-        &:active, &:visited {
+        &:active,
+        &:visited {
             color: var(--text-color);
         }
     }

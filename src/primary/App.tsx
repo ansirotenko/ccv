@@ -26,14 +26,14 @@ function App() {
     const [query, setQuery] = useState<string | null>(initialQuery);
     const [categories, setCategories] = useState<CopyCategory[]>(initialCategories);
     const containerRef = useRef<HTMLDivElement>(null);
-    
+
     useSubscribeEvent<string>(ITEMS_CHANGED, () => search(query, categories));
     useSubscribeEvent<string>(WINDOW_HIDDEN_EVENT, () => {
         // to make refresh in invisible mode
         setSelectedIndex(0);
         toolbarChanged(initialQuery, initialCategories);
     });
-    const reuseItemWithoutLoop = useListenClipboard(newItem => applyNewActiveItem(newItem));
+    const reuseItemWithoutLoop = useListenClipboard((newItem) => applyNewActiveItem(newItem));
 
     useEffect(() => {
         search(query, categories);
@@ -130,13 +130,9 @@ function App() {
         await showAboutWindow();
         await emitEvent(HIGHLIGHT_REPORT_BUG, 'Highlight bug report');
     }
-    
+
     return (
-        <Container 
-            onHide={refreshAndHide}
-            selectedIndex={selectedIndex}
-            onSelect={select}
-            onActivate={activate}>
+        <Container onHide={refreshAndHide} selectedIndex={selectedIndex} onSelect={select} onActivate={activate}>
             <Toolbar
                 query={query}
                 categories={categories}
@@ -146,7 +142,7 @@ function App() {
                 onSettings={showSettingsWindow}
                 onReportIssue={reportIssue}
             />
-            <SearchContext.Provider value={escapeSearch(query)} >
+            <SearchContext.Provider value={escapeSearch(query)}>
                 <ItemsList
                     loading={loading}
                     error={error}

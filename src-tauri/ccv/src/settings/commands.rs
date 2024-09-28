@@ -45,21 +45,25 @@ pub fn set_settings(
 
 fn notify_settings_change(
     app_handle: AppHandle,
-    settings_change: &Option<Sender<Settings>>, 
-    new_settings: Settings
+    settings_change: &Option<Sender<Settings>>,
+    new_settings: Settings,
 ) -> Result<(), AppError> {
     if let Some(settings_change) = settings_change.as_ref() {
-        settings_change.send(new_settings.clone()).map_err(|err| app_error!("{err}"))?;
+        settings_change
+            .send(new_settings.clone())
+            .map_err(|err| app_error!("{err}"))?;
     } else {
         return Err(app_error!("Uninitialized settings_change"));
     }
 
-    app_handle.emit_all(
-        settings::SETTINGS_UPDATED_EVENT,
-        EventPayload {
-            data: new_settings.clone(),
-        },
-    ).map_err(|err| app_error!("{err}"))?;
+    app_handle
+        .emit_all(
+            settings::SETTINGS_UPDATED_EVENT,
+            EventPayload {
+                data: new_settings.clone(),
+            },
+        )
+        .map_err(|err| app_error!("{err}"))?;
 
     Ok(())
 }

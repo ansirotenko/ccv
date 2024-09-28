@@ -40,11 +40,21 @@ export function ItemPreview({ item }: ItemPreviewProps) {
         }
 
         if (item.value.html) {
-            return <div className={styles.htmlContent} dangerouslySetInnerHTML={{ __html: htmlToHighlightedHtml(DOMPurify.sanitize(item.value.html), search) }} />;
+            return (
+                <div
+                    className={styles.htmlContent}
+                    dangerouslySetInnerHTML={{ __html: htmlToHighlightedHtml(DOMPurify.sanitize(item.value.html), search) }}
+                />
+            );
         }
 
         if (item.value.text) {
-            return <div className={styles.textContent} dangerouslySetInnerHTML={{ __html: textToHighlightedHtml(item.value.text, search) }}></div>;
+            return (
+                <div
+                    className={styles.textContent}
+                    dangerouslySetInnerHTML={{ __html: textToHighlightedHtml(item.value.text, search) }}
+                ></div>
+            );
         }
 
         return <Message severity="error" className={styles.failed} text={`Copy item has empty content or format is unknown`} />;

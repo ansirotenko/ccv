@@ -6,9 +6,7 @@ import { insertCopyItem, reuseCopyItem } from '../common/commands';
 type ClipboardChangedHandler = (patch: CopyItem) => void;
 type UnlistendClipboardFunc = () => Promise<void>;
 
-export function useListenClipboard(
-    onClipboardChanged: ClipboardChangedHandler
-) {
+export function useListenClipboard(onClipboardChanged: ClipboardChangedHandler) {
     const clipboardChangeHandler = useRef<ClipboardChangedHandler>();
     clipboardChangeHandler.current = onClipboardChanged;
 
@@ -43,7 +41,7 @@ export function useListenClipboard(
         };
     }, []);
 
-    return async function(itemId: string) {
+    return async function (itemId: string) {
         await stopListenClipboard();
         const newItem = await reuseCopyItem(itemId);
         await startListenClipboard();
@@ -53,5 +51,5 @@ export function useListenClipboard(
         }
 
         return newItem;
-    }
+    };
 }

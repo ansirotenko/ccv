@@ -1,6 +1,6 @@
 import { createContext } from 'react';
 
-const highlightClass = "highlight";
+const highlightClass = 'highlight';
 
 export const SearchContext = createContext<string | null>(null);
 
@@ -16,8 +16,8 @@ export function htmlToHighlightedHtml(html: string, search: string | null): stri
     if (!search) {
         return html;
     }
-    return html.replace(/>([^<]+)</g, function(_, p1) {
-        return `>${textToHighlightedHtml(makeUnsafeText(p1), search)}<`
+    return html.replace(/>([^<]+)</g, function (_, p1) {
+        return `>${textToHighlightedHtml(makeUnsafeText(p1), search)}<`;
     });
 }
 
@@ -29,7 +29,7 @@ export function textToHighlightedHtml(text: string, search: string | null): stri
 
     const ret: string[] = [];
     let start = 0;
-    while(true) {
+    while (true) {
         const next = comparableText.indexOf(search, start);
         if (next === -1) {
             ret.push(makeSafeHtml(text.substring(start, text.length)));
@@ -45,23 +45,18 @@ export function textToHighlightedHtml(text: string, search: string | null): stri
         }
     }
 
-    return ret.join("");
+    return ret.join('');
 }
 
 function makeSafeHtml(text: string): string {
-    return text
-         .replace(/&/g, "&amp;")
-         .replace(/</g, "&lt;")
-         .replace(/>/g, "&gt;")
-         .replace(/"/g, "&quot;")
-         .replace(/'/g, "&#039;");
+    return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 }
 
 function makeUnsafeText(html: string): string {
     return html
-         .replace(/&amp;/g, "&")
-         .replace(/&lt;/g, "<")
-         .replace(/&gt;/g, ">")
-         .replace(/&quot;/g, "\"")
-         .replace(/&#039;/g, "'");
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&#039;/g, "'");
 }

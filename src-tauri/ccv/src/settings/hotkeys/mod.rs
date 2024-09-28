@@ -48,7 +48,8 @@ fn activate_primary_window(primary_window_option: &Option<Window>) -> () {
     }
 
     // for some reason on linux app doesnt show form the first attempt
-    #[cfg(target_os = "linux")] {
+    #[cfg(target_os = "linux")]
+    {
         let copy = primary_window_option.clone();
 
         std::thread::spawn(move || {

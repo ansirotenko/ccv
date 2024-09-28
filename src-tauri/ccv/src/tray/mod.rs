@@ -33,14 +33,12 @@ pub fn event_handler(app_handle: &tauri::AppHandle, event: SystemTrayEvent) {
             position: _,
             size: _,
             ..
-        } => {
-        }
+        } => {}
         SystemTrayEvent::RightClick {
             position: _,
             size: _,
             ..
-        } => {
-        }
+        } => {}
         SystemTrayEvent::DoubleClick {
             position: _,
             size: _,

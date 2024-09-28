@@ -20,15 +20,7 @@ interface ToolbarProps extends Omit<ComponentProps<'div'>, 'onChange'> {
     onClose?: () => void;
 }
 
-export function Toolbar({
-    onChange,
-    onSettings,
-    onReportIssue,
-    onClose,
-    query,
-    categories,
-    possibleCategories,
-}: ToolbarProps) {
+export function Toolbar({ onChange, onSettings, onReportIssue, onClose, query, categories, possibleCategories }: ToolbarProps) {
     const [isFilterVisible, setIsFilterVisible] = useState<boolean>(false);
     const filterPopupRef = useRef<HTMLDivElement>(null);
     const filterButtonRef = useRef<Button>(null);
@@ -39,14 +31,12 @@ export function Toolbar({
     const categoriesText = getCategoriesText(categoriesNumber, possibleCategories);
 
     useSubscribeEvent<string>(WINDOW_SHOWN_EVENT, () => {
-        setCounter(c => c + 1); // to provoke rerender
+        setCounter((c) => c + 1); // to provoke rerender
     });
 
     useEffect(() => {
         setInputValue(query || '');
-    }, [
-        query
-    ])
+    }, [query]);
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -85,7 +75,7 @@ export function Toolbar({
                     data-counter={counter}
                     placeholder="Search..."
                     value={inputValue}
-                    ref={input => input && input.focus()}
+                    ref={(input) => input && input.focus()}
                     onChange={(e) => {
                         setInputValue(e.target.value);
                         onInputValueChange(e.target.value);

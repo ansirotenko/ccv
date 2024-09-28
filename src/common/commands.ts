@@ -1,4 +1,3 @@
-
 import { invoke } from '@tauri-apps/api/tauri';
 import { AboutData, CopyCategory, CopyItem, SearchResult, Settings } from './contract';
 
@@ -74,7 +73,7 @@ function toCopyItem(rawCopyItem: CopyItemRaw): CopyItem {
 }
 
 export async function reuseCopyItem(itemId: string) {
-    const rawCopyItem = await invoke<CopyItemRaw>('reuse_copy_item', { itemId: itemId })
+    const rawCopyItem = await invoke<CopyItemRaw>('reuse_copy_item', { itemId: itemId });
     return toCopyItem(rawCopyItem);
 }
 

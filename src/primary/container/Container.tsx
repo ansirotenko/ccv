@@ -13,7 +13,7 @@ interface ContainerProps extends Omit<ComponentProps<'div'>, 'onSelect'> {
     onHide: () => void;
 }
 
-export function Container({ selectedIndex, onSelect, onActivate, onHide, children}: ContainerProps) {
+export function Container({ selectedIndex, onSelect, onActivate, onHide, children }: ContainerProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const [mainShortcutOn, setMainShortcutOn] = useState<boolean>(false);
     const [mainShortcutCounter, setMainShortcutCounter] = useState<number>(0);
@@ -32,7 +32,7 @@ export function Container({ selectedIndex, onSelect, onActivate, onHide, childre
         } else {
             onSelect(selectedIndex + 1);
         }
-        setMainShortcutCounter(count => count + 1);
+        setMainShortcutCounter((count) => count + 1);
     });
 
     const keyUp = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -57,14 +57,14 @@ export function Container({ selectedIndex, onSelect, onActivate, onHide, childre
         }
         if (event.key === 'ArrowUp') {
             if (mainShortcutOn) {
-                setMainShortcutCounter(count => count + 1);
+                setMainShortcutCounter((count) => count + 1);
             }
-            onSelect(selectedIndex - 1)
+            onSelect(selectedIndex - 1);
             return;
         }
         if (event.key === 'ArrowDown') {
             if (mainShortcutOn) {
-                setMainShortcutCounter(count => count + 1);
+                setMainShortcutCounter((count) => count + 1);
             }
             onSelect(selectedIndex + 1);
             return;
@@ -74,15 +74,10 @@ export function Container({ selectedIndex, onSelect, onActivate, onHide, childre
             return;
         }
     };
-    
+
     return (
-        <div 
-            className={styles.container} 
-            onKeyDown={keyDown}
-            onKeyUp={keyUp}
-            ref={containerRef} 
-            tabIndex={0}>
-           { children }
+        <div className={styles.container} onKeyDown={keyDown} onKeyUp={keyUp} ref={containerRef} tabIndex={0}>
+            {children}
         </div>
     );
 }

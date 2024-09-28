@@ -64,7 +64,7 @@ function App() {
             message: (
                 <div className={styles.shortcutEdit} onKeyDown={keyDown} tabIndex={0} ref={shortcutDialog}>
                     <label>Old combination:</label> <span>{shortcutDisplay(settings?.allShortcuts.openCcv)}</span>
-                    <label>New combination:</label> <InputText ref={shortcutValue} disabled={true}/>
+                    <label>New combination:</label> <InputText ref={shortcutValue} disabled={true} />
                 </div>
             ),
             onShow: () => {
@@ -81,7 +81,7 @@ function App() {
         newShortcutRef.current = newShortcut;
         if (!newShortcut) {
             if (shortcutValue.current) {
-                shortcutValue.current.value = "";
+                shortcutValue.current.value = '';
             }
             (document.getElementsByClassName('acceptButton')[0] as HTMLButtonElement).disabled = true;
         } else {

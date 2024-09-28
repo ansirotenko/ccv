@@ -47,9 +47,10 @@ fn main() {
                     return Err(Box::new(err));
                 }
 
-                if let Err(err) =
-                    settings::setup::read_settings_and_register_shortcuts(app.app_handle(), &app_data_dir)
-                {
+                if let Err(err) = settings::setup::read_settings_and_register_shortcuts(
+                    app.app_handle(),
+                    &app_data_dir,
+                ) {
                     log::error!("Unable to initialize settings. {err}");
                     return Err(Box::new(err));
                 }
@@ -79,14 +80,12 @@ fn main() {
         .manage(settings::state::SettingsState::new())
         .system_tray(tray::get_menu())
         .on_window_event(|event| match event.event() {
-            CloseRequested { api, .. } => {
-                match hide_window(&Some(event.window().clone())) {
-                    Ok(_) => {
-                        api.prevent_close();
-                    },
-                    Err(err) => {
-                        log::error!("Unable to hide window. {err}");
-                    }
+            CloseRequested { api, .. } => match hide_window(&Some(event.window().clone())) {
+                Ok(_) => {
+                    api.prevent_close();
+                }
+                Err(err) => {
+                    log::error!("Unable to hide window. {err}");
                 }
             },
             Focused(is_focused) => {
@@ -94,22 +93,30 @@ fn main() {
                     match event.window().is_visible() {
                         Ok(is_visible) => {
                             if is_visible {
-                                #[cfg(not(target_os = "linux"))] {
+                                #[cfg(not(target_os = "linux"))]
+                                {
                                     if let Err(err) = hide_window(&Some(event.window().clone())) {
                                         log::error!("Unable to hide window. {err}")
                                     }
                                 }
-                                
+
                                 // for some reason in linux primary window got blurred and immideately gets focused.
-                                #[cfg(target_os = "linux")] {
+                                #[cfg(target_os = "linux")]
+                                {
                                     use ccv_contract::app_error;
                                     use ccv_contract::error::AppError;
 
                                     let async_perfomer = move || -> Result<(), AppError> {
                                         std::thread::sleep(std::time::Duration::from_millis(50));
-                                        
-                                        let still_visible = event.window().is_visible().map_err(|err| app_error!("Cannot get visible {err}"))?;
-                                        let still_focsed = event.window().is_focused().map_err(|err| app_error!("Cannot get focused {err}"))?;
+
+                                        let still_visible =
+                                            event.window().is_visible().map_err(|err| {
+                                                app_error!("Cannot get visible {err}")
+                                            })?;
+                                        let still_focsed =
+                                            event.window().is_focused().map_err(|err| {
+                                                app_error!("Cannot get focused {err}")
+                                            })?;
                                         if still_visible && !still_focsed {
                                             hide_window(&Some(event.window().clone()))?;
                                         }
@@ -120,7 +127,7 @@ fn main() {
                                     std::thread::spawn(async_perfomer);
                                 }
                             }
-                        },
+                        }
                         Err(err) => {
                             log::error!("Unable to get window visibility. {err}")
                         }

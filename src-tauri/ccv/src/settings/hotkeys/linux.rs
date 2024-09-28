@@ -4,8 +4,7 @@ use ccv_contract::models::Settings;
 use ccv_contract::{app_error, error::AppError, models::Shortcut};
 use global_hotkey::{
     hotkey::{Code, HotKey, Modifiers},
-    HotKeyState,
-    GlobalHotKeyEvent, GlobalHotKeyManager,
+    GlobalHotKeyEvent, GlobalHotKeyManager, HotKeyState,
 };
 use std::{sync::mpsc::Receiver, thread, time::Duration};
 use tauri::{AppHandle, Manager};
