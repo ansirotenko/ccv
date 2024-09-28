@@ -7,7 +7,7 @@
 
 **Why do you need it?**
 
-To address common issues such as, "We'll share a link with you, just give me a moment... Oh, I forgot where I saved it!" With this tool, you'll always have quick access to previously copied text, whether it’s prompt commands or even a favourite "text-goose".
+To address common issues such as, "I'm gonna share a link with you, just give me a moment... Oh, I forgot where I saved it!" With this tool, you'll always have quick access to previously copied text, whether it’s prompt commands or even a favourite "text-goose".
 
 It uses sqlite to store the entire clipboard history, allows you to search and reuse old items. 
 
