@@ -12,6 +12,11 @@ body {
         display: none;
     }
 
+    & [class~='p-datepicker'] {
+        caret-color: transparent;
+        user-select: none;
+    }
+
     > [id~='root'] {
         height: 100%;
     }

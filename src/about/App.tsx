@@ -124,8 +124,8 @@ function App() {
                     . It would be very helpfull if you can attach logs.
                 </div>
                 <BlockUI blocked={reportBugHightlighted}>
-                    <section className={styles.contentButtonContainer}>
-                        <Button className={styles.contentButton} onClick={hideAboutWindow}>
+                    <section className={styles.okButtonContainer}>
+                        <Button className={styles.okButton} onClick={hideAboutWindow}>
                             Ok
                         </Button>
                     </section>

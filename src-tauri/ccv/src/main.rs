@@ -90,7 +90,7 @@ fn main() {
                 }
             },
             Focused(is_focused) => {
-                if !is_focused {
+                if !is_focused && event.window().label() == primary::SCREEN {
                     match event.window().is_visible() {
                         Ok(is_visible) => {
                             if is_visible {

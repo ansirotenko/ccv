@@ -210,6 +210,7 @@ function App() {
                             showButtonBar
                             showTime
                             hourFormat="24"
+                            hideOnDateTimeSelect={true}
                         />
                         <Button
                             className={styles.settingsButton}
@@ -234,6 +235,11 @@ function App() {
                         </Button>
                     </div>
                 </Fieldset>
+                <section className={styles.okButtonContainer}>
+                    <Button className={styles.okButton} onClick={hideSettingsWindow}>
+                        Ok
+                    </Button>
+                </section>
             </div>
         </div>
     );

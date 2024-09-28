@@ -45,7 +45,7 @@
     height: calc(100% - 22px);
 
     > div {
-        padding: 8px 10px;
+        padding: 8px 14px;
 
         > section {
             > strong {
@@ -83,14 +83,18 @@
     }
 }
 
-.contentButtonContainer {
+.reportBug {
+    margin: 0 -4px;
+}
+
+.okButtonContainer {
     display: flex;
     justify-content: center;
     align-items: end;
     height: 100%;
 }
 
-.contentButton {
+.okButton {
     border-color: var(--surface-border);
     font-size: 16px;
     min-width: 21px;
@@ -99,9 +103,4 @@
     justify-content: center;
     padding: 4px;
     border-radius: 2px;
-}
-
-.reportBug {
-    padding: 8px 4px;
-    margin: 0 -4px;
 }
