@@ -94,8 +94,30 @@ fn main() {
                     match event.window().is_visible() {
                         Ok(is_visible) => {
                             if is_visible {
-                                if let Err(err) = hide_window(&Some(event.window().clone())) {
-                                    log::error!("Unable to hide window. {err}")
+                                #[cfg(not(target_os = "linux"))] {
+                                    if let Err(err) = hide_window(&Some(event.window().clone())) {
+                                        log::error!("Unable to hide window. {err}")
+                                    }
+                                }
+                                
+                                // for some reason in linux primary window got blurred and immideately gets focused.
+                                #[cfg(target_os = "linux")] {
+                                    use ccv_contract::app_error;
+                                    use ccv_contract::error::AppError;
+
+                                    let async_perfomer = move || -> Result<(), AppError> {
+                                        std::thread::sleep(std::time::Duration::from_millis(50));
+                                        
+                                        let still_visible = event.window().is_visible().map_err(|err| app_error!("Cannot get visible {err}"))?;
+                                        let still_focsed = event.window().is_focused().map_err(|err| app_error!("Cannot get focused {err}"))?;
+                                        if still_visible && !still_focsed {
+                                            hide_window(&Some(event.window().clone()))?;
+                                        }
+
+                                        Ok(())
+                                    };
+
+                                    std::thread::spawn(async_perfomer);
                                 }
                             }
                         },
