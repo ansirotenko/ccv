@@ -2,10 +2,10 @@ import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { ComponentProps, useEffect, useRef, useState } from 'react';
 import { useDebouncedCallback } from '../../common/useDebouncedCallback';
-import { CopyCategory, MainShortcutPressedPayload } from '../../api';
+import { CopyCategory } from '../../api';
 import { Checkbox } from 'primereact/checkbox';
 import { useSubscribeEvent } from '../../common/useSubscribeEvent';
-import { MAIN_SHORTCUT_PRESSED_EVENT } from '../../events';
+import { WINDOW_SHOWN_EVENT } from '../../events';
 import { getCategoriesText, toCategoriesArray, toCategoriesNumber } from './categoryHelper';
 import bugImage from '../../assets/bug.png';
 
@@ -39,10 +39,8 @@ export function Toolbar({
     const categoriesNumber = toCategoriesNumber(categories, possibleCategories);
     const categoriesText = getCategoriesText(categoriesNumber, possibleCategories);
 
-    useSubscribeEvent<MainShortcutPressedPayload>(MAIN_SHORTCUT_PRESSED_EVENT, (mainShortcutPressedPayload) => {
-        if (mainShortcutPressedPayload.changedFromHiddenToVisile) {
-            setCounter(c => c + 1);
-        }
+    useSubscribeEvent<string>(WINDOW_SHOWN_EVENT, () => {
+        setCounter(c => c + 1); // to provoke rerender
     });
 
     useEffect(() => {

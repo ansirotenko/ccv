@@ -56,7 +56,7 @@ async function showSettingsWindow() {
 
 async function showAboutWindow() {
     await invoke<void>('show_about_window');
-    await emit(HIGHLIGHT_REPORT_BUG, { data: 'Highlight bug report' } as EventPayload<string>);
+    await emit(HIGHLIGHT_REPORT_BUG, { data: 'Highlight bug report' } as EventPayload<string>); // TODO useRaiseEvent
 }
 
 export function useBackend(
@@ -71,7 +71,13 @@ export function useBackend(
         await stopListenClipboard();
         const rawCopyItem = await invoke<CopyItemRaw>('reuse_copy_item', { itemId: itemId });
         await startListenClipboard();
-        return toCopyItem(rawCopyItem);
+        const newItem = toCopyItem(rawCopyItem);
+
+        if (clipboardChangeHandler.current) {
+            clipboardChangeHandler.current(newItem);
+        }
+
+        return newItem;
     }
 
     async function startListenClipboard() {

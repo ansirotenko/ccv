@@ -8,7 +8,7 @@ use ccv::primary;
 use ccv::settings;
 use ccv::splashscreen;
 use ccv::tray;
-use ccv::utils::window::{close_window, show_window};
+use ccv::utils::window::{close_window, hide_window, show_window};
 use ccv_contract::error::log_error;
 use tauri::{
     async_runtime, generate_context, generate_handler, Builder, Manager,
@@ -80,7 +80,7 @@ fn main() {
         .system_tray(tray::get_menu())
         .on_window_event(|event| match event.event() {
             CloseRequested { api, .. } => {
-                match event.window().hide() {
+                match hide_window(&Some(event.window().clone())) {
                     Ok(_) => {
                         api.prevent_close();
                     },
@@ -91,12 +91,18 @@ fn main() {
             },
             Focused(is_focused) => {
                 if !is_focused {
-                    println!("Window {} blurred", event.window().label());
-                    if let Err(err) = event.window().hide() {
-                        log::error!("Unable to hide window. {err}")
+                    match event.window().is_visible() {
+                        Ok(is_visible) => {
+                            if is_visible {
+                                if let Err(err) = hide_window(&Some(event.window().clone())) {
+                                    log::error!("Unable to hide window. {err}")
+                                }
+                            }
+                        },
+                        Err(err) => {
+                            log::error!("Unable to get window visibility. {err}")
+                        }
                     }
-                } else {
-                    println!("Window {} focused", event.window().label());
                 }
             }
             _ => {}
