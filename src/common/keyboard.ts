@@ -1,4 +1,4 @@
-import { Shortcut } from "../api";
+import { Shortcut } from "../common/contract";
 
 export type AppKeyboardEvent = {
     altKey: boolean;
@@ -20,7 +20,7 @@ export function matchShortcutModifiers(shortcut: Shortcut, event: AppKeyboardEve
             (!shortcut.metaKey || event.metaKey);
 }
 
-export function getShortcutFromEvent(event: AppKeyboardEvent): Shortcut {
+export function shortcutFromEvent(event: AppKeyboardEvent): Shortcut {
     return {
         altKey: event.altKey,
         ctrlKey: event.ctrlKey,
@@ -32,7 +32,7 @@ export function getShortcutFromEvent(event: AppKeyboardEvent): Shortcut {
     }
 }
 
-export function getShortcutDisplay(shortcut: Shortcut): string {
+export function shortcutDisplay(shortcut: Shortcut): string {
     let keys: string[] = [];
     if (shortcut.ctrlKey) {
         keys.push('Ctrl');

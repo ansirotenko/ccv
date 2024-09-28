@@ -1,5 +1,5 @@
 import { ComponentProps, useContext } from 'react';
-import { CopyItem } from '../../api';
+import { CopyItem } from '../../common/contract';
 import { Message } from 'primereact/message';
 import { Image } from 'primereact/image';
 import { FilePreview } from './FilePreview';

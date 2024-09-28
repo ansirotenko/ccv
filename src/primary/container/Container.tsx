@@ -1,7 +1,6 @@
 import { KeyboardEvent, useRef, ComponentProps, useState, useContext } from 'react';
-import { MainShortcutPressedPayload } from '../../api';
-import { useSubscribeEvent } from '../../common/useSubscribeEvent';
-import { MAIN_SHORTCUT_PRESSED_EVENT, WINDOW_SHOWN_EVENT } from '../../events';
+import { MainShortcutPressedPayload } from '../../common/contract';
+import { useSubscribeEvent, MAIN_SHORTCUT_PRESSED_EVENT, WINDOW_SHOWN_EVENT } from '../../common/events';
 import { hasModifers, matchShortcutModifiers } from '../../common/keyboard';
 import SettingsContext from '../../common/SettingsContext';
 

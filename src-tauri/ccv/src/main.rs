@@ -137,7 +137,7 @@ fn main() {
             primary::commands::hide_primary_window,
             primary::commands::show_primary_window,
             about::commands::get_about_data,
-            about::commands::open,
+            about::commands::open_uri,
             about::commands::hide_about_window,
             about::commands::show_about_window,
             settings::commands::hide_settings_window,
