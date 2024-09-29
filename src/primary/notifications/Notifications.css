@@ -1,5 +1,3 @@
-
-
 .p-dialog-header {
     padding: 10px;
     color: var(--text-color);
@@ -27,5 +25,4 @@
         padding: 4px 15px;
         border-radius: 2px;
     }
-    
 }

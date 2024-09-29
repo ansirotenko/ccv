@@ -156,7 +156,7 @@ function App() {
                 />
                 <ItemPreview item={result.items[selectedIndex]} />
             </SearchContext.Provider>
-            <Notifications/>
+            <Notifications />
         </Container>
     );
 }
