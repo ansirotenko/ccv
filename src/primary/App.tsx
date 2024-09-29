@@ -10,6 +10,7 @@ import { SearchContext, escapeSearch } from './SearchContext';
 import { useSubscribeEvent, emitEvent, ITEMS_CHANGED, WINDOW_HIDDEN_EVENT, HIGHLIGHT_REPORT_BUG } from '../common/events';
 import { Container } from './container/Container';
 import { hidePrimaryWindow, searchCopyItems, showAboutWindow, showSettingsWindow } from '../common/commands';
+import { Notifications } from './notifications/Notifications';
 
 const initialQuery = '';
 const possibleCategories: CopyCategory[] = ['Files', 'Html', 'Image', 'Rtf', 'Text'];
@@ -155,6 +156,7 @@ function App() {
                 />
                 <ItemPreview item={result.items[selectedIndex]} />
             </SearchContext.Provider>
+            <Notifications/>
         </Container>
     );
 }

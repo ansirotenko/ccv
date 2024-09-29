@@ -38,7 +38,7 @@ pub fn set_settings(
 
     let settings_change = state.settings_change.lock().unwrap();
     log_error(
-        notify_settings_change(app_handle, &settings_change, new_settings),
+        notify_settings_change(app_handle, &settings_change, &new_settings),
         "Unable notify settings changed",
     )
 }
@@ -46,7 +46,7 @@ pub fn set_settings(
 fn notify_settings_change(
     app_handle: AppHandle,
     settings_change: &Option<Sender<Settings>>,
-    new_settings: Settings,
+    new_settings: &Settings,
 ) -> Result<(), AppError> {
     if let Some(settings_change) = settings_change.as_ref() {
         settings_change

@@ -65,22 +65,18 @@ fn fix_settings(mut value: serde_json::Value, default_settings: Settings) -> Set
     };
     value[VERSION_KEY] = serde_json::json!(default_settings.version);
 
-    if let Ok(notifications) = serde_json::from_value::<Vec<String>>(value[NOTIFICATIONS_KEY].clone()) {
-        if notifications.is_empty() {
-            value[NOTIFICATIONS_KEY] = serde_json::Value::Null;
-        }
-    } else {
+    if let Err(_) = serde_json::from_value::<Vec<String>>(value[NOTIFICATIONS_KEY].clone()) {
         value[NOTIFICATIONS_KEY] = serde_json::Value::Null;
     }
 
-    if serde_json::from_value::<Theme>(value[THEME_KEY].clone()).is_err() {
+    if let Err(_) = serde_json::from_value::<Theme>(value[THEME_KEY].clone()) {
         value[THEME_KEY] = serde_json::json!(default_settings.theme);
     }
 
     if !value[ALL_SHORTCUTS_KEY].is_object() {
         value[ALL_SHORTCUTS_KEY] = serde_json::json!(default_settings.all_shortcuts);
     } else {
-        if serde_json::from_value::<Shortcut>(value[ALL_SHORTCUTS_KEY][OPEN_CCV_KEY].clone()).is_err() {
+        if let Err(_) = serde_json::from_value::<Shortcut>(value[ALL_SHORTCUTS_KEY][OPEN_CCV_KEY].clone()) {
             value[ALL_SHORTCUTS_KEY][OPEN_CCV_KEY] =
                 serde_json::json!(default_settings.all_shortcuts.open_ccv);
         }
@@ -110,7 +106,14 @@ fn get_default_settings() -> Settings {
 }
 
 pub fn write_settings(app_data_dir: &PathBuf, settings: &Settings) -> Result<(), AppError> {
-    let json = serde_json::to_string_pretty(settings)
+    let mut settings = settings.clone();
+    if let Some(notifiactions) = &settings.notifications {
+        if notifiactions.is_empty() {
+            settings.notifications = None;
+        }
+    }
+
+    let json = serde_json::to_string_pretty(&settings)
         .map_err(|err| app_error!("Unable to serialize settings. {err}"))?;
 
     let mut file = File::options()
@@ -174,7 +177,7 @@ mod tests {
     }
 
     #[test]
-    fn empty_notifications_for_actual_version_erased() {
+    fn invalid_notifications_for_actual_version() {
         let expected = Settings {
             notifications: None,
             version: DEFAULT_VERSION.to_string(),
@@ -192,7 +195,7 @@ mod tests {
 
         let json_value = serde_json::json!({ 
             VERSION_KEY: DEFAULT_VERSION.to_string(), 
-            NOTIFICATIONS_KEY: Vec::<String>::new(),
+            NOTIFICATIONS_KEY: 123,
             THEME_KEY: Theme::Dark, 
             ALL_SHORTCUTS_KEY: AllShortcuts{ 
                 open_ccv: Shortcut{ 
@@ -246,7 +249,7 @@ mod tests {
     }
 
     #[test]
-    fn v0_version() {
+    fn v0_version_migrated() {
         let expected = Settings {
             notifications: Some(vec![settings::WELCOME_NOTIFICATION.to_string()]),
             version: DEFAULT_VERSION.to_string(),
@@ -281,7 +284,7 @@ mod tests {
     }
 
     #[test]
-    fn wrong_theme() {
+    fn invalid_theme() {
         let expected = Settings {
             notifications: None,
             version: DEFAULT_VERSION.to_string(),
@@ -316,7 +319,7 @@ mod tests {
     }
 
     #[test]
-    fn wrong_shortcuts() {
+    fn invalid_shortcuts() {
         let expected = Settings {
             notifications: None,
             version: DEFAULT_VERSION.to_string(),
@@ -335,7 +338,7 @@ mod tests {
     }
 
     #[test]
-    fn wrong_open_ccv_shortcut() {
+    fn invalid_open_ccv_shortcut() {
         let expected = Settings {
             notifications: None,
             version: DEFAULT_VERSION.to_string(),
