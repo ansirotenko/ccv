@@ -6,6 +6,7 @@ use std::thread;
 use ccv::about;
 use ccv::primary;
 use ccv::settings;
+use ccv::settings::state::SettingsState;
 use ccv::splashscreen;
 use ccv::tray;
 use ccv::utils::window::{close_window, hide_window, show_window};
@@ -66,8 +67,16 @@ fn main() {
                         log::error!("Unable to hide splashscreen window. {err}");
                     }
 
-                    if let Err(err) = show_window(&app_handle.get_window(primary::SCREEN)) {
-                        log::error!("Unable to show primary window. {err}");
+                    let settings_state = app_handle.state::<SettingsState>();
+                    let settings = settings_state.settings.lock().unwrap().clone();
+                    if let Some(settings) = settings {
+                        if let Some(notifications) = settings.notifications {
+                            if !notifications.is_empty() {
+                                if let Err(err) = show_window(&app_handle.get_window(primary::SCREEN)) {
+                                    log::error!("Unable to show primary window. {err}");
+                                }
+                            }
+                        }
                     }
                 });
             } else {

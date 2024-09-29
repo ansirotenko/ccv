@@ -107,6 +107,11 @@ pub enum Theme {
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct Settings {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(rename = "notifications")]
+    pub notifications: Option<Vec<String>>,
+    #[serde(rename = "version")]
+    pub version: String,
     #[serde(rename = "allShortcuts")]
     pub all_shortcuts: AllShortcuts,
     #[serde(rename = "theme")]

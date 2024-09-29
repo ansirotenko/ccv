@@ -48,6 +48,8 @@ export interface AllShortcuts {
 export type Theme = 'Light' | 'Dark';
 
 export interface Settings {
+    firstLaunch: boolean | undefined;
+    version: string;
     allShortcuts: AllShortcuts;
     theme: Theme;
 }
