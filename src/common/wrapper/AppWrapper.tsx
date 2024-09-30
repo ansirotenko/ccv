@@ -1,7 +1,8 @@
 import { ComponentProps, useContext, useEffect, useRef, useState } from 'react';
-import { Settings, Theme } from '../../common/contract';
+import { AboutData, Settings, Theme } from '../../common/contract';
 import { PrimeReactContext } from 'primereact/api';
-import SettingsContext from '../SettingsContext';
+import { SettingsContext } from '../SettingsContext';
+import { AboutContext } from '../AboutContext';
 import { invoke } from '@tauri-apps/api/tauri';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { Message } from 'primereact/message';
@@ -9,6 +10,7 @@ import { useSubscribeEvent, SETTINGS_UPDATED } from '../events';
 
 import 'primeicons/primeicons.css';
 import styles from './AppWrapper.module.css';
+import { getAboutData } from '../commands';
 
 async function getSettings() {
     return await invoke<Settings>('get_settings');
@@ -18,6 +20,7 @@ let attempts = 20;
 
 function AppWrapper({ children }: ComponentProps<'div'>) {
     const [settings, setSettings] = useState<Settings | undefined>();
+    const [aboutData, setAboutData] = useState<AboutData | undefined>();
     const [hasError, setHasError] = useState<boolean>();
     const [oldTheme, setOldTheme] = useState<Theme>('Light');
     const timeout = useRef<ReturnType<typeof setTimeout>>();
@@ -25,6 +28,9 @@ function AppWrapper({ children }: ComponentProps<'div'>) {
     useSubscribeEvent<Settings>(SETTINGS_UPDATED, (newSettings) => setSettings(newSettings));
 
     useEffect(() => {
+        getAboutData().then((aboutData) => {
+            setAboutData(aboutData);
+        })
         loadSettingsAttempt();
     }, []);
 
@@ -72,7 +78,11 @@ function AppWrapper({ children }: ComponentProps<'div'>) {
         );
     }
 
-    return <SettingsContext.Provider value={settings}>{children}</SettingsContext.Provider>;
+    return <SettingsContext.Provider value={settings}>
+        <AboutContext.Provider value={aboutData}>
+            {children}
+        </AboutContext.Provider>
+    </SettingsContext.Provider>;
 }
 
 export default AppWrapper;

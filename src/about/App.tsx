@@ -1,23 +1,17 @@
-import { useEffect, useState } from 'react';
-import { AboutData } from '../common/contract';
+import { useContext, useState } from 'react';
 import { Button } from 'primereact/button';
 import { Skeleton } from 'primereact/skeleton';
 import { BlockUI } from 'primereact/blockui';
 import { useSubscribeEvent, HIGHLIGHT_REPORT_BUG } from '../common/events';
-import { getAboutData, hideAboutWindow, openAnything as openUri } from '../common/commands';
+import { hideAboutWindow, openAnything as openUri } from '../common/commands';
+import { AboutContext } from '../common/AboutContext';
 
 import styles from './App.module.css';
 
 function App() {
     const [reportBugHightlighted, setReportBugHightlighted] = useState<boolean>(false);
-    const [aboutData, setSetAboutData] = useState<AboutData | undefined>();
+    const aboutData = useContext(AboutContext);
     useSubscribeEvent<string>(HIGHLIGHT_REPORT_BUG, () => setReportBugHightlighted(true));
-
-    useEffect(() => {
-        getAboutData().then((data) => {
-            setSetAboutData(data);
-        });
-    }, []);
 
     return (
         <div

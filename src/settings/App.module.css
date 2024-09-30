@@ -115,8 +115,9 @@
     }
 
     span {
-        line-height: 23px;
+        line-height: 28px;
         margin-left: 9px;
+        font-size: 15px;
     }
 }
 

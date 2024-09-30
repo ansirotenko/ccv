@@ -2,7 +2,7 @@ import { KeyboardEvent, useRef, ComponentProps, useState, useContext } from 'rea
 import { MainShortcutPressedPayload } from '../../common/contract';
 import { useSubscribeEvent, MAIN_SHORTCUT_PRESSED_EVENT, WINDOW_SHOWN_EVENT } from '../../common/events';
 import { hasModifers, matchShortcutModifiers } from '../../common/keyboard';
-import SettingsContext from '../../common/SettingsContext';
+import { SettingsContext } from '../../common/SettingsContext';
 
 import styles from './Container.module.css';
 

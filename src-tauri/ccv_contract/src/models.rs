@@ -61,6 +61,13 @@ pub struct FileInfo {
     pub is_directory: bool,
 }
 
+#[derive(Serialize, Deserialize, Clone, Copy, PartialEq, Debug)]
+pub enum Os {
+    Linux,
+    MacOs,
+    Windows
+}
+
 #[derive(Serialize, Clone, Debug, PartialEq)]
 pub struct AboutData {
     #[serde(rename = "version")]
@@ -77,6 +84,8 @@ pub struct AboutData {
     pub app_logs_dir: Option<String>,
     #[serde(rename = "text")]
     pub text: String,
+    #[serde(rename = "os")]
+    pub os: Os,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]

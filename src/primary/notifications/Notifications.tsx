@@ -1,10 +1,9 @@
 import { useContext } from 'react';
-import SettingsContext from '../../common/SettingsContext';
+import { SettingsContext } from '../../common/SettingsContext';
 import { setSettings } from '../../common/commands';
 import { Settings } from '../../common/contract';
 import { WelcomeDialog } from './WelcomeDialog';
-
-import './Notifications.css';
+import { UpdateDialog } from './UpdateDialog';
 
 export async function eraseNotification(name: string, settings: Settings) {
     const newNotifications = settings.notifications?.filter((x) => x != name);
@@ -25,5 +24,5 @@ export function Notifications() {
         }
     }
 
-    return <></>;
+    return <UpdateDialog notifyIfUpToDate={false}></UpdateDialog>;
 }

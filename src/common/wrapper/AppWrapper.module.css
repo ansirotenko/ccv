@@ -20,6 +20,40 @@ body {
     > [id~='root'] {
         height: 100%;
     }
+
+    [class~='p-dialog-header'] {
+        padding: 10px 10px 4px 10px;
+        color: var(--text-color);
+        background-color: var(--surface-50);
+        text-align: center;
+    
+        [class~='p-dialog-title'] {
+            font-size: 15px;
+        }
+    }
+    
+    [class~='p-dialog-content'] {
+        padding: 5px 15px;
+        color: var(--text-color);
+        font-size: 13px;
+        background-color: var(--surface-50);
+    }
+    
+    [class~='p-dialog-footer'] {
+        padding: 15px;
+        background-color: var(--surface-50);
+        color: var(--text-color);
+        text-align: center;
+    
+        [class~='p-button'] {
+            border-color: var(--surface-border);
+            font-size: 16px;
+            min-width: 21px;
+            padding: 4px 15px;
+            border-radius: 2px;
+        }
+    }
+    
 }
 
 ::-webkit-scrollbar {

@@ -8,7 +8,7 @@ import { Toast } from 'primereact/toast';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { error as logError } from 'tauri-plugin-log-api';
 import { AppError, Settings, Shortcut } from '../common/contract';
-import SettingsContext from '../common/SettingsContext';
+import { SettingsContext } from '../common/SettingsContext';
 import { shortcutDisplay, shortcutFromEvent } from '../common/keyboard';
 import { hideSettingsWindow, removeCopyItems, removeCopyItemsOlder, setSettings } from '../common/commands';
 
@@ -59,6 +59,7 @@ function App() {
             },
             acceptLabel: 'Apply',
             acceptClassName: 'acceptButton',
+            rejectClassName: 'p-button-info p-button-outlined',
             rejectLabel: 'Cancel',
             header: 'Press new shortcut',
             message: (

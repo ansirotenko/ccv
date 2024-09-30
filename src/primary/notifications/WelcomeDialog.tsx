@@ -1,7 +1,7 @@
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { ComponentProps, useContext } from 'react';
-import SettingsContext from '../../common/SettingsContext';
+import { SettingsContext } from '../../common/SettingsContext';
 import { shortcutDisplay } from '../../common/keyboard';
 
 interface WelcomeDialogProps extends ComponentProps<'div'> {

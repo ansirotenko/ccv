@@ -1,5 +1,6 @@
 use crate::about;
 use crate::utils::window::{hide_window, show_window};
+use ccv_contract::models::Os;
 use ccv_contract::{
     error::{log_error, AppError},
     models::AboutData,
@@ -16,6 +17,16 @@ pub fn get_about_data(app_handle: AppHandle) -> Result<AboutData, AppError> {
     let app_data_dir = app_handle.path_resolver().app_data_dir();
     let app_logs_dir = app_handle.path_resolver().app_log_dir();
 
+    let os = if cfg!(target_os = "macos") {
+        Os::MacOs
+    } else {
+        if cfg!(target_os = "windows") {
+            Os::Windows
+        } else {
+            Os::Linux
+        }
+    };
+
     let about_data = AboutData {
         version: format!("{major_version}.{minor_version}.{patch_version}"),
         authors: env!("CARGO_PKG_AUTHORS").to_string(),
@@ -26,6 +37,7 @@ pub fn get_about_data(app_handle: AppHandle) -> Result<AboutData, AppError> {
         app_data_dir: app_data_dir.map(|p| p.to_str().unwrap_or("").to_string()),
         app_logs_dir: app_logs_dir.map(|p| p.to_str().unwrap_or("").to_string()),
         text: env!("CARGO_PKG_DESCRIPTION").to_string(),
+        os: os
     };
     Ok(about_data)
 }

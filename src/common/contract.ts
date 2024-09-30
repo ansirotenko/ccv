@@ -54,6 +54,8 @@ export interface Settings {
     theme: Theme;
 }
 
+export type Os = 'Linux' | 'MacOs' | 'Windows';
+
 export interface AboutData {
     version: string;
     authors: string;
@@ -62,6 +64,7 @@ export interface AboutData {
     appDataDirectory: string | null;
     appLogsDirectory: string | null;
     text: string;
+    os: Os
 }
 
 export interface EventPayload<T> {

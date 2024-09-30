@@ -1,0 +1,10 @@
+
+.error {
+    width: 100%;
+    min-height: 50px;
+}
+
+.progress {
+    height: 6px;
+    margin: 10px 0;
+}
