@@ -1,6 +1,6 @@
 {
   "version": "0.1.1",
-  "notes": "See the assets to download this version and install.",
+  "notes": "- Improve keybindings\n- Notifications feature\n- Custom updater dialog",
   "pub_date": "2024-10-05T00:39:04.358Z",
   "platforms": {
     "darwin-x86_64": {
