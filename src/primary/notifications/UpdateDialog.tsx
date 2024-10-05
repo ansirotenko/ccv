@@ -102,7 +102,7 @@ export function UpdateDialog({ notifyIfUpToDate }: UpdateDialogProps) {
                 closable={false}
             >
                 <div>Release notes:</div>
-                <p>
+                <p className={styles.manifestBody}>
                     {upateManifest?.body}
                 </p>
                 <div>Would you like to update Ccv?</div>

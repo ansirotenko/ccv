@@ -8,3 +8,7 @@
     height: 6px;
     margin: 10px 0;
 }
+
+.manifestBody {
+    white-space: pre-line;
+}
