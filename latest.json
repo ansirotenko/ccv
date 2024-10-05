@@ -1,23 +1,23 @@
 {
-  "version": "0.1.0",
-  "notes": "First version of ccv",
-  "pub_date": "2024-09-18T21:46:32.869Z",
+  "version": "0.1.1",
+  "notes": "See the assets to download this version and install.",
+  "pub_date": "2024-10-05T00:39:04.358Z",
   "platforms": {
     "darwin-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRZ3E5T3k2MlZ0WHAzcDlXdm1nS1pudjdOeFovbis3SWJydmcyS1puYVBkYWdiakE5TUtUbFlYeDJRdGppOWJLRUlWTGkrdElKOWNVUmRLUjVDdzBSZ0ladnJoa1E1WVFJPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzI2NjE1MjEwCWZpbGU6Y2N2LmFwcC50YXIuZ3oKSlNNTnUyczFKSDAwSnlTQmk2WHZOcGdYS092YytjRGdiekNjdE9WVlNMOW1DOGlleTU2OExRUDFLaHVpOHNHRUhmY25pQkNGQzd4TnY3RkJDSzFHRHc9PQo=",
-      "url": "https://github.com/ansirotenko/ccv/releases/download/ccv-v0.1.0/ccv_x64.app.tar.gz"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRZ3E5T3k2MlZ0WG5MemVxNG56a2F0VHNyMjN1eGl5MElleklaTkxpdWljcllNdEUyYlRteXhpMWIvbWxWMU9TNTFuOGZ4QjNlRmZldVZ6NmRFOGJYMWhRaEtFN1dDTEFNPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzI4MDg4NDMzCWZpbGU6Y2N2LmFwcC50YXIuZ3oKOXdwMGZRZVVWOFhkczRDbEtOdHRPV2tIc1pvOENveVBMMlNHVHlDS3FDVzE4R0pDN3U0T3E2cndxQnFwTkY1QnA3ZUhwS1F0SVFTQ3lvUzgrVVB1Q1E9PQo=",
+      "url": "https://github.com/ansirotenko/ccv/releases/download/ccv-v0.1.1/ccv_x64.app.tar.gz"
     },
     "darwin-aarch64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRZ3E5T3k2MlZ0WHNmWVJhZi8wd0d6V3BuRDhCWlRXczVvVHNrNkJKMjN4UEM3dGpJNkZ1MGFQNjhxWHVwc1VwcDJnc2hFdUszVm02aHRvSm92VDVjZlc0bGxEellWTndzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzI2NjE1MzY1CWZpbGU6Y2N2LmFwcC50YXIuZ3oKNXRuT3NENHdsT3BPL0tIcUMxcWd3VFZEandkWXc1MjU2cFBlbnhxSlA2N3d1NEp2WVNSd1VxemIxREVsTzJrYzJlNENSUVVCS285U1dFd1VMUUM1Q0E9PQo=",
-      "url": "https://github.com/ansirotenko/ccv/releases/download/ccv-v0.1.0/ccv_aarch64.app.tar.gz"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRZ3E5T3k2MlZ0WGtEZmVJZ3ZKR25kMmk1UEtQQjFMVGV5WTA1YkNCM1pSbStDZFpaUVBkYUtFaHl4akFNdFVIenptK0dTb3BNMkhGKzFscGFHMXQrUStiVEQ0KzJWUkFNPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzI4MDg4NDM4CWZpbGU6Y2N2LmFwcC50YXIuZ3oKdWp2VXNSRW9TVXBucHJuWnhrOHhucFgwbXY1a3RIcnAzaGR2U3JPaXZvbTZiL2ErVXpta291SUMyTTR2eHMxZFExSEV1eHlCTTg5WE9vTlIra28wQ1E9PQo=",
+      "url": "https://github.com/ansirotenko/ccv/releases/download/ccv-v0.1.1/ccv_aarch64.app.tar.gz"
     },
     "linux-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRZ3E5T3k2MlZ0WHYxdDNOUk04dmFVNm9ETURFMlVKMUczRExiQ0RlVXh0WVptb3d4YWdjMTAzdHFzVzJRcTNWSU5oaXZsSVRLUkVlRi9EOTBDVUFKQm5GVk5ON2dTQmc4PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzI2NjE1MzQ2CWZpbGU6Y2N2XzAuMS4wX2FtZDY0LkFwcEltYWdlLnRhci5negp5Z1dUTjgweVA1bmM4ajBmVXNmR2J5UzFDRS9VNDQ3Rm1LbDFmd04wclNVTXlQYWJ0K1l6WmRWTHh1cW81YVRKTys4d3lKYzc2NnYzMTVENmF6SWVCUT09Cg==",
-      "url": "https://github.com/ansirotenko/ccv/releases/download/ccv-v0.1.0/ccv_0.1.0_amd64.AppImage.tar.gz"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRZ3E5T3k2MlZ0WGhlZTFReWVwSmRNQi9FckcxWGFMRXZNdFl0YTJxZ2E0azFNTGx3KzN1R3JDdXJpYU5Xd3FadkN2cDhLSllNTU5TbC9UM3puQWQxVTZ6WUFvcENsRWdJPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzI4MDg4NjU5CWZpbGU6Y2N2XzAuMS4xX2FtZDY0LkFwcEltYWdlLnRhci5negpoSUxWUWsxamROZG9IRS9hNjU3dGVlbGtFR3U3U2xCUThicFE5TU1QNDh1dEtybVNkK1FxWjNxYm9SVnNRU1UyRVNoMDlWZkZjN1dCQ3RWOE9hV0tEUT09Cg==",
+      "url": "https://github.com/ansirotenko/ccv/releases/download/ccv-v0.1.1/ccv_0.1.1_amd64.AppImage.tar.gz"
     },
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRZ3E5T3k2MlZ0WG9pL0MrcUQzelBLRXVhT0R2cDFETEtzclYxU1hDYlA3SXptTERKWU11N1Azb0REdDZyQ2JaYmNrRmFYVmJuMGwxZUpDbUJLMGpOdHROb1BrSlJMZ0FrPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzI2Njk1OTg4CWZpbGU6Y2N2XzAuMS4wX3g2NF9lbi1VUy5tc2kuemlwCmgwQmRsRnR3RFZGU0xoazdxM2I1UGhkSG1uaEYxWHJLSXk1SXgvYmhyRUxmTnRMWDJxcmVNUW4xeTdoSHUxdHphNE1nV2IzZ3BTQ2w0Qi9INFI4WEFBPT0K",
-      "url": "https://github.com/ansirotenko/ccv/releases/download/ccv-v0.1.0/ccv_0.1.0_x64_en-US.msi.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRZ3E5T3k2MlZ0WHNmUnVHSTY3YUFxaEdvYk16dmtvOXBHdFlsRi8xaWVUMDVWUUFzaElIek5lYUNySVM1ZHNlQ1FNT1BhTUFmd0UyaDFrREFMN2NMZVJqcFkyQUc2R2c4PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzI4MDg4NzQwCWZpbGU6Y2N2XzAuMS4xX3g2NF9lbi1VUy5tc2kuemlwClAvWlNxWC9qcWFjU0p1MlRXcGRwMi9lbzE2ZjZ4clBzNGZBUlg3a1dZMnAzVkxMdUg2NUcvVVNzM1NxNmVZZmNTKzgwdWkvVkdoWXgwQ0hSVDdSekRnPT0K",
+      "url": "https://github.com/ansirotenko/ccv/releases/download/ccv-v0.1.1/ccv_0.1.1_x64_en-US.msi.zip"
     }
   }
 }
