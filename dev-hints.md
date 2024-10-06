@@ -36,3 +36,22 @@ Here is recipe how ccv can be build in docker. Unfortunately the only target OS 
     ```bash
     docker rmi ccv_builder:local
     ```
+# Profiling budle
+To see the final bundle size
+- install carg-bloat [if it is first time]
+```bash
+cargo install cargo-bloat
+```
+- execute comand 
+```bash
+cd ./src-tauri
+cargo bloat --release --crates
+```
+
+To see the final ui-bundle graph
+- build ui
+```bash
+npm run build
+```
+- then open `./profiler/ui-bundle-stats.html` to see ui-bundle bundle graph
+
