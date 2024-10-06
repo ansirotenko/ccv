@@ -12,7 +12,7 @@ import { Container } from './container/Container';
 import { hidePrimaryWindow, searchCopyItems, showAboutWindow, showSettingsWindow } from '../common/commands';
 import { Notifications } from './notifications/Notifications';
 
-const initialQuery = '';
+const initialQuery = null;
 const possibleCategories: CopyCategory[] = ['Files', 'Html', 'Image', 'Rtf', 'Text'];
 const initialCategories: CopyCategory[] = possibleCategories;
 const pageSize = 100;

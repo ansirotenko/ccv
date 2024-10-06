@@ -10,7 +10,10 @@ use ccv::settings::state::SettingsState;
 use ccv::splashscreen;
 use ccv::tray;
 use ccv::utils::window::{close_window, hide_window, show_window};
-use ccv_contract::error::log_error;
+use ccv_contract::{
+    app_error,
+    error::{log_error, AppError},
+};
 use tauri::{
     async_runtime, generate_context, generate_handler, Builder, Manager,
     WindowEvent::{CloseRequested, Focused},
@@ -72,7 +75,9 @@ fn main() {
                     if let Some(settings) = settings {
                         if let Some(notifications) = settings.notifications {
                             if !notifications.is_empty() {
-                                if let Err(err) = show_window(&app_handle.get_window(primary::SCREEN)) {
+                                if let Err(err) =
+                                    show_window(&app_handle.get_window(primary::SCREEN))
+                                {
                                     log::error!("Unable to show primary window. {err}");
                                 }
                             }
@@ -98,43 +103,32 @@ fn main() {
                 }
             },
             Focused(is_focused) => {
+                println!("{is_focused}");
                 if !is_focused && event.window().label() == primary::SCREEN {
                     match event.window().is_visible() {
                         Ok(is_visible) => {
                             if is_visible {
-                                #[cfg(not(target_os = "linux"))]
-                                {
-                                    if let Err(err) = hide_window(&Some(event.window().clone())) {
-                                        log::error!("Unable to hide window. {err}")
+                                // sometimes window looses focus and then immideately gets it back
+                                // e.g. on dragging window or focusing search box (only at linux)
+                                let async_perfomer = move || -> Result<(), AppError> {
+                                    std::thread::sleep(std::time::Duration::from_millis(50));
+
+                                    let still_visible = event
+                                        .window()
+                                        .is_visible()
+                                        .map_err(|err| app_error!("Cannot get visible {err}"))?;
+                                    let still_focsed = event
+                                        .window()
+                                        .is_focused()
+                                        .map_err(|err| app_error!("Cannot get focused {err}"))?;
+                                    if still_visible && !still_focsed {
+                                        hide_window(&Some(event.window().clone()))?;
                                     }
-                                }
 
-                                // for some reason in linux primary window got blurred and immideately gets focused.
-                                #[cfg(target_os = "linux")]
-                                {
-                                    use ccv_contract::app_error;
-                                    use ccv_contract::error::AppError;
+                                    Ok(())
+                                };
 
-                                    let async_perfomer = move || -> Result<(), AppError> {
-                                        std::thread::sleep(std::time::Duration::from_millis(50));
-
-                                        let still_visible =
-                                            event.window().is_visible().map_err(|err| {
-                                                app_error!("Cannot get visible {err}")
-                                            })?;
-                                        let still_focsed =
-                                            event.window().is_focused().map_err(|err| {
-                                                app_error!("Cannot get focused {err}")
-                                            })?;
-                                        if still_visible && !still_focsed {
-                                            hide_window(&Some(event.window().clone()))?;
-                                        }
-
-                                        Ok(())
-                                    };
-
-                                    std::thread::spawn(async_perfomer);
-                                }
+                                std::thread::spawn(async_perfomer);
                             }
                         }
                         Err(err) => {
