@@ -12,6 +12,7 @@ if [ "$(expr substr $(uname -s) 1 5)" == "MINGW" ]; then
 fi
 
 docker run --name $CONTAINER_NAME -e TARGET=$TARGET -v $DIRNAME:$APP_DIR ccv_builder:local 
+# docker run -dt --name $CONTAINER_NAME -e TARGET=$TARGET -v $DIRNAME:$APP_DIR ccv_builder:local 
 
 CONTAINER=$(docker ps --filter name=$CONTAINER_NAME -a -q)
 

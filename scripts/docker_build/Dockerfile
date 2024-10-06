@@ -41,4 +41,5 @@ RUN source $NVM_DIR/nvm.sh \
 ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
 ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 
-ENTRYPOINT cd /app && npm ci && cargo tauri build -t $TARGET -d
+ENTRYPOINT cd /app && npm ci && cargo tauri build -t $TARGET
+# ENTRYPOINT ["tail", "-f", "/dev/null"]
