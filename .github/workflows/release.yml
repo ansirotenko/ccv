@@ -4,10 +4,6 @@ on:
   push:
     branches: [ "release" ]
 
-env:
-  TAURI_PRIVATE_KEY: ${{ secrets.CCV_UPDATER_PRIVATE_KEY }}
-  TAURI_KEY_PASSWORD: ${{ secrets.CCV_UPDATER_PASSWORD }}
-
 jobs:
   publish-tauri:
     permissions:
@@ -57,6 +53,11 @@ jobs:
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_PRIVATE_KEY: ${{ secrets.CCV_UPDATER_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ secrets.CCV_UPDATER_PASSWORD }}
+          SIGN: "1"
+          SIGN_KEY: ${{ secrets.CCV_SIGNING_KEY }} 
+          APPIMAGETOOL_SIGN_PASSPHRASE: ${{ secrets.CCV_APPIMAGETOOL_SIGN_PASSPHRASE }} 
         with:
           tagName: ccv-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
           releaseName: 'ccv v__VERSION__'

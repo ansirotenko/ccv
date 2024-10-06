@@ -17,8 +17,9 @@
         "bundle": {
             "active": true,
             "targets": "all",
-            "identifier": "ansirotenko.ccv",
+            "identifier": "com.ansirotenko.ccv",
             "publisher": "ansirotenko",
+            "copyright": "Copyright © 2024 Andrei Sirotenko",
             "category": "DeveloperTool",
             "icon": [
                 "icons/32x32.png",
