@@ -1,9 +1,6 @@
-
 # TODOS
-- improve intro
-- non latin keybindings
-- systemicons for file icons
-- maybe custom updater dialog? 
-- tauri 2.0
+- sign installers
 - brew
-- html highlight bug
+- tauri 2.0
+    - autostart
+    - systemicons for file icons
