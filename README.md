@@ -16,3 +16,7 @@ Supported formats: *Text*, *Html*, *Rtf*, *Images*, *Files*.
 The download file for the installation can be found on the [releases](https://github.com/ansirotenko/ccv/releases) page. In the future, it will be available on the [brew ](https://brew.sh/).
 
 > Note: Currently the installers are not signed yet. Work on this task continues.
+
+<p align="center">
+  <img src="./demo.gif"/>
+</p>
