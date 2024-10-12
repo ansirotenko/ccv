@@ -4,6 +4,7 @@ use ccv_contract::{
     error::AppError,
     models::{AllShortcuts, Settings, Shortcut, Theme},
 };
+use tauri::AppHandle;
 use std::{
     fs::File,
     io::{Read, Write},

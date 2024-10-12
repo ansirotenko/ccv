@@ -1,55 +1,100 @@
-use crate::settings;
-use ccv_contract::{error::AppError, models::Settings};
+use crate::primary;
+use crate:: settings;
+use crate:: utils::window::show_window;
+use ccv_contract::models::EventPayload;
+use ccv_contract::models::MainShortcutPressedPayload;
+use ccv_contract::{app_error, error::AppError, models::Settings};
+use tauri::Emitter;
 use std::{path::PathBuf, sync::mpsc::channel};
-use tauri::{AppHandle, Manager};
-// use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut, ShortcutState};
+use tauri::{AppHandle, Manager, WebviewWindow};
+use tauri_plugin_global_shortcut::{Code, Modifiers, Shortcut, ShortcutState};
 
 pub fn read_settings_and_register_shortcuts(
     app_handle: &AppHandle,
     app_data_dir: &PathBuf,
 ) -> Result<(), AppError> {
-    let state_settings = app_handle.state::<settings::state::SettingsState>();
-    let mut settings = state_settings.settings.lock().unwrap();
+    let settings_state = app_handle.state::<settings::state::SettingsState>();
+    let mut settings = settings_state.settings.lock().unwrap();
+    //TODO test if error returns
     match settings::core::read_settings(app_data_dir) {
         Ok(new_settings) => {
             *settings = Some(new_settings);
         }
         Err(err) => {
-            log::error!("Unable to read settings file. {err}");
+            return Err(err);
         }
-    }
+    };
 
     // let (tx, rx) = channel::<Settings>();
     // TODO restore rx
-    let (tx, _) = channel::<Settings>();
-    let mut hotkey_change = state_settings.settings_change.lock().unwrap();
-    *hotkey_change = Some(tx);
+    // let (tx, _) = channel::<Settings>();
+    // let mut hotkey_change = settings_state.settings_change.lock().unwrap();
+    // *hotkey_change = Some(tx);
 
     // TODO test this
     // let settings = settings.clone().unwrap();
     // settings::hotkeys::listen_hotkey_change(app_handle.clone(), settings, rx);
 
+    // TODO key must be present
 
+    app_handle.plugin(
+        tauri_plugin_global_shortcut::Builder::new().with_handler(move |app_handle, shortcut, event| {
+            match event.state() {
+                ShortcutState::Pressed => {
+                    let settings_state = app_handle.state::<settings::state::SettingsState>();
+                    let settings = settings_state.settings.lock().unwrap();
 
-    // let ctrl_n_shortcut = Shortcut::new(Some(Modifiers::CONTROL), Code::KeyN);
-    // app.handle().plugin(
-    //     tauri_plugin_global_shortcut::Builder::new().with_handler(move |_app, shortcut, event| {
-    //         println!("{:?}", shortcut);
-    //         if shortcut == &ctrl_n_shortcut {
-    //             match event.state() {
-    //                 ShortcutState::Pressed => {
-    //                 println!("Ctrl-N Pressed!");
-    //                 }
-    //                 ShortcutState::Released => {
-    //                 println!("Ctrl-N Released!");
-    //                 }
-    //             }
-    //         }
-    //     })
-    //     .build(),
-    // )?;
+                    if let Some(settings) = settings.as_ref() {
+                        if let Some(open_ccv_shortcut) = settings::shortcut::get_shortcut(&settings.all_shortcuts.open_ccv) {
+                            if shortcut == &open_ccv_shortcut {
+                                activate_primary_window(&app_handle.get_webview_window(primary::SCREEN))
+                            }
+                        }
+                    }
+                }
+                ShortcutState::Released => {}
+            }
+        })
+        .build(),
+    ).map_err(|err| app_error!("Unable to initialize global shortcut plugin. {err}"))?;
 
-    // app.global_shortcut().register(ctrl_n_shortcut)?;
+    settings::shortcut::register_shortcuts(app_handle, &settings.as_ref().unwrap().all_shortcuts, false)?;
 
     Ok(())
+}
+
+fn activate_primary_window(primary_window_option: &Option<WebviewWindow>) -> () {
+    if let Some(primary_window) = primary_window_option {
+        let was_visible_before = primary_window.is_visible().unwrap_or(false);
+        if let Err(err) = show_window(primary_window_option) {
+            log::error!("Unable to show primary window by shortcut. {err}");
+        } else {
+            if let Err(err) = primary_window.emit_to(
+                primary::SCREEN,
+                primary::MAIN_SHORTCUT_PRESSED_EVENT,
+                EventPayload {
+                    data: MainShortcutPressedPayload {
+                        changed_from_hidden_to_visile: !was_visible_before,
+                    },
+                },
+            ) {
+                log::error!("Unable to send shortcut pressed event. {err}");
+            }
+        }
+    }
+
+    // for some reason on linux app doesnt show form the first attempt
+    #[cfg(target_os = "linux")]
+    {
+        let copy = primary_window_option.clone();
+
+        std::thread::spawn(move || {
+            std::thread::sleep(std::time::Duration::from_millis(50));
+            if let Some(primary_window) = copy {
+                if let Err(err) = show_window(&Some(primary_window.clone())) {
+                    log::error!("Unable to show primary window by shortcut. {err}");
+                }
+            }
+        });
+    }
 }

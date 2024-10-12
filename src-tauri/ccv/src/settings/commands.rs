@@ -28,26 +28,35 @@ pub fn set_settings(
     state: State<SettingsState>,
 ) -> Result<(), AppError> {
     let mut settings = state.settings.lock().unwrap();
+    let old_settings = settings.clone();
     *settings = Some(new_settings.clone());
-
-    let app_data_dir = log_error(app_handle.path().app_data_dir(), "Unable to get appication directory")?;
-    log_error(
-        settings::core::write_settings(&app_data_dir, &new_settings),
-        "Unable to save settings",
-    )?;
 
     let settings_change = state.settings_change.lock().unwrap();
     log_error(
-        notify_settings_change(app_handle, &settings_change, &new_settings),
-        "Unable notify settings changed",
+        store_and_notify_settings(&app_handle, &settings_change, &old_settings, &new_settings),
+        "Unable store and notify settings changed",
     )
 }
 
-fn notify_settings_change(
-    app_handle: AppHandle,
+// TODO move to core?
+fn store_and_notify_settings(
+    app_handle: &AppHandle,
     _: &Option<Sender<Settings>>,
+    old_settings: &Option<Settings>,
     new_settings: &Settings,
 ) -> Result<(), AppError> {
+    let app_data_dir = app_handle.path().app_data_dir().map_err(|err| app_error!("Unable to get appication directory. {err}"))?;
+    settings::core::write_settings(&app_data_dir, &new_settings)?;
+
+    match old_settings {
+        Some(old_settings) if old_settings == new_settings => {
+            // nothing should be done in this case
+        },
+        _ => {
+            settings::shortcut::register_shortcuts(app_handle, &new_settings.all_shortcuts, true)?;
+        }
+    }
+
     // if let Some(settings_change) = settings_change.as_ref() {
     //     settings_change
     //         .send(new_settings.clone())

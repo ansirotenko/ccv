@@ -80,16 +80,14 @@ function App() {
 
     const onShortcutChanged = (newShortcut: Shortcut | null) => {
         newShortcutRef.current = newShortcut;
-        if (!newShortcut) {
-            if (shortcutValue.current) {
-                shortcutValue.current.value = '';
-            }
+        if (!newShortcut || !newShortcut.code) {
             (document.getElementsByClassName('acceptButton')[0] as HTMLButtonElement).disabled = true;
         } else {
-            if (shortcutValue.current) {
-                shortcutValue.current.value = shortcutDisplay(newShortcut);
-            }
             (document.getElementsByClassName('acceptButton')[0] as HTMLButtonElement).disabled = false;
+        }
+
+        if (shortcutValue.current) {
+            shortcutValue.current.value = !newShortcut ? '' : shortcutDisplay(newShortcut);
         }
     };
 

@@ -647,7 +647,6 @@ dependencies = [
  "ccv_sqlite",
  "chrono",
  "clipboard-rs",
- "global-hotkey",
  "log",
  "open",
  "serde",

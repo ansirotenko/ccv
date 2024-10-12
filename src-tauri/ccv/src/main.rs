@@ -23,7 +23,6 @@ fn main() {
         .plugin(tauri_plugin_updater::Builder::new().build())
         // TODO test
         .plugin(tauri_plugin_process::init()) // required for restart after updater completes job
-        .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         // TODO test if needed
         .plugin(tauri_plugin_shell::init()) 
         .plugin(tauri_plugin_autostart::init(tauri_plugin_autostart::MacosLauncher::LaunchAgent, None))// test autostart
@@ -122,7 +121,6 @@ fn main() {
                                 // sometimes window looses focus and then immideately gets it back
                                 // e.g. on dragging window or focusing search box (only at linux)
 
-                                // TODO double chekc this
                                 if let Some(window) = window.app_handle().get_webview_window(window.label()) {
                                     let async_perfomer = move || -> Result<(), AppError> {
                                         std::thread::sleep(std::time::Duration::from_millis(50));
