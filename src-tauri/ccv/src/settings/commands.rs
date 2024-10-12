@@ -12,8 +12,8 @@ use ccv_contract::{
     models::{EventPayload, Settings},
 };
 use chrono::{DateTime, Utc};
-use tauri::{command, AppHandle, Manager, State};
-use tauri_plugin_clipboard::ClipboardManager;
+use tauri::{command, AppHandle, Emitter, Manager, State};
+use tauri_plugin_clipboard::Clipboard;
 
 #[command]
 pub fn get_settings(state: State<SettingsState>) -> Result<Option<Settings>, AppError> {
@@ -30,7 +30,7 @@ pub fn set_settings(
     let mut settings = state.settings.lock().unwrap();
     *settings = Some(new_settings.clone());
 
-    let app_data_dir = app_handle.path_resolver().app_data_dir().unwrap();
+    let app_data_dir = log_error(app_handle.path().app_data_dir(), "Unable to get appication directory")?;
     log_error(
         settings::core::write_settings(&app_data_dir, &new_settings),
         "Unable to save settings",
@@ -45,19 +45,19 @@ pub fn set_settings(
 
 fn notify_settings_change(
     app_handle: AppHandle,
-    settings_change: &Option<Sender<Settings>>,
+    _: &Option<Sender<Settings>>,
     new_settings: &Settings,
 ) -> Result<(), AppError> {
-    if let Some(settings_change) = settings_change.as_ref() {
-        settings_change
-            .send(new_settings.clone())
-            .map_err(|err| app_error!("{err}"))?;
-    } else {
-        return Err(app_error!("Uninitialized settings_change"));
-    }
+    // if let Some(settings_change) = settings_change.as_ref() {
+    //     settings_change
+    //         .send(new_settings.clone())
+    //         .map_err(|err| app_error!("{err}"))?;
+    // } else {
+    //     return Err(app_error!("Uninitialized settings_change"));
+    // }
 
     app_handle
-        .emit_all(
+        .emit(
             settings::SETTINGS_UPDATED_EVENT,
             EventPayload {
                 data: new_settings.clone(),
@@ -71,7 +71,7 @@ fn notify_settings_change(
 #[command]
 pub fn hide_settings_window(app_handle: AppHandle) -> Result<(), AppError> {
     log_error(
-        hide_window(&app_handle.get_window(settings::SCREEN)),
+        hide_window(&app_handle.get_webview_window(settings::SCREEN)),
         "Unable to hide settings window",
     )
 }
@@ -79,7 +79,7 @@ pub fn hide_settings_window(app_handle: AppHandle) -> Result<(), AppError> {
 #[command]
 pub fn show_settings_window(app_handle: AppHandle) -> Result<(), AppError> {
     log_error(
-        show_window(&app_handle.get_window(settings::SCREEN)),
+        show_window(&app_handle.get_webview_window(settings::SCREEN)),
         "Unable to show settings window",
     )
 }
@@ -89,7 +89,7 @@ pub fn remove_copy_items(
     item_ids: String,
     app_handle: AppHandle,
     state: State<PrimaryState>,
-    state_clipboard: State<ClipboardManager>,
+    clipboard_state: State<Clipboard>,
 ) -> Result<(), AppError> {
     let splitted_item_ids: Vec<&str> = item_ids.split(",").into_iter().map(|x| x.trim()).collect();
     if splitted_item_ids.is_empty() {
@@ -101,12 +101,13 @@ pub fn remove_copy_items(
         "Error on removing copy items",
     )?;
     log_error(
-        primary::core::insert_copy_item_if_not_found(repository.as_ref(), state_clipboard),
+        primary::core::insert_copy_item_if_not_found(repository.as_ref(), &clipboard_state),
         "Unable to insert item after deletion",
     )?;
 
     log_error(
-        app_handle.emit_all(
+        app_handle.emit_to(
+            primary::SCREEN,
             primary::ITEMS_CHANGED_EVENT,
             EventPayload {
                 data: format!("Delete items with ids '{item_ids}'"),
@@ -123,7 +124,7 @@ pub fn remove_copy_items_older(
     sinse: DateTime<Utc>,
     app_handle: AppHandle,
     state: State<PrimaryState>,
-    state_clipboard: State<ClipboardManager>,
+    clipboard_state: State<Clipboard>,
 ) -> Result<(), AppError> {
     let repository = state.repository.lock().unwrap();
     log_error(
@@ -131,12 +132,13 @@ pub fn remove_copy_items_older(
         "Error on removing old copy items",
     )?;
     log_error(
-        primary::core::insert_copy_item_if_not_found(repository.as_ref(), state_clipboard),
+        primary::core::insert_copy_item_if_not_found(repository.as_ref(), &clipboard_state),
         "Unable to insert item after deletion",
     )?;
 
     log_error(
-        app_handle.emit_all(
+        app_handle.emit_to(
+            primary::SCREEN,
             primary::ITEMS_CHANGED_EVENT,
             EventPayload {
                 data: format!("Delete items older {sinse}"),

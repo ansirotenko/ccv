@@ -77,11 +77,11 @@ pub struct AboutData {
     #[serde(rename = "homepage")]
     pub homepage: String,
     #[serde(rename = "appDirectory")]
-    pub app_dir: Option<String>,
+    pub app_dir: String,
     #[serde(rename = "appDataDirectory")]
-    pub app_data_dir: Option<String>,
+    pub app_data_dir: String,
     #[serde(rename = "appLogsDirectory")]
-    pub app_logs_dir: Option<String>,
+    pub app_logs_dir: String,
     #[serde(rename = "text")]
     pub text: String,
     #[serde(rename = "os")]

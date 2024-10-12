@@ -2,7 +2,7 @@ use crate::primary;
 use crate::utils::window::show_window;
 use ccv_contract::models::{EventPayload, MainShortcutPressedPayload, Settings};
 use std::sync::mpsc::Receiver;
-use tauri::{async_runtime, AppHandle, Window};
+use tauri::{async_runtime, AppHandle, Emitter, WebviewWindow};
 
 #[cfg(target_os = "linux")]
 mod linux;
@@ -28,13 +28,14 @@ pub fn listen_hotkey_change(
     });
 }
 
-fn activate_primary_window(primary_window_option: &Option<Window>) -> () {
+fn activate_primary_window(primary_window_option: &Option<WebviewWindow>) -> () {
     if let Some(primary_window) = primary_window_option {
         let was_visible_before = primary_window.is_visible().unwrap_or(false);
         if let Err(err) = show_window(primary_window_option) {
             log::error!("Unable to show primary window by shortcut. {err}");
         } else {
-            if let Err(err) = primary_window.emit(
+            if let Err(err) = primary_window.emit_to(
+                primary::SCREEN,
                 primary::MAIN_SHORTCUT_PRESSED_EVENT,
                 EventPayload {
                     data: MainShortcutPressedPayload {

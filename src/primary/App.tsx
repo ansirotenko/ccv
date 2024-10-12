@@ -5,7 +5,7 @@ import { CopyItem, CopyCategory, AppError, SearchResult } from '../common/contra
 import { ItemPreview } from './itemPreview/ItemPreview';
 import { useDebouncedCallback } from '../common/useDebouncedCallback';
 import { useListenClipboard } from './useListenClipboard';
-import { error as logError } from 'tauri-plugin-log-api';
+import { error as logError } from '@tauri-apps/plugin-log';
 import { SearchContext, escapeSearch } from './SearchContext';
 import { useSubscribeEvent, emitEvent, ITEMS_CHANGED, WINDOW_HIDDEN_EVENT, HIGHLIGHT_REPORT_BUG } from '../common/events';
 import { Container } from './container/Container';

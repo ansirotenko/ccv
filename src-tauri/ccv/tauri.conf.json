@@ -1,104 +1,94 @@
 {
-    "build": {
-        "beforeDevCommand": "npm run dev",
-        "beforeBuildCommand": "npm run build",
-        "devPath": "http://localhost:1420",
-        "distDir": "../../dist"
-    },
-    "package": {
-        "productName": "ccv",
-        "version": "0.1.1"
-    },
-    "tauri": {
-        "systemTray": {
-            "iconPath": "icons/icon.ico",
-            "iconAsTemplate": true
-        },
-        "bundle": {
-            "active": true,
-            "targets": "all",
-            "identifier": "com.ansirotenko.ccv",
-            "publisher": "ansirotenko",
-            "copyright": "Copyright © 2024 Andrei Sirotenko",
-            "category": "DeveloperTool",
-            "icon": [
-                "icons/32x32.png",
-                "icons/128x128.png",
-                "icons/128x128@2x.png",
-                "icons/icon.icns",
-                "icons/icon.ico"
-            ]
-        },
-        "allowlist": {
-            "all": false,
-            "shell": {
-                "all": false,
-                "open": true
-            },
-            "globalShortcut": {
-                "all": true
-            },
-            "window": {
-                "all": true
-            }
-        },
-        "security": {
-            "csp": null
-        },
-        "updater": {
-            "active": true,
-            "endpoints": [
-                "https://raw.githubusercontent.com/ansirotenko/ccv/main/latest.json"
-            ],
-            "dialog": false,
-            "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDVFNkQ2NUVCQjJEM0FCMjAKUldRZ3E5T3k2MlZ0WGlpeW9ka2kxdTZRV1oxZkphbDdKNWRqaWtOYTdjVThldFdlMUx2dlp1L04K",
-            "windows": {
-                "installMode": "passive"
-            }
-        },
-        "windows": [
-            {
-                "title": "ccv",
-                "width": 380,
-                "height": 520,
-                "center": true,
-                "resizable": false,
-                "fullscreen": false,
-                "visible": false,
-                "skipTaskbar": true,
-                "url": "screens/primary.html",
-                "decorations": false,
-                "label": "primary"
-            },
-            {
-                "center": true,
-                "width": 530,
-                "height": 285,
-                "decorations": false,
-                "resizable": false,
-                "url": "screens/splashscreen.html",
-                "label": "splashscreen"
-            },
-            {
-                "center": true,
-                "width": 610,
-                "height": 360,
-                "visible": false,
-                "decorations": false,
-                "resizable": false,
-                "url": "screens/about.html",
-                "label": "about"
-            },
-            {
-                "center": true,
-                "width": 510,
-                "height": 680,
-                "visible": false,
-                "decorations": false,
-                "resizable": false,
-                "url": "screens/settings.html",
-                "label": "settings"
-            }
-        ]
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../../dist",
+    "devUrl": "http://localhost:1420"
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "publisher": "ansirotenko",
+    "licenseFile": "../../LICENSE",
+    "shortDescription": "CCV is lightweight crossplatform clipboard manager",
+    "copyright": "Copyright © 2024 Andrei Sirotenko",
+    "category": "DeveloperTool",
+    "createUpdaterArtifacts": true
+  },
+  "productName": "ccv",
+  "mainBinaryName": "ccv",
+  "version": "0.2.0",
+  "identifier": "com.ansirotenko.ccv",
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDVFNkQ2NUVCQjJEM0FCMjAKUldRZ3E5T3k2MlZ0WGlpeW9ka2kxdTZRV1oxZkphbDdKNWRqaWtOYTdjVThldFdlMUx2dlp1L04K",
+      "endpoints": [
+        "https://raw.githubusercontent.com/ansirotenko/ccv/main/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
+      }
     }
+  },
+  "app": {
+    "security": {
+      "csp": null,
+      "capabilities": ["ccv-capability"]
+    },
+    "windows": [
+      {
+        "title": "ccv",
+        "width": 380,
+        "height": 520,
+        "center": true,
+        "resizable": false,
+        "fullscreen": false,
+        "visible": false,
+        "skipTaskbar": true,
+        "url": "screens/primary.html",
+        "decorations": false,
+        "shadow": false,
+        "label": "primary"
+      },
+      {
+        "center": true,
+        "width": 530,
+        "height": 285,
+        "decorations": false,
+        "shadow": false,
+        "resizable": false,
+        "url": "screens/splashscreen.html",
+        "label": "splashscreen"
+      },
+      {
+        "center": true,
+        "width": 610,
+        "height": 360,
+        "visible": false,
+        "decorations": false,
+        "shadow": false,
+        "resizable": false,
+        "url": "screens/about.html",
+        "label": "about"
+      },
+      {
+        "center": true,
+        "width": 510,
+        "height": 680,
+        "visible": false,
+        "decorations": false,
+        "shadow": false,
+        "resizable": false,
+        "url": "screens/settings.html",
+        "label": "settings"
+      }
+    ]
+  }
 }

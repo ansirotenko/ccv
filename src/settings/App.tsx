@@ -6,7 +6,7 @@ import { Calendar } from 'primereact/calendar';
 import { RadioButton } from 'primereact/radiobutton';
 import { Toast } from 'primereact/toast';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
-import { error as logError } from 'tauri-plugin-log-api';
+import { error as logError } from '@tauri-apps/plugin-log';
 import { AppError, Settings, Shortcut } from '../common/contract';
 import { SettingsContext } from '../common/SettingsContext';
 import { shortcutDisplay, shortcutFromEvent } from '../common/keyboard';

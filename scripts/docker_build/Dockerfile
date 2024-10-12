@@ -17,8 +17,7 @@ RUN cargo install tauri-cli
 RUN apt-get update
 
 # install tauri prereqisites
-# for tauri 2.0 use webkitgtk 4.1
-RUN apt-get install -y libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
+RUN apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
 
 # # replace shell with bash so we can source files
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh

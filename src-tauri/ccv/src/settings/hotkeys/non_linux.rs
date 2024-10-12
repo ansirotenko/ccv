@@ -3,6 +3,7 @@ use crate::primary;
 use ccv_contract::app_error;
 use ccv_contract::models::Settings;
 use ccv_contract::{error::AppError, models::Shortcut};
+use tauri_plugin_global_shortcut::GlobalShortcutExt;
 use std::{sync::mpsc::Receiver, thread, time::Duration};
 use tauri::{AppHandle, GlobalShortcutManager, Manager};
 
@@ -11,10 +12,10 @@ pub fn main_loop_hotkey_change(
     init_settings: Settings,
     receiver: Receiver<Settings>,
 ) -> Result<(), AppError> {
-    let mut global_shortcut_manager = app_handle.global_shortcut_manager();
+    let mut global_shortcut_manager = app_handle.global_shortcut();
     let mut old_settings = init_settings;
 
-    let primary_window = app_handle.get_window(primary::SCREEN);
+    let primary_window = app_handle.get_webview_window(primary::SCREEN);
     let initial_accelerator = parse_shortcut(&old_settings.all_shortcuts.open_ccv);
     global_shortcut_manager
         .register(initial_accelerator.as_str(), move || {
@@ -30,7 +31,7 @@ pub fn main_loop_hotkey_change(
                     .unregister(old_accelerator.as_str())
                     .map_err(|err| app_error!("{err}"))?;
 
-                let primary_window = app_handle.get_window(primary::SCREEN);
+                let primary_window = app_handle.get_webview_window(primary::SCREEN);
                 let new_accelerator = parse_shortcut(&new_settings.all_shortcuts.open_ccv);
                 global_shortcut_manager
                     .register(new_accelerator.as_str(), move || {

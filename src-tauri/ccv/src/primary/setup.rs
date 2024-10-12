@@ -2,10 +2,10 @@ use crate::primary;
 use ccv_contract::{error::AppError, models::CopyCategory::Unknown};
 use std::path::PathBuf;
 use tauri::{AppHandle, Manager};
-use tauri_plugin_clipboard::ClipboardManager;
+use tauri_plugin_clipboard::Clipboard;
 
-pub fn init_repository(app_handle: AppHandle, app_data_dir: &PathBuf) -> Result<(), AppError> {
-    let state_clipboard = app_handle.state::<ClipboardManager>();
+pub fn init_repository(app_handle: &AppHandle, app_data_dir: &PathBuf) -> Result<(), AppError> {
+    let clipboard_state = app_handle.state::<Clipboard>();
     let state = app_handle.state::<primary::state::PrimaryState>();
     let mut repository = state.repository.lock().unwrap();
     #[cfg(feature = "sqlite")]
@@ -31,14 +31,14 @@ pub fn init_repository(app_handle: AppHandle, app_data_dir: &PathBuf) -> Result<
         *repository = Box::new(ccv_in_memory::repository::InMemoryRepository::new(data));
     }
 
-    let category = primary::core::get_clipboard_category(&state_clipboard);
+    let category = primary::core::get_clipboard_category(&clipboard_state);
     match category {
         Err(e) => {
             log::warn!("Failed to identify clipboard value: {e}")
         }
         Ok(Unknown) => {}
         _ => {
-            primary::core::insert_copy_item_if_not_found(repository.as_ref(), state_clipboard)?;
+            primary::core::insert_copy_item_if_not_found(repository.as_ref(), &clipboard_state)?;
         }
     };
 

@@ -6,7 +6,7 @@ use ccv_contract::{
 };
 use chrono::Utc;
 use tauri::{command, AppHandle, Manager, State};
-use tauri_plugin_clipboard::ClipboardManager;
+use tauri_plugin_clipboard::Clipboard;
 
 #[command]
 pub fn search_copy_items(
@@ -32,7 +32,7 @@ pub fn search_copy_items(
 pub fn reuse_copy_item(
     item_id: String,
     state: State<primary::state::PrimaryState>,
-    state_clipboard: State<ClipboardManager>,
+    clipboard_state: State<Clipboard>,
 ) -> Result<CopyItem, AppError> {
     let repository = state.repository.lock().unwrap();
 
@@ -42,7 +42,7 @@ pub fn reuse_copy_item(
     )?;
 
     log_error(
-        primary::core::write_reused_copy_item(&copy_item, state_clipboard),
+        primary::core::write_reused_copy_item(&copy_item, &clipboard_state),
         "Error on writing to clipboard",
     )?;
 
@@ -52,11 +52,11 @@ pub fn reuse_copy_item(
 #[command]
 pub fn insert_copy_item(
     state: State<primary::state::PrimaryState>,
-    state_clipboard: State<ClipboardManager>,
+    clipboard_state: State<Clipboard>,
 ) -> Result<CopyItem, AppError> {
     let repository = state.repository.lock().unwrap();
     log_error(
-        primary::core::insert_copy_item_if_not_found(repository.as_ref(), state_clipboard),
+        primary::core::insert_copy_item_if_not_found(repository.as_ref(), &clipboard_state),
         "Error on inserting new copy item",
     )
 }
@@ -64,7 +64,7 @@ pub fn insert_copy_item(
 #[command]
 pub fn hide_primary_window(app_handle: AppHandle) -> Result<(), AppError> {
     log_error(
-        hide_window(&app_handle.get_window(primary::SCREEN)),
+        hide_window(&app_handle.get_webview_window(primary::SCREEN)),
         "Unable to hide primary window",
     )
 }
@@ -72,7 +72,7 @@ pub fn hide_primary_window(app_handle: AppHandle) -> Result<(), AppError> {
 #[command]
 pub fn show_primary_window(app_handle: AppHandle) -> Result<(), AppError> {
     log_error(
-        show_window(&app_handle.get_window(primary::SCREEN)),
+        show_window(&app_handle.get_webview_window(primary::SCREEN)),
         "Unable to show primary window",
     )
 }

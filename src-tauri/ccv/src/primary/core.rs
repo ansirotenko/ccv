@@ -7,17 +7,16 @@ use ccv_contract::{
     },
     repository::Repository,
 };
-use clipboard_rs::{Clipboard, ClipboardContent, ClipboardContext, ContentFormat};
+use tauri_plugin_clipboard::Clipboard;
 use std::path::Path;
 use tauri::State;
-use tauri_plugin_clipboard::ClipboardManager;
 
 pub fn insert_copy_item_if_not_found(
     repository: &dyn Repository,
-    state_clipboard: State<ClipboardManager>,
+    clipboard: &State<Clipboard>,
 ) -> Result<CopyItem, AppError> {
     let new_copy_item_value = log_error(
-        get_new_copy_item_value(&state_clipboard),
+        get_new_copy_item_value(clipboard),
         "Failed to get new copy item",
     )?;
     let existed_item = repository.find_by_value(&new_copy_item_value)?;
@@ -32,9 +31,9 @@ pub fn insert_copy_item_if_not_found(
 }
 
 fn get_new_copy_item_value(
-    clipboard_manager: &ClipboardManager,
+    clipboard_state: &State<Clipboard>,
 ) -> Result<CopyItemValue, AppError> {
-    let category = get_clipboard_category(clipboard_manager)?;
+    let category = get_clipboard_category(clipboard_state)?;
     let mut image: Option<String> = None;
     let mut files: Option<Vec<FileInfo>> = None;
     let mut rtf: Option<String> = None;
@@ -42,7 +41,7 @@ fn get_new_copy_item_value(
     let mut text: Option<String> = None;
     match category {
         Files => {
-            let file_pathes = clipboard_manager
+            let file_pathes = clipboard_state
                 .read_files()
                 .map_err(|e| app_error!("{e}"))?;
 
@@ -71,38 +70,38 @@ fn get_new_copy_item_value(
         }
         Image => {
             image = Some(
-                clipboard_manager
+                clipboard_state
                     .read_image_base64()
                     .map_err(|e| app_error!("{e}"))?,
             );
         }
         Rtf => {
             text = Some(
-                clipboard_manager
+                clipboard_state
                     .read_text()
                     .map_err(|e| app_error!("{e}"))?,
             );
             rtf = Some(
-                clipboard_manager
+                clipboard_state
                     .read_rtf()
                     .map_err(|e| app_error!("{e}"))?,
             );
         }
         Html => {
             text = Some(
-                clipboard_manager
+                clipboard_state
                     .read_text()
                     .map_err(|e| app_error!("{e}"))?,
             );
             html = Some(
-                clipboard_manager
+                clipboard_state
                     .read_html()
                     .map_err(|e| app_error!("{e}"))?,
             );
         }
         Text => {
             text = Some(
-                clipboard_manager
+                clipboard_state
                     .read_text()
                     .map_err(|e| app_error!("{e}"))?,
             );
@@ -121,30 +120,33 @@ fn get_new_copy_item_value(
 }
 
 pub fn get_clipboard_category(
-    clipboard_manager: &ClipboardManager,
+    clipboard_state: &State<Clipboard>,
 ) -> Result<CopyCategory, AppError> {
-    if clipboard_manager
+    if clipboard_state
         .has_image()
         .map_err(|e| app_error!("{e}"))?
     {
         return Ok(Image);
     }
-    if clipboard_manager
+    if clipboard_state
         .has_files()
         .map_err(|e| app_error!("{e}"))?
     {
         return Ok(Files);
     }
-    if clipboard_manager.has_rtf().map_err(|e| app_error!("{e}"))? {
+    if clipboard_state
+        .has_rtf()
+        .map_err(|e| app_error!("{e}"))? 
+    {
         return Ok(Rtf);
     }
-    if clipboard_manager
+    if clipboard_state
         .has_html()
         .map_err(|e| app_error!("{e}"))?
     {
         return Ok(Html);
     }
-    if clipboard_manager
+    if clipboard_state
         .has_text()
         .map_err(|e| app_error!("{e}"))?
     {
@@ -155,12 +157,9 @@ pub fn get_clipboard_category(
 
 pub fn write_reused_copy_item(
     copy_item: &CopyItem,
-    state_clipboard: State<ClipboardManager>,
+    clipboard_state: &State<Clipboard>,
 ) -> Result<(), AppError> {
-    state_clipboard.clear().map_err(|e| app_error!("{e}"))?;
-    state_clipboard
-        .has(ContentFormat::Other("a".to_string()))
-        .unwrap();
+    clipboard_state.clear().map_err(|e| app_error!("{e}"))?;
 
     match copy_item.value.category {
         Files => {
@@ -188,35 +187,39 @@ pub fn write_reused_copy_item(
                 }
             }
 
-            state_clipboard
+            clipboard_state
                 .write_files_uris(files_uris)
                 .map_err(|e| app_error!("{e}"))?;
         }
         Image => {
-            state_clipboard
+            clipboard_state
                 .write_image_base64(copy_item.value.image.as_ref().unwrap().clone())
                 .map_err(|e| app_error!("{e}"))?;
         }
         Rtf => {
-            // this solves problem of reusing rtf format. commented lines writes only rtf, but not text
-            let ctx = log_error(ClipboardContext::new(), "Unable to create ClipboardContext")?;
+            use clipboard_rs::{Clipboard, ClipboardContent};
+            let ctx = clipboard_state.clipboard
+                .lock()
+                .map_err(|err| app_error!("{err}"))?;
+
             log_error(
-                ctx.set(vec![
-                    ClipboardContent::Text(copy_item.value.text.as_ref().unwrap().clone()),
-                    ClipboardContent::Rtf(copy_item.value.rtf.as_ref().unwrap().clone()),
-                ]),
+                ctx
+                    .set(vec![
+                        ClipboardContent::Text(copy_item.value.text.as_ref().unwrap().clone()),
+                        ClipboardContent::Rtf(copy_item.value.rtf.as_ref().unwrap().clone()),
+                    ]),
                 "Unable to write rtf and text content",
             )?;
-
-            // state_clipboard
+            
+            // clipboard_state
             //     .write_text(copy_item.value.text.as_ref().unwrap().clone())
             //     .map_err(|e| app_error!("{e}"))?;
-            // state_clipboard
+            // clipboard_state
             //     .write_rtf(copy_item.value.rtf.as_ref().unwrap().clone())
             //     .map_err(|e| app_error!("{e}"))?;
         }
         Html => {
-            state_clipboard
+            clipboard_state
                 .write_html_and_text(
                     copy_item.value.html.as_ref().unwrap().clone(),
                     copy_item.value.text.as_ref().unwrap().clone(),
@@ -224,7 +227,7 @@ pub fn write_reused_copy_item(
                 .map_err(|e| app_error!("{e}"))?;
         }
         Text => {
-            state_clipboard
+            clipboard_state
                 .write_text(copy_item.value.text.as_ref().unwrap().clone())
                 .map_err(|e| app_error!("{e}"))?;
         }

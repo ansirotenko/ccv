@@ -1,4 +1,4 @@
-import { invoke } from '@tauri-apps/api/tauri';
+import { invoke } from '@tauri-apps/api/core';
 import { AboutData, CopyCategory, CopyItem, SearchResult, Settings } from './contract';
 
 export async function getAboutData() {

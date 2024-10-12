@@ -2,5 +2,8 @@
 - sign installers
 - brew
 - tauri 2.0
-    - autostart
     - systemicons for file icons
+    check
+        - autostart
+        - updater
+        - copy rtf? arboard 

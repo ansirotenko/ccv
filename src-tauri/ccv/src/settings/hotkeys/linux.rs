@@ -18,7 +18,7 @@ pub fn main_loop_hotkey_change(
         .map_err(|err| app_error!("Unable to create GlobalHotKeyManager. {err}"))?;
     let mut old_settings = init_settings;
 
-    let primary_window = app_handle.get_window(primary::SCREEN);
+    let primary_window = app_handle.get_webview_window(primary::SCREEN);
 
     let initial_hotkey = get_hotkey(&old_settings.all_shortcuts.open_ccv)?;
     manager

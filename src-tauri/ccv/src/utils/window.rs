@@ -1,8 +1,8 @@
 use crate::utils;
 use ccv_contract::{app_error, error::AppError, models::EventPayload};
-use tauri::Window;
+use tauri::{Emitter, WebviewWindow};
 
-pub fn show_window(window: &Option<Window>) -> Result<(), AppError> {
+pub fn show_window(window: &Option<WebviewWindow>) -> Result<(), AppError> {
     if let Some(window) = window {
         window.show().map_err(|_| app_error!("Error on show"))?;
         window
@@ -29,7 +29,7 @@ pub fn show_window(window: &Option<Window>) -> Result<(), AppError> {
     }
 }
 
-pub fn hide_window(window: &Option<Window>) -> Result<(), AppError> {
+pub fn hide_window(window: &Option<WebviewWindow>) -> Result<(), AppError> {
     if let Some(window) = window {
         window.hide().map_err(|_| app_error!("Error on hide"))?;
         window
@@ -46,7 +46,7 @@ pub fn hide_window(window: &Option<Window>) -> Result<(), AppError> {
     }
 }
 
-pub fn close_window(window: &Option<Window>) -> Result<(), AppError> {
+pub fn close_window(window: &Option<WebviewWindow>) -> Result<(), AppError> {
     if let Some(window) = window {
         window.close().map_err(|_| app_error!("Error on close"))?;
         Ok(())

@@ -3,10 +3,10 @@ members = ["ccv", "ccv_contract", "ccv_in_memory", "ccv_sqlite"]
 resolver = "2"
 
 [workspace.package]
-version = "0.1.1" # Also update version at ./ccv/tarui.conf.json
+version = "0.2.0" # Also update version at ./ccv/tarui.conf.json
 authors = ["Andrei Sirotenko <panshirotenski@gmail.com>"]
 homepage = "https://github.com/ansirotenko/ccv"
-license = "MIT"
+license-file = "../LICENSE"
 
 [workspace.dependencies]
 serde = { version = "1.0.204", features = ["derive"] }

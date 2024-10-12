@@ -24,5 +24,5 @@ export function Notifications() {
         }
     }
 
-    return <UpdateDialog notifyIfUpToDate={false}></UpdateDialog>;
+    return <UpdateDialog notifyUpToDate={false}></UpdateDialog>;
 }

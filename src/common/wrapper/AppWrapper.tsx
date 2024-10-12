@@ -3,7 +3,7 @@ import { AboutData, Settings, Theme } from '../../common/contract';
 import { PrimeReactContext } from 'primereact/api';
 import { SettingsContext } from '../SettingsContext';
 import { AboutContext } from '../AboutContext';
-import { invoke } from '@tauri-apps/api/tauri';
+import { invoke } from '@tauri-apps/api/core';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { Message } from 'primereact/message';
 import { useSubscribeEvent, SETTINGS_UPDATED } from '../events';

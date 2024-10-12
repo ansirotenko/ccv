@@ -1,13 +1,8 @@
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { ComponentProps, useContext, useEffect, useState } from 'react';
-import {
-    checkUpdate,
-    installUpdate,
-    onUpdaterEvent,
-    UpdateManifest
-  } from '@tauri-apps/api/updater';
-import { relaunch } from '@tauri-apps/api/process';
+import { check, Update } from '@tauri-apps/plugin-updater';
+import { relaunch } from '@tauri-apps/plugin-process';
 import { AboutContext } from '../../common/AboutContext';
 import { Message } from 'primereact/message';
 import { ProgressBar } from 'primereact/progressbar';
@@ -15,38 +10,42 @@ import { ProgressBar } from 'primereact/progressbar';
 import styles from './UpdateDialog.module.css';
 
 interface UpdateDialogProps extends ComponentProps<'div'> {
-    notifyIfUpToDate: boolean 
+    notifyUpToDate: boolean 
 }
 
-export function UpdateDialog({ notifyIfUpToDate }: UpdateDialogProps) {
-    const [shouldUpdate, setShouldUpdate] = useState<boolean | undefined>();
-    const [upateManifest, setUpateManifest] = useState<UpdateManifest | undefined>();
+export function UpdateDialog({ notifyUpToDate }: UpdateDialogProps) {
+    const [loading, setLoading] = useState<boolean>(true);
+    const [update, setUpdate] = useState<Update | null>(null);
     const [confirmed, setConfirmed] = useState(false);
     const [updateIsRunning, setUpdateIsRunning] = useState(false);
     const [updateStatus, setUpdateStatus] = useState<string>("PENDING");
     const [updateError, setUpdateError] = useState<string | undefined>(undefined);
+    const [contentLength, setContentLength] = useState<number | undefined>();
+    const [downloaded, setDownloaded] = useState<number | undefined>();
     const aboutData = useContext(AboutContext);
 
     useEffect(() => {
-        async function listen() {
-            checkUpdate().then(({ shouldUpdate, manifest }) => {
-                setShouldUpdate(shouldUpdate);
-                setUpateManifest(manifest);
-            })
-    
-            const unlisten = await onUpdaterEvent(({ error, status }) => {
-                setUpdateError(error);
-                setUpdateStatus(status);
-            })
-
-            return unlisten;
-        }
-        
-        const promise = listen();
-        return () => {
-            promise.then((c) => c());
-        };
+        check().then(update => {
+            setUpdate(update);
+        })
+        .finally(() => {
+            setLoading(false);
+        })
     }, [])
+
+    // TODO test functionality
+
+    if (loading) {
+        return <></>
+    }
+
+    function getValue() {
+        if (!contentLength || contentLength < 0) {
+            return 0;
+        }
+
+        return (downloaded || 0) / contentLength;
+    }
 
     function updatingContent() {
         if (updateError) {
@@ -57,7 +56,7 @@ export function UpdateDialog({ notifyIfUpToDate }: UpdateDialogProps) {
                 <p>
                     {updateStatus}
                 </p>
-                <ProgressBar mode="indeterminate" className={styles.progress}></ProgressBar>
+                <ProgressBar value={getValue()} className={styles.progress}></ProgressBar>
             </>
         )
     }
@@ -79,22 +78,44 @@ export function UpdateDialog({ notifyIfUpToDate }: UpdateDialogProps) {
         );
     }
 
-    if (shouldUpdate && !confirmed) {
+    async function installUpdate() {
+        setConfirmed(true)
+        setUpdateIsRunning(true);
+
+        try {
+            await update?.downloadAndInstall((event) => {
+                switch (event.event) {
+                    case 'Started':
+                        setUpdateStatus("STARTED");
+                        setContentLength(event.data.contentLength);
+                        break;
+                    case 'Progress':
+                        setUpdateStatus("DOWNLOADING");
+                        setDownloaded(d => (d || 0) + event.data.chunkLength);
+                        break;
+                    case 'Finished':
+                        setUpdateStatus("INSTALLING");
+                        break;
+                  }
+            });
+            await relaunch();
+        } catch (e: any) {
+            // TODO see what happens
+            setUpdateError(e.toString());
+        }
+    }
+
+    if (update != null && !confirmed) {
         return (
             <Dialog
-                header={<>Version <b>{upateManifest?.version}</b> is available, you have <b>{aboutData?.version}</b></>}
+                header={<>Version <b>{update?.version}</b> is available, you have <b>{aboutData?.version}</b></>}
                 visible={true}
                 style={{ width: '320px' }}
                 onHide={() => {}}
                 footer={ 
                     <>
                         <Button className='p-button-info p-button-outlined' onClick={() => setConfirmed(true)}>Cacnel</Button>
-                        <Button onClick={async () => {
-                            setConfirmed(true)
-                            setUpdateIsRunning(true);
-                            await installUpdate();
-                            await relaunch();
-                        }}>Install</Button>
+                        <Button onClick={installUpdate}>Install</Button>
                     </>
                 }
                 draggable={false}
@@ -103,14 +124,14 @@ export function UpdateDialog({ notifyIfUpToDate }: UpdateDialogProps) {
             >
                 <div>Release notes:</div>
                 <p className={styles.manifestBody}>
-                    {upateManifest?.body}
+                    {update?.body}
                 </p>
                 <div>Would you like to update Ccv?</div>
             </Dialog>
         );
     }
     
-    if (shouldUpdate == false && notifyIfUpToDate && !confirmed) {
+    if (update == null && notifyUpToDate && !confirmed) {
         return (
             <Dialog
                 header="Ccv is up to date"
