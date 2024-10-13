@@ -10,7 +10,7 @@ import { ProgressBar } from 'primereact/progressbar';
 import styles from './UpdateDialog.module.css';
 
 interface UpdateDialogProps extends ComponentProps<'div'> {
-    notifyUpToDate: boolean 
+    notifyUpToDate: boolean;
 }
 
 export function UpdateDialog({ notifyUpToDate }: UpdateDialogProps) {
@@ -18,25 +18,26 @@ export function UpdateDialog({ notifyUpToDate }: UpdateDialogProps) {
     const [update, setUpdate] = useState<Update | null>(null);
     const [confirmed, setConfirmed] = useState(false);
     const [updateIsRunning, setUpdateIsRunning] = useState(false);
-    const [updateStatus, setUpdateStatus] = useState<string>("PENDING");
+    const [updateStatus, setUpdateStatus] = useState<string>('PENDING');
     const [updateError, setUpdateError] = useState<string | undefined>(undefined);
     const [contentLength, setContentLength] = useState<number | undefined>();
     const [downloaded, setDownloaded] = useState<number | undefined>();
     const aboutData = useContext(AboutContext);
 
     useEffect(() => {
-        check().then(update => {
-            setUpdate(update);
-        })
-        .finally(() => {
-            setLoading(false);
-        })
-    }, [])
+        check()
+            .then((update) => {
+                setUpdate(update);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+    }, []);
 
     // TODO test functionality
 
     if (loading) {
-        return <></>
+        return <></>;
     }
 
     function getValue() {
@@ -53,12 +54,10 @@ export function UpdateDialog({ notifyUpToDate }: UpdateDialogProps) {
         }
         return (
             <>
-                <p>
-                    {updateStatus}
-                </p>
+                <p>{updateStatus}</p>
                 <ProgressBar value={getValue()} className={styles.progress}></ProgressBar>
             </>
-        )
+        );
     }
 
     if (updateIsRunning) {
@@ -79,24 +78,24 @@ export function UpdateDialog({ notifyUpToDate }: UpdateDialogProps) {
     }
 
     async function installUpdate() {
-        setConfirmed(true)
+        setConfirmed(true);
         setUpdateIsRunning(true);
 
         try {
             await update?.downloadAndInstall((event) => {
                 switch (event.event) {
                     case 'Started':
-                        setUpdateStatus("STARTED");
+                        setUpdateStatus('STARTED');
                         setContentLength(event.data.contentLength);
                         break;
                     case 'Progress':
-                        setUpdateStatus("DOWNLOADING");
-                        setDownloaded(d => (d || 0) + event.data.chunkLength);
+                        setUpdateStatus('DOWNLOADING');
+                        setDownloaded((d) => (d || 0) + event.data.chunkLength);
                         break;
                     case 'Finished':
-                        setUpdateStatus("INSTALLING");
+                        setUpdateStatus('INSTALLING');
                         break;
-                  }
+                }
             });
             await relaunch();
         } catch (e: any) {
@@ -108,13 +107,19 @@ export function UpdateDialog({ notifyUpToDate }: UpdateDialogProps) {
     if (update != null && !confirmed) {
         return (
             <Dialog
-                header={<>Version <b>{update?.version}</b> is available, you have <b>{aboutData?.version}</b></>}
+                header={
+                    <>
+                        Version <b>{update?.version}</b> is available, you have <b>{aboutData?.version}</b>
+                    </>
+                }
                 visible={true}
                 style={{ width: '320px' }}
                 onHide={() => {}}
-                footer={ 
+                footer={
                     <>
-                        <Button className='p-button-info p-button-outlined' onClick={() => setConfirmed(true)}>Cacnel</Button>
+                        <Button className="p-button-info p-button-outlined" onClick={() => setConfirmed(true)}>
+                            Cacnel
+                        </Button>
                         <Button onClick={installUpdate}>Install</Button>
                     </>
                 }
@@ -123,14 +128,12 @@ export function UpdateDialog({ notifyUpToDate }: UpdateDialogProps) {
                 closable={false}
             >
                 <div>Release notes:</div>
-                <p className={styles.manifestBody}>
-                    {update?.body}
-                </p>
+                <p className={styles.manifestBody}>{update?.body}</p>
                 <div>Would you like to update Ccv?</div>
             </Dialog>
         );
     }
-    
+
     if (update == null && notifyUpToDate && !confirmed) {
         return (
             <Dialog
@@ -150,5 +153,5 @@ export function UpdateDialog({ notifyUpToDate }: UpdateDialogProps) {
         );
     }
 
-    return <></>
+    return <></>;
 }

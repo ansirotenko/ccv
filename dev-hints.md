@@ -4,6 +4,8 @@
 1. replace `src-tauri/ccv/icons/original.png`
 2. cd to `src-tauri/ccv`
 3. run `cargo tauri icon ./icons/original.png`
+4. replace `public/favicon.ico`
+5. replace `src/assets/logo256.png`
 
 # Create sqlite db
 - run `cargo install diesel_cli --no-default-features --features "sqlite-bundled"`

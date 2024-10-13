@@ -1,15 +1,28 @@
-
-use ccv_contract::{app_error, error::AppError, models::{AllShortcuts, Shortcut}};
+use ccv_contract::{
+    app_error,
+    error::AppError,
+    models::{AllShortcuts, Shortcut},
+};
 use tauri::AppHandle;
-use tauri_plugin_global_shortcut::{Shortcut as HotKey, Code, Modifiers, GlobalShortcutExt};
+use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut as HotKey};
 
-pub fn register_shortcuts(app_handle: &AppHandle, all_shortcuts: &AllShortcuts, unregister_all: bool) -> Result<(), AppError> {
+pub fn register_shortcuts(
+    app_handle: &AppHandle,
+    all_shortcuts: &AllShortcuts,
+    unregister_all: bool,
+) -> Result<(), AppError> {
     if unregister_all {
-        app_handle.global_shortcut().unregister_all().map_err(|err| app_error!("Unable to unregister shortcuts. {err}"))?
+        app_handle
+            .global_shortcut()
+            .unregister_all()
+            .map_err(|err| app_error!("Unable to unregister shortcuts. {err}"))?
     }
 
     if let Some(open_ccv_shortcut) = get_shortcut(&all_shortcuts.open_ccv) {
-        app_handle.global_shortcut().register(open_ccv_shortcut).map_err(|err| app_error!("Unable to register open ccv shortcut. {err}"))?;
+        app_handle
+            .global_shortcut()
+            .register(open_ccv_shortcut)
+            .map_err(|err| app_error!("Unable to register open ccv shortcut. {err}"))?;
     }
 
     Ok(())
@@ -19,7 +32,7 @@ pub fn get_shortcut(shortcut: &Shortcut) -> Option<HotKey> {
     if let Some(code) = shortcut.code.as_ref() {
         if let Some(code) = get_shortcut_code(code.as_str()) {
             let mut modifier: Modifiers = Modifiers::empty();
-    
+
             if shortcut.ctrl_key {
                 modifier = modifier | Modifiers::CONTROL;
             }
@@ -32,7 +45,7 @@ pub fn get_shortcut(shortcut: &Shortcut) -> Option<HotKey> {
             if shortcut.meta_key {
                 modifier = modifier | Modifiers::SUPER;
             }
-    
+
             if modifier == Modifiers::empty() {
                 Some(HotKey::new(None, code))
             } else {

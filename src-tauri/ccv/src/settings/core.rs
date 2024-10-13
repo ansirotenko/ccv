@@ -2,14 +2,14 @@ use crate::settings;
 use ccv_contract::{
     app_error,
     error::AppError,
-    models::{AllShortcuts, Settings, Shortcut, Theme},
+    models::{AllShortcuts, EventPayload, Settings, Shortcut, Theme},
 };
-use tauri::AppHandle;
 use std::{
     fs::File,
     io::{Read, Write},
     path::PathBuf,
 };
+use tauri::{AppHandle, Emitter, Manager};
 
 const SETTINGS_FILE_NAME: &str = "settings.json";
 const DEFAULT_VERSION: &str = "v1";
@@ -32,9 +32,7 @@ pub fn read_settings(app_data_dir: &PathBuf) -> Result<Settings, AppError> {
         .map_err(|err| app_error!("Unable to read settings file. {err}"))?;
 
     let settings_to_be_written = match serde_json::from_str::<serde_json::Value>(&file_content) {
-        Ok(value) => {
-            fix_settings(value.clone(), get_default_settings())
-        }
+        Ok(value) => fix_settings(value.clone(), get_default_settings()),
         Err(_) => get_default_settings(),
     };
 
@@ -77,7 +75,9 @@ fn fix_settings(mut value: serde_json::Value, default_settings: Settings) -> Set
     if !value[ALL_SHORTCUTS_KEY].is_object() {
         value[ALL_SHORTCUTS_KEY] = serde_json::json!(default_settings.all_shortcuts);
     } else {
-        if let Err(_) = serde_json::from_value::<Shortcut>(value[ALL_SHORTCUTS_KEY][OPEN_CCV_KEY].clone()) {
+        if let Err(_) =
+            serde_json::from_value::<Shortcut>(value[ALL_SHORTCUTS_KEY][OPEN_CCV_KEY].clone())
+        {
             value[ALL_SHORTCUTS_KEY][OPEN_CCV_KEY] =
                 serde_json::json!(default_settings.all_shortcuts.open_ccv);
         }
@@ -96,11 +96,11 @@ fn get_default_settings() -> Settings {
         theme: Theme::Light,
         all_shortcuts: AllShortcuts {
             open_ccv: Shortcut {
-                alt_key: true,
-                ctrl_key: false,
+                alt_key: false,
+                ctrl_key: true,
                 meta_key: false,
                 shift_key: false,
-                code: Some("KeyV".to_string()),
+                code: Some("Backquote".to_string()),
             },
         },
     }
@@ -126,6 +126,38 @@ pub fn write_settings(app_data_dir: &PathBuf, settings: &Settings) -> Result<(),
 
     file.write_all(json.as_bytes())
         .map_err(|err| app_error!("Unable to write settings file content. {err}"))
+}
+
+pub fn store_and_notify_settings(
+    app_handle: &AppHandle,
+    old_settings: &Option<Settings>,
+    new_settings: &Settings,
+) -> Result<(), AppError> {
+    let app_data_dir = app_handle
+        .path()
+        .app_data_dir()
+        .map_err(|err| app_error!("Unable to get appication directory. {err}"))?;
+    settings::core::write_settings(&app_data_dir, &new_settings)?;
+
+    match old_settings {
+        Some(old_settings) if old_settings == new_settings => {
+            // nothing should be done in this case
+        }
+        _ => {
+            settings::shortcut::register_shortcuts(app_handle, &new_settings.all_shortcuts, true)?;
+        }
+    }
+
+    app_handle
+        .emit(
+            settings::SETTINGS_UPDATED_EVENT,
+            EventPayload {
+                data: new_settings.clone(),
+            },
+        )
+        .map_err(|err| app_error!("{err}"))?;
+
+    Ok(())
 }
 
 #[cfg(test)]
@@ -159,18 +191,18 @@ mod tests {
             },
         };
 
-        let json_value = serde_json::json!({ 
-            VERSION_KEY: DEFAULT_VERSION.to_string(), 
-            THEME_KEY: Theme::Dark, 
-            ALL_SHORTCUTS_KEY: AllShortcuts{ 
-                open_ccv: Shortcut{ 
-                    alt_key: true, 
-                    shift_key: true, 
-                    ctrl_key: true, 
-                    meta_key: true, 
+        let json_value = serde_json::json!({
+            VERSION_KEY: DEFAULT_VERSION.to_string(),
+            THEME_KEY: Theme::Dark,
+            ALL_SHORTCUTS_KEY: AllShortcuts{
+                open_ccv: Shortcut{
+                    alt_key: true,
+                    shift_key: true,
+                    ctrl_key: true,
+                    meta_key: true,
                     code: Some("Q".to_string())
                 }
-            } 
+            }
         });
         let actual = fix_settings(json_value, get_default_settings());
 
@@ -194,19 +226,19 @@ mod tests {
             },
         };
 
-        let json_value = serde_json::json!({ 
-            VERSION_KEY: DEFAULT_VERSION.to_string(), 
+        let json_value = serde_json::json!({
+            VERSION_KEY: DEFAULT_VERSION.to_string(),
             NOTIFICATIONS_KEY: 123,
-            THEME_KEY: Theme::Dark, 
-            ALL_SHORTCUTS_KEY: AllShortcuts{ 
-                open_ccv: Shortcut{ 
-                    alt_key: true, 
-                    shift_key: true, 
-                    ctrl_key: true, 
-                    meta_key: true, 
+            THEME_KEY: Theme::Dark,
+            ALL_SHORTCUTS_KEY: AllShortcuts{
+                open_ccv: Shortcut{
+                    alt_key: true,
+                    shift_key: true,
+                    ctrl_key: true,
+                    meta_key: true,
                     code: Some("Q".to_string())
                 }
-            } 
+            }
         });
         let actual = fix_settings(json_value, get_default_settings());
 
@@ -230,19 +262,19 @@ mod tests {
             },
         };
 
-        let json_value = serde_json::json!({ 
-            VERSION_KEY: DEFAULT_VERSION.to_string(), 
+        let json_value = serde_json::json!({
+            VERSION_KEY: DEFAULT_VERSION.to_string(),
             NOTIFICATIONS_KEY: vec![settings::WELCOME_NOTIFICATION.to_string()],
-            THEME_KEY: Theme::Dark, 
-            ALL_SHORTCUTS_KEY: AllShortcuts{ 
-                open_ccv: Shortcut{ 
-                    alt_key: true, 
-                    shift_key: true, 
-                    ctrl_key: true, 
-                    meta_key: true, 
+            THEME_KEY: Theme::Dark,
+            ALL_SHORTCUTS_KEY: AllShortcuts{
+                open_ccv: Shortcut{
+                    alt_key: true,
+                    shift_key: true,
+                    ctrl_key: true,
+                    meta_key: true,
                     code: Some("Q".to_string())
                 }
-            } 
+            }
         });
         let actual = fix_settings(json_value, get_default_settings());
 
@@ -266,18 +298,18 @@ mod tests {
             },
         };
 
-        let json_value = serde_json::json!({ 
-            VERSION_KEY: "v0", 
-            THEME_KEY: Theme::Dark, 
-            ALL_SHORTCUTS_KEY: AllShortcuts{ 
-                open_ccv: Shortcut{ 
-                    alt_key: true, 
-                    shift_key: true, 
-                    ctrl_key: true, 
-                    meta_key: true, 
+        let json_value = serde_json::json!({
+            VERSION_KEY: "v0",
+            THEME_KEY: Theme::Dark,
+            ALL_SHORTCUTS_KEY: AllShortcuts{
+                open_ccv: Shortcut{
+                    alt_key: true,
+                    shift_key: true,
+                    ctrl_key: true,
+                    meta_key: true,
                     code: Some("Q".to_string())
                 }
-            } 
+            }
         });
         let actual = fix_settings(json_value, get_default_settings());
 
@@ -301,18 +333,18 @@ mod tests {
             },
         };
 
-        let json_value = serde_json::json!({ 
-            VERSION_KEY: DEFAULT_VERSION.to_string(), 
-            THEME_KEY: "NewTheme", 
-            ALL_SHORTCUTS_KEY: AllShortcuts{ 
-                open_ccv: Shortcut{ 
-                    alt_key: true, 
-                    shift_key: true, 
-                    ctrl_key: true, 
-                    meta_key: true, 
+        let json_value = serde_json::json!({
+            VERSION_KEY: DEFAULT_VERSION.to_string(),
+            THEME_KEY: "NewTheme",
+            ALL_SHORTCUTS_KEY: AllShortcuts{
+                open_ccv: Shortcut{
+                    alt_key: true,
+                    shift_key: true,
+                    ctrl_key: true,
+                    meta_key: true,
                     code: Some("Q".to_string())
                 }
-            } 
+            }
         });
         let actual = fix_settings(json_value, get_default_settings());
 
@@ -328,9 +360,9 @@ mod tests {
             all_shortcuts: get_default_settings().all_shortcuts,
         };
 
-        let json_value = serde_json::json!({ 
-            VERSION_KEY: DEFAULT_VERSION.to_string(), 
-            THEME_KEY: Theme::Dark, 
+        let json_value = serde_json::json!({
+            VERSION_KEY: DEFAULT_VERSION.to_string(),
+            THEME_KEY: Theme::Dark,
             ALL_SHORTCUTS_KEY: 123
         });
         let actual = fix_settings(json_value, get_default_settings());
@@ -347,9 +379,9 @@ mod tests {
             all_shortcuts: get_default_settings().all_shortcuts,
         };
 
-        let json_value = serde_json::json!({ 
-            VERSION_KEY: DEFAULT_VERSION.to_string(), 
-            THEME_KEY: Theme::Dark, 
+        let json_value = serde_json::json!({
+            VERSION_KEY: DEFAULT_VERSION.to_string(),
+            THEME_KEY: Theme::Dark,
             ALL_SHORTCUTS_KEY: serde_json::json!({ OPEN_CCV_KEY: 123})
         });
         let actual = fix_settings(json_value, get_default_settings());

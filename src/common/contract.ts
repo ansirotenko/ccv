@@ -64,7 +64,7 @@ export interface AboutData {
     appDataDirectory: string | null;
     appLogsDirectory: string | null;
     text: string;
-    os: Os
+    os: Os;
 }
 
 export interface EventPayload<T> {

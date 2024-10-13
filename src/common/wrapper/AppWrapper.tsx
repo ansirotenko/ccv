@@ -30,7 +30,7 @@ function AppWrapper({ children }: ComponentProps<'div'>) {
     useEffect(() => {
         getAboutData().then((aboutData) => {
             setAboutData(aboutData);
-        })
+        });
         loadSettingsAttempt();
     }, []);
 
@@ -78,11 +78,11 @@ function AppWrapper({ children }: ComponentProps<'div'>) {
         );
     }
 
-    return <SettingsContext.Provider value={settings}>
-        <AboutContext.Provider value={aboutData}>
-            {children}
-        </AboutContext.Provider>
-    </SettingsContext.Provider>;
+    return (
+        <SettingsContext.Provider value={settings}>
+            <AboutContext.Provider value={aboutData}>{children}</AboutContext.Provider>
+        </SettingsContext.Provider>
+    );
 }
 
 export default AppWrapper;

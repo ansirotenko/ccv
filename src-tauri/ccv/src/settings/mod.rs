@@ -1,6 +1,5 @@
 pub mod commands;
 pub mod core;
-// pub mod hotkeys;
 pub mod setup;
 pub mod shortcut;
 pub mod state;

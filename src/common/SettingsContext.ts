@@ -5,6 +5,6 @@ const defaultSettings: Settings = {
     allShortcuts: { openCcv: { altKey: false, ctrlKey: false, shiftKey: false, metaKey: false, code: undefined } },
     theme: 'Light',
     version: '',
-    notifications: undefined
+    notifications: undefined,
 };
 export const SettingsContext = createContext<Settings>(defaultSettings);

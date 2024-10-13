@@ -1,13 +1,15 @@
 use crate::primary;
-use crate:: settings;
-use crate:: utils::window::show_window;
-use ccv_contract::models::EventPayload;
-use ccv_contract::models::MainShortcutPressedPayload;
-use ccv_contract::{app_error, error::AppError, models::Settings};
+use crate::settings;
+use crate::utils::window::show_window;
+use ccv_contract::{
+    app_error,
+    error::AppError,
+    models::{EventPayload, MainShortcutPressedPayload},
+};
+use std::path::PathBuf;
 use tauri::Emitter;
-use std::{path::PathBuf, sync::mpsc::channel};
 use tauri::{AppHandle, Manager, WebviewWindow};
-use tauri_plugin_global_shortcut::{Code, Modifiers, Shortcut, ShortcutState};
+use tauri_plugin_global_shortcut::ShortcutState;
 
 pub fn read_settings_and_register_shortcuts(
     app_handle: &AppHandle,
@@ -15,7 +17,6 @@ pub fn read_settings_and_register_shortcuts(
 ) -> Result<(), AppError> {
     let settings_state = app_handle.state::<settings::state::SettingsState>();
     let mut settings = settings_state.settings.lock().unwrap();
-    //TODO test if error returns
     match settings::core::read_settings(app_data_dir) {
         Ok(new_settings) => {
             *settings = Some(new_settings);
@@ -25,40 +26,37 @@ pub fn read_settings_and_register_shortcuts(
         }
     };
 
-    // let (tx, rx) = channel::<Settings>();
-    // TODO restore rx
-    // let (tx, _) = channel::<Settings>();
-    // let mut hotkey_change = settings_state.settings_change.lock().unwrap();
-    // *hotkey_change = Some(tx);
+    app_handle
+        .plugin(
+            tauri_plugin_global_shortcut::Builder::new()
+                .with_handler(move |app_handle, shortcut, event| match event.state() {
+                    ShortcutState::Pressed => {
+                        let settings_state = app_handle.state::<settings::state::SettingsState>();
+                        let settings = settings_state.settings.lock().unwrap();
 
-    // TODO test this
-    // let settings = settings.clone().unwrap();
-    // settings::hotkeys::listen_hotkey_change(app_handle.clone(), settings, rx);
-
-    // TODO key must be present
-
-    app_handle.plugin(
-        tauri_plugin_global_shortcut::Builder::new().with_handler(move |app_handle, shortcut, event| {
-            match event.state() {
-                ShortcutState::Pressed => {
-                    let settings_state = app_handle.state::<settings::state::SettingsState>();
-                    let settings = settings_state.settings.lock().unwrap();
-
-                    if let Some(settings) = settings.as_ref() {
-                        if let Some(open_ccv_shortcut) = settings::shortcut::get_shortcut(&settings.all_shortcuts.open_ccv) {
-                            if shortcut == &open_ccv_shortcut {
-                                activate_primary_window(&app_handle.get_webview_window(primary::SCREEN))
+                        if let Some(settings) = settings.as_ref() {
+                            if let Some(open_ccv_shortcut) =
+                                settings::shortcut::get_shortcut(&settings.all_shortcuts.open_ccv)
+                            {
+                                if shortcut == &open_ccv_shortcut {
+                                    activate_primary_window(
+                                        &app_handle.get_webview_window(primary::SCREEN),
+                                    )
+                                }
                             }
                         }
                     }
-                }
-                ShortcutState::Released => {}
-            }
-        })
-        .build(),
-    ).map_err(|err| app_error!("Unable to initialize global shortcut plugin. {err}"))?;
+                    ShortcutState::Released => {}
+                })
+                .build(),
+        )
+        .map_err(|err| app_error!("Unable to initialize global shortcut plugin. {err}"))?;
 
-    settings::shortcut::register_shortcuts(app_handle, &settings.as_ref().unwrap().all_shortcuts, false)?;
+    settings::shortcut::register_shortcuts(
+        app_handle,
+        &settings.as_ref().unwrap().all_shortcuts,
+        false,
+    )?;
 
     Ok(())
 }

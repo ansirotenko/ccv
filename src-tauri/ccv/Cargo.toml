@@ -18,10 +18,9 @@ ccv_sqlite = { path = "../ccv_sqlite", optional = true }
 clipboard-rs = { version = "0.2.1" }
 chrono = { workspace = true }
 log = { workspace = true }
-open = { version = "5.3.0" }
 serde = { workspace = true }
 serde_json = { version = "1.0.127" }
-tauri = { version = "2.0.2", features = ["tray-icon"] }
+tauri = { version = "2.0.3", features = ["tray-icon"] }
 tauri-plugin-autostart = { version = "2.0.1" }
 tauri-plugin-clipboard = { version = "2.1.9" }
 tauri-plugin-global-shortcut = { version = "2.0.1" }

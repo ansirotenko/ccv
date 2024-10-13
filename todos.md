@@ -6,4 +6,3 @@
     check
         - autostart
         - updater
-        - copy rtf? arboard 

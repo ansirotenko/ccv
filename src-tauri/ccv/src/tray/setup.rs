@@ -29,10 +29,34 @@ pub fn build(app_handle: &AppHandle) -> Result<(), AppError> {
 }
 
 fn get_menu<R: Runtime>(app_handle: &AppHandle<R>) -> Result<Menu<R>, Error> {
-    let about = MenuItem::with_id(app_handle, ABOUT_MENU.to_string(), "About", true, None::<&str>)?;
-    let settings = MenuItem::with_id(app_handle, SETTINGS_MENU.to_string(), "Settings", true, None::<&str>)?;
-    let show = MenuItem::with_id(app_handle, SHOW_MENU.to_string(), "Show", true, None::<&str>)?;
-    let quit = MenuItem::with_id(app_handle, QUIT_MENU.to_string(), "Quit", true, None::<&str>)?;
+    let about = MenuItem::with_id(
+        app_handle,
+        ABOUT_MENU.to_string(),
+        "About",
+        true,
+        None::<&str>,
+    )?;
+    let settings = MenuItem::with_id(
+        app_handle,
+        SETTINGS_MENU.to_string(),
+        "Settings",
+        true,
+        None::<&str>,
+    )?;
+    let show = MenuItem::with_id(
+        app_handle,
+        SHOW_MENU.to_string(),
+        "Show",
+        true,
+        None::<&str>,
+    )?;
+    let quit = MenuItem::with_id(
+        app_handle,
+        QUIT_MENU.to_string(),
+        "Quit",
+        true,
+        None::<&str>,
+    )?;
     let separator = PredefinedMenuItem::separator(app_handle)?;
 
     Menu::with_items(
