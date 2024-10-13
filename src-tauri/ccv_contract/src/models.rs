@@ -125,6 +125,8 @@ pub struct Settings {
     pub all_shortcuts: AllShortcuts,
     #[serde(rename = "theme")]
     pub theme: Theme,
+    #[serde(rename = "autostart")]
+    pub autostart: bool,
 }
 
 #[derive(Clone, Serialize, Debug)]

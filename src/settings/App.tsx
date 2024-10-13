@@ -11,6 +11,7 @@ import { AppError, Settings, Shortcut } from '../common/contract';
 import { SettingsContext } from '../common/SettingsContext';
 import { shortcutDisplay, shortcutFromEvent } from '../common/keyboard';
 import { hideSettingsWindow, removeCopyItems, removeCopyItemsOlder, setSettings } from '../common/commands';
+import { Checkbox } from 'primereact/checkbox';
 
 import styles from './App.module.css';
 
@@ -150,33 +151,45 @@ function App() {
                 <Button className={`pi pi-times ${styles.toolbarButton}`} onClick={hideSettingsWindow} />
             </div>
             <div className={styles.content}>
-                <Fieldset legend="Theme">
-                    <div className={styles.themeContainer}>
-                        <div className={styles.theme}>
-                            <RadioButton
-                                inputId="lightTheme"
-                                name="light"
-                                onChange={() => {
-                                    if (settings && settings.theme !== 'Light') {
-                                        saveSettings({ ...settings!, theme: 'Light' });
-                                    }
-                                }}
-                                checked={settings?.theme === 'Light'}
-                            />
-                            <label htmlFor="lightTheme">Light</label>
+                <Fieldset legend="General">
+                    <div className={styles.generalSettings}>
+                        <label>Theme</label>
+                        <div className={styles.themeContainer}>
+                            <div className={styles.theme}>
+                                <RadioButton
+                                    inputId="lightTheme"
+                                    name="light"
+                                    onChange={() => {
+                                        if (settings && settings.theme !== 'Light') {
+                                            saveSettings({ ...settings!, theme: 'Light' });
+                                        }
+                                    }}
+                                    checked={settings?.theme === 'Light'}
+                                />
+                                <label htmlFor="lightTheme">Light</label>
+                            </div>
+                            <div className={styles.theme}>
+                                <RadioButton
+                                    inputId="darkTheme"
+                                    onChange={() => {
+                                        if (settings && settings.theme !== 'Dark') {
+                                            saveSettings({ ...settings!, theme: 'Dark' });
+                                        }
+                                    }}
+                                    checked={settings?.theme === 'Dark'}
+                                />
+                                <label htmlFor="darkTheme">Dark</label>
+                            </div>
                         </div>
-                        <div className={styles.theme}>
-                            <RadioButton
-                                inputId="darkTheme"
-                                onChange={() => {
-                                    if (settings && settings.theme !== 'Dark') {
-                                        saveSettings({ ...settings!, theme: 'Dark' });
-                                    }
-                                }}
-                                checked={settings?.theme === 'Dark'}
-                            />
-                            <label htmlFor="darkTheme">Dark</label>
-                        </div>
+                        <label>Autostart</label>
+                        <Checkbox
+                            checked={settings?.autostart}
+                            onChange={(e) => {
+                                if (e.checked != settings?.autostart) {
+                                    saveSettings({ ...settings!, autostart: !!e.checked });
+                                }
+                            }}
+                        />
                     </div>
                 </Fieldset>
                 <Fieldset legend="Shortcuts">

@@ -6,6 +6,10 @@
 .progress {
     height: 6px;
     margin: 10px 0;
+
+    [class~='p-progressbar-value'] {
+        background-color: #8dd0ff;
+    }
 }
 
 .manifestBody {

@@ -18,6 +18,7 @@ const ALL_SHORTCUTS_KEY: &str = "allShortcuts";
 const OPEN_CCV_KEY: &str = "openCcv";
 const VERSION_KEY: &str = "version";
 const THEME_KEY: &str = "theme";
+const AUTOSTART_KEY: &str = "autostart";
 
 pub fn read_settings(app_data_dir: &PathBuf) -> Result<Settings, AppError> {
     let mut file = File::options()
@@ -72,6 +73,10 @@ fn fix_settings(mut value: serde_json::Value, default_settings: Settings) -> Set
         value[THEME_KEY] = serde_json::json!(default_settings.theme);
     }
 
+    if let Err(_) = serde_json::from_value::<bool>(value[AUTOSTART_KEY].clone()) {
+        value[AUTOSTART_KEY] = serde_json::json!(true);
+    }
+
     if !value[ALL_SHORTCUTS_KEY].is_object() {
         value[ALL_SHORTCUTS_KEY] = serde_json::json!(default_settings.all_shortcuts);
     } else {
@@ -103,6 +108,7 @@ fn get_default_settings() -> Settings {
                 code: Some("Backquote".to_string()),
             },
         },
+        autostart: true
     }
 }
 
@@ -140,11 +146,20 @@ pub fn store_and_notify_settings(
     settings::core::write_settings(&app_data_dir, &new_settings)?;
 
     match old_settings {
-        Some(old_settings) if old_settings == new_settings => {
+        Some(old_settings) if old_settings.all_shortcuts == new_settings.all_shortcuts => {
             // nothing should be done in this case
         }
         _ => {
             settings::shortcut::register_shortcuts(app_handle, &new_settings.all_shortcuts, true)?;
+        }
+    }
+
+    match old_settings {
+        Some(old_settings) if old_settings.autostart == new_settings.autostart => {
+            // nothing should be done in this case
+        }
+        _ => {
+            settings::autostart::adjust_autostart(app_handle, new_settings.autostart)?;
         }
     }
 
@@ -179,7 +194,7 @@ mod tests {
         let expected = Settings {
             notifications: None,
             version: DEFAULT_VERSION.to_string(),
-            theme: Theme::Dark,
+            theme: Theme::Light,
             all_shortcuts: AllShortcuts {
                 open_ccv: Shortcut {
                     alt_key: true,
@@ -189,11 +204,13 @@ mod tests {
                     code: Some("Q".to_string()),
                 },
             },
+            autostart: true
         };
 
         let json_value = serde_json::json!({
             VERSION_KEY: DEFAULT_VERSION.to_string(),
-            THEME_KEY: Theme::Dark,
+            THEME_KEY: Theme::Light,
+            AUTOSTART_KEY: true,
             ALL_SHORTCUTS_KEY: AllShortcuts{
                 open_ccv: Shortcut{
                     alt_key: true,
@@ -224,12 +241,14 @@ mod tests {
                     code: Some("Q".to_string()),
                 },
             },
+            autostart: false
         };
 
         let json_value = serde_json::json!({
             VERSION_KEY: DEFAULT_VERSION.to_string(),
             NOTIFICATIONS_KEY: 123,
             THEME_KEY: Theme::Dark,
+            AUTOSTART_KEY: false,
             ALL_SHORTCUTS_KEY: AllShortcuts{
                 open_ccv: Shortcut{
                     alt_key: true,
@@ -238,7 +257,7 @@ mod tests {
                     meta_key: true,
                     code: Some("Q".to_string())
                 }
-            }
+            },
         });
         let actual = fix_settings(json_value, get_default_settings());
 
@@ -260,12 +279,14 @@ mod tests {
                     code: Some("Q".to_string()),
                 },
             },
+            autostart: true
         };
 
         let json_value = serde_json::json!({
             VERSION_KEY: DEFAULT_VERSION.to_string(),
             NOTIFICATIONS_KEY: vec![settings::WELCOME_NOTIFICATION.to_string()],
             THEME_KEY: Theme::Dark,
+            AUTOSTART_KEY: true,
             ALL_SHORTCUTS_KEY: AllShortcuts{
                 open_ccv: Shortcut{
                     alt_key: true,
@@ -296,11 +317,13 @@ mod tests {
                     code: Some("Q".to_string()),
                 },
             },
+            autostart: false
         };
 
         let json_value = serde_json::json!({
             VERSION_KEY: "v0",
             THEME_KEY: Theme::Dark,
+            AUTOSTART_KEY: false,
             ALL_SHORTCUTS_KEY: AllShortcuts{
                 open_ccv: Shortcut{
                     alt_key: true,
@@ -322,6 +345,7 @@ mod tests {
             notifications: None,
             version: DEFAULT_VERSION.to_string(),
             theme: Theme::Light,
+            autostart: true,
             all_shortcuts: AllShortcuts {
                 open_ccv: Shortcut {
                     alt_key: true,
@@ -336,6 +360,44 @@ mod tests {
         let json_value = serde_json::json!({
             VERSION_KEY: DEFAULT_VERSION.to_string(),
             THEME_KEY: "NewTheme",
+            AUTOSTART_KEY: true,
+            ALL_SHORTCUTS_KEY: AllShortcuts{
+                open_ccv: Shortcut{
+                    alt_key: true,
+                    shift_key: true,
+                    ctrl_key: true,
+                    meta_key: true,
+                    code: Some("Q".to_string())
+                }
+            }
+        });
+        let actual = fix_settings(json_value, get_default_settings());
+
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn invalid_autostart() {
+        let expected = Settings {
+            notifications: None,
+            version: DEFAULT_VERSION.to_string(),
+            theme: Theme::Dark,
+            autostart: true,
+            all_shortcuts: AllShortcuts {
+                open_ccv: Shortcut {
+                    alt_key: true,
+                    ctrl_key: true,
+                    meta_key: true,
+                    shift_key: true,
+                    code: Some("Q".to_string()),
+                },
+            },
+        };
+
+        let json_value = serde_json::json!({
+            VERSION_KEY: DEFAULT_VERSION.to_string(),
+            THEME_KEY: Theme::Dark,
+            AUTOSTART_KEY: "asdad",
             ALL_SHORTCUTS_KEY: AllShortcuts{
                 open_ccv: Shortcut{
                     alt_key: true,
@@ -357,12 +419,14 @@ mod tests {
             notifications: None,
             version: DEFAULT_VERSION.to_string(),
             theme: Theme::Dark,
+            autostart: false,
             all_shortcuts: get_default_settings().all_shortcuts,
         };
 
         let json_value = serde_json::json!({
             VERSION_KEY: DEFAULT_VERSION.to_string(),
             THEME_KEY: Theme::Dark,
+            AUTOSTART_KEY: false,
             ALL_SHORTCUTS_KEY: 123
         });
         let actual = fix_settings(json_value, get_default_settings());
@@ -376,12 +440,14 @@ mod tests {
             notifications: None,
             version: DEFAULT_VERSION.to_string(),
             theme: Theme::Dark,
+            autostart: false,
             all_shortcuts: get_default_settings().all_shortcuts,
         };
 
         let json_value = serde_json::json!({
             VERSION_KEY: DEFAULT_VERSION.to_string(),
             THEME_KEY: Theme::Dark,
+            AUTOSTART_KEY: false,
             ALL_SHORTCUTS_KEY: serde_json::json!({ OPEN_CCV_KEY: 123})
         });
         let actual = fix_settings(json_value, get_default_settings());

@@ -18,47 +18,50 @@ pub fn read_settings_and_register_shortcuts(
     let settings_state = app_handle.state::<settings::state::SettingsState>();
     let mut settings = settings_state.settings.lock().unwrap();
     match settings::core::read_settings(app_data_dir) {
-        Ok(new_settings) => {
-            *settings = Some(new_settings);
-        }
-        Err(err) => {
-            return Err(err);
-        }
-    };
+        Ok(initial_settings) => {
+            *settings = Some(initial_settings.clone());
 
-    app_handle
-        .plugin(
-            tauri_plugin_global_shortcut::Builder::new()
-                .with_handler(move |app_handle, shortcut, event| match event.state() {
-                    ShortcutState::Pressed => {
-                        let settings_state = app_handle.state::<settings::state::SettingsState>();
-                        let settings = settings_state.settings.lock().unwrap();
+            app_handle
+                .plugin(
+                    tauri_plugin_global_shortcut::Builder::new()
+                        .with_handler(move |app_handle, shortcut, event| match event.state() {
+                            ShortcutState::Pressed => {
+                                let settings_state =
+                                    app_handle.state::<settings::state::SettingsState>();
+                                let settings = settings_state.settings.lock().unwrap();
 
-                        if let Some(settings) = settings.as_ref() {
-                            if let Some(open_ccv_shortcut) =
-                                settings::shortcut::get_shortcut(&settings.all_shortcuts.open_ccv)
-                            {
-                                if shortcut == &open_ccv_shortcut {
-                                    activate_primary_window(
-                                        &app_handle.get_webview_window(primary::SCREEN),
-                                    )
+                                if let Some(settings) = settings.as_ref() {
+                                    if let Some(open_ccv_shortcut) =
+                                        settings::shortcut::get_shortcut(
+                                            &settings.all_shortcuts.open_ccv,
+                                        )
+                                    {
+                                        if shortcut == &open_ccv_shortcut {
+                                            activate_primary_window(
+                                                &app_handle.get_webview_window(primary::SCREEN),
+                                            )
+                                        }
+                                    }
                                 }
                             }
-                        }
-                    }
-                    ShortcutState::Released => {}
-                })
-                .build(),
-        )
-        .map_err(|err| app_error!("Unable to initialize global shortcut plugin. {err}"))?;
+                            ShortcutState::Released => {}
+                        })
+                        .build(),
+                )
+                .map_err(|err| app_error!("Unable to initialize global shortcut plugin. {err}"))?;
 
-    settings::shortcut::register_shortcuts(
-        app_handle,
-        &settings.as_ref().unwrap().all_shortcuts,
-        false,
-    )?;
+            settings::shortcut::register_shortcuts(
+                app_handle,
+                &initial_settings.all_shortcuts,
+                false,
+            )?;
 
-    Ok(())
+            settings::autostart::adjust_autostart(app_handle, initial_settings.autostart)?;
+
+            Ok(())
+        }
+        Err(err) => Err(err),
+    }
 }
 
 fn activate_primary_window(primary_window_option: &Option<WebviewWindow>) -> () {

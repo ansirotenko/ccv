@@ -6,5 +6,6 @@ const defaultSettings: Settings = {
     theme: 'Light',
     version: '',
     notifications: undefined,
+    autostart: false,
 };
 export const SettingsContext = createContext<Settings>(defaultSettings);

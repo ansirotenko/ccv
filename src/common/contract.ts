@@ -52,6 +52,7 @@ export interface Settings {
     version: string;
     allShortcuts: AllShortcuts;
     theme: Theme;
+    autostart: boolean;
 }
 
 export type Os = 'Linux' | 'MacOs' | 'Windows';

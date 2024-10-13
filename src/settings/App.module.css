@@ -48,6 +48,7 @@
     & [class~='p-fieldset'] {
         margin-bottom: 13px;
         border-radius: 3px;
+        padding: 0px 10px 8px;
     }
 
     & [class~='p-fieldset-legend'] {
@@ -83,13 +84,29 @@
     }
 }
 
+.generalSettings {
+    outline-style: none;
+    grid-template-columns: 1fr 3fr;
+    display: grid;
+    column-gap: 0;
+    row-gap: 5px;
+
+    label {
+        font-size: 14px;
+        line-height: 20px;
+    }
+}
+
 .themeContainer {
     display: flex;
 }
 
 .theme {
     margin-right: 10px;
-    line-height: 16px;
+
+    [class~='p-radiobutton'] {
+        margin-bottom: 2px;
+    }
 
     label {
         margin-left: 4px;
