@@ -5,7 +5,7 @@ import { CopyItem, CopyCategory, AppError, SearchResult } from '../common/contra
 import { ItemPreview } from './itemPreview/ItemPreview';
 import { useDebouncedCallback } from '../common/useDebouncedCallback';
 import { useListenClipboard } from './useListenClipboard';
-import { error as logError } from '@tauri-apps/plugin-log';
+import * as log from '@tauri-apps/plugin-log';
 import { SearchContext, escapeSearch } from './SearchContext';
 import { useSubscribeEvent, emitEvent, ITEMS_CHANGED, WINDOW_HIDDEN_EVENT, HIGHLIGHT_REPORT_BUG } from '../common/events';
 import { Container } from './container/Container';
@@ -63,7 +63,7 @@ function App() {
             const resultItems = await searchCopyItems(searchQuery, 0, pageSize, searchCategories);
             setResult(resultItems);
         } catch (e) {
-            logError((e as AppError).message);
+            log.error((e as AppError).message);
             setError({ message: (e as AppError).message });
         } finally {
             setLoading(false);
@@ -81,7 +81,7 @@ function App() {
             setPage(page + 1);
             containerRef.current?.focus();
         } catch (e) {
-            logError((e as AppError).message);
+            log.error((e as AppError).message);
             setError({ message: (e as AppError).message });
         } finally {
             setLoading(false);

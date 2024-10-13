@@ -20,8 +20,6 @@ export function UpdateDialog({ notifyUpToDate }: UpdateDialogProps) {
     const [updateIsRunning, setUpdateIsRunning] = useState(false);
     const [updateStatus, setUpdateStatus] = useState<string>('PENDING');
     const [updateError, setUpdateError] = useState<string | undefined>(undefined);
-    const [contentLength, setContentLength] = useState<number | undefined>();
-    const [downloaded, setDownloaded] = useState<number | undefined>();
     const aboutData = useContext(AboutContext);
 
     useEffect(() => {
@@ -34,18 +32,8 @@ export function UpdateDialog({ notifyUpToDate }: UpdateDialogProps) {
             });
     }, []);
 
-    // TODO test functionality
-
     if (loading) {
         return <></>;
-    }
-
-    function getValue() {
-        if (!contentLength || contentLength < 0) {
-            return 0;
-        }
-
-        return (downloaded || 0) / contentLength;
     }
 
     function updatingContent() {
@@ -55,7 +43,7 @@ export function UpdateDialog({ notifyUpToDate }: UpdateDialogProps) {
         return (
             <>
                 <p>{updateStatus}</p>
-                <ProgressBar value={getValue()} className={styles.progress}></ProgressBar>
+                <ProgressBar mode="indeterminate" className={styles.progress}></ProgressBar>
             </>
         );
     }
@@ -86,11 +74,9 @@ export function UpdateDialog({ notifyUpToDate }: UpdateDialogProps) {
                 switch (event.event) {
                     case 'Started':
                         setUpdateStatus('STARTED');
-                        setContentLength(event.data.contentLength);
                         break;
                     case 'Progress':
                         setUpdateStatus('DOWNLOADING');
-                        setDownloaded((d) => (d || 0) + event.data.chunkLength);
                         break;
                     case 'Finished':
                         setUpdateStatus('INSTALLING');
@@ -99,7 +85,6 @@ export function UpdateDialog({ notifyUpToDate }: UpdateDialogProps) {
             });
             await relaunch();
         } catch (e: any) {
-            // TODO see what happens
             setUpdateError(e.toString());
         }
     }

@@ -5,4 +5,3 @@
     - systemicons for file icons
     check
         - autostart
-        - updater

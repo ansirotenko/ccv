@@ -6,7 +6,7 @@ import { Calendar } from 'primereact/calendar';
 import { RadioButton } from 'primereact/radiobutton';
 import { Toast } from 'primereact/toast';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
-import { error as logError } from '@tauri-apps/plugin-log';
+import * as log from '@tauri-apps/plugin-log';
 import { AppError, Settings, Shortcut } from '../common/contract';
 import { SettingsContext } from '../common/SettingsContext';
 import { shortcutDisplay, shortcutFromEvent } from '../common/keyboard';
@@ -29,7 +29,7 @@ function App() {
             showSuccess(`Settings were changed`);
         } catch (e) {
             const appError = e as AppError;
-            logError(appError.message);
+            log.error(appError.message);
             showError(`Failed to save settings: ${appError.message}`);
         }
     };
@@ -100,12 +100,12 @@ function App() {
                         showSuccess(`Deletion completed`);
                     } else {
                         const errorMessage = `Ids are empty`;
-                        logError(errorMessage);
+                        log.error(errorMessage);
                         showError(errorMessage);
                     }
                 } catch (e) {
                     const appError = e as AppError;
-                    logError(appError.message);
+                    log.error(appError.message);
                     showError(`Deleton failed: ${appError.message}`);
                 }
             },
@@ -124,12 +124,12 @@ function App() {
                         showSuccess(`Deletion completed`);
                     } else {
                         const errorMessage = `Deletion date is null`;
-                        logError(errorMessage);
+                        log.error(errorMessage);
                         showError(errorMessage);
                     }
                 } catch (e) {
                     const appError = e as AppError;
-                    logError(appError.message);
+                    log.error(appError.message);
                     showError(`Deleton failed: ${appError.message}`);
                 }
             },

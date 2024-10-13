@@ -16,7 +16,6 @@ use utils::window::{close_window, hide_window, show_window};
 pub fn run() -> () {
     let builder = Builder::default()
         .plugin(tauri_plugin_updater::Builder::new().build())
-        // TODO test
         .plugin(tauri_plugin_process::init()) // required for restart after updater completes job
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_autostart::init(
