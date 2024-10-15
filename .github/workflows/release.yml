@@ -55,6 +55,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.CCV_UPDATER_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.CCV_UPDATER_PASSWORD }}
+          APPLE_CERTIFICATE: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_TEAM_ID }}
           SIGN: "1"
           SIGN_KEY: ${{ secrets.CCV_SIGNING_KEY }} 
           APPIMAGETOOL_SIGN_PASSPHRASE: ${{ secrets.CCV_APPIMAGETOOL_SIGN_PASSPHRASE }} 
