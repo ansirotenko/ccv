@@ -64,9 +64,9 @@ export function ItemPreview({ item }: ItemPreviewProps) {
         return <div className={styles.container}></div>;
     }
 
-    let info = `id: ${item.id}, created: ${item.created.toLocaleString()}`;
+    let info = `id: ${item.id}, created: ${item.created.toLocaleString('en-GB')}`;
     if (item.lastReuse.getTime() !== item.created.getTime()) {
-        info += `, last use: ${item.lastReuse.toLocaleString()}`;
+        info += `, last use: ${item.lastReuse.toLocaleString('en-GB')}`;
     }
     return (
         <div className={styles.container}>
