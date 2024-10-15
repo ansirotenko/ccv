@@ -60,7 +60,11 @@ fn get_new_copy_item_value(clipboard_state: &State<Clipboard>) -> Result<CopyIte
                         file_name: file_name
                             .map(|f| f.to_os_string().into_string().unwrap_or("".to_string())),
                         is_directory: path.is_dir(),
-                        icon_base64: None,
+                        icon_base64: if path.is_dir() {
+                            None
+                        } else {
+                            get_file_icon(fp)
+                        },
                     }
                 })
                 .collect();
@@ -95,6 +99,16 @@ fn get_new_copy_item_value(clipboard_state: &State<Clipboard>) -> Result<CopyIte
         files: files,
         category: category,
     })
+}
+
+pub fn get_file_icon(file_path: &str) -> Option<String> {
+    match systemicons::get_icon(file_path, 16) {
+        Err(_) => None,
+        Ok(icon_bytes) => {
+            use base64::{engine::general_purpose::STANDARD, Engine as _};
+            Some(STANDARD.encode(icon_bytes))
+        }
+    }
 }
 
 pub fn get_clipboard_category(

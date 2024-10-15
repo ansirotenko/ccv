@@ -12,6 +12,7 @@ edition = "2021"
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
+base64 = { version = "0.22.1"}
 ccv_contract = { path = "../ccv_contract" }
 ccv_in_memory = { path = "../ccv_in_memory" }
 ccv_sqlite = { path = "../ccv_sqlite", optional = true }
@@ -20,6 +21,7 @@ chrono = { workspace = true }
 log = { workspace = true }
 serde = { workspace = true }
 serde_json = { version = "1.0.127" }
+systemicons = { version = "0.8.0" }
 tauri = { version = "2.0.3", features = ["tray-icon"] }
 tauri-plugin-autostart = { version = "2.0.1" }
 tauri-plugin-clipboard = { version = "2.1.9" }

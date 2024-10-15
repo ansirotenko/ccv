@@ -1,12 +1,13 @@
 .container {
     white-space: nowrap;
-    line-height: 18px;
+    line-height: 22px;
+    position: relative;
+    margin-left: 18px;
 }
 
-.image {
-    margin: 0 4px;
+.iconus {
+    position: absolute;
+    left: -18px;
+    top: 2px
 }
 
-.icon {
-    margin: 0 2px;
-}

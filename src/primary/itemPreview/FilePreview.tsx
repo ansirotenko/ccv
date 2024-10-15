@@ -12,9 +12,11 @@ export function FilePreview({ file }: FilePreviewProps) {
     const search = useContext(SearchContext);
     return (
         <div className={styles.container}>
-            {file.iconBase64 && <img className={styles.image} src={`data:image/png;base64, ${file.iconBase64}`} height="13" />}
-            {!file.iconBase64 && !file.isDirectory && <i className={`pi pi-file ${styles.icon}`}></i>}
-            {!file.iconBase64 && file.isDirectory && <i className={`pi pi-folder ${styles.icon}`}></i>}
+            <div className={styles.iconus}>
+                {file.iconBase64 && <img src={`data:image/png;base64, ${file.iconBase64}`} height="16" />}
+                {!file.iconBase64 && !file.isDirectory && <i className="pi pi-file"></i>}
+                {!file.iconBase64 && file.isDirectory && <i className="pi pi-folder"></i>}
+            </div>
             <em dangerouslySetInnerHTML={{ __html: textToHighlightedHtml(file.fileName, search) }}></em>
             <em> @ </em>
             <em dangerouslySetInnerHTML={{ __html: textToHighlightedHtml(file.fullPath, search) }}></em>
