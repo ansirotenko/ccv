@@ -5,6 +5,7 @@ import { Image } from 'primereact/image';
 import DOMPurify from 'dompurify';
 import { Tooltip } from 'primereact/tooltip';
 import { SearchContext, textToHighlightedHtml, htmlToHighlightedHtml } from '../SearchContext';
+import { AboutContext } from '../../common/AboutContext';
 
 import styles from './Item.module.css';
 
@@ -20,6 +21,8 @@ interface ItemProps extends Omit<ComponentProps<'div'>, 'onSelect'> {
 export function Item({ item, index, selectedIndex, newlyActivedId, onSelect, onActivate }: ItemProps) {
     const search = useContext(SearchContext);
     const ref = useRef<HTMLDivElement>(null);
+    const about = useContext(AboutContext);
+
     useEffect(() => {
         if (index === selectedIndex) {
             ref.current?.scrollIntoView({
@@ -39,7 +42,11 @@ export function Item({ item, index, selectedIndex, newlyActivedId, onSelect, onA
         }
 
         if (item.value.files) {
-            const fileClass = item.value.files.length === 1 ? styles.singleLineFile : styles.multiLineFiles;
+            const fileClass = item.value.files.length === 1 
+                ? styles.singleLineFile 
+                : about?.os === 'Linux'
+                    ? styles.multiLineFilesLinux
+                    : styles.multiLineFiles;
             return (
                 <div className={fileClass}>
                     {item.value.files.map((f) => (
@@ -54,7 +61,11 @@ export function Item({ item, index, selectedIndex, newlyActivedId, onSelect, onA
         }
 
         if (item.value.text) {
-            const textClass = item.value.text.indexOf('\n') === -1 ? styles.singleLineText : styles.multiLineText;
+            const textClass = item.value.text.indexOf('\n') === -1 
+                ? styles.singleLineText 
+                : about?.os === 'Linux' 
+                    ? styles.multiLineTextLinux  
+                    : styles.multiLineText;
             return <div className={textClass} dangerouslySetInnerHTML={{ __html: textToHighlightedHtml(item.value.text, search) }}></div>;
         }
 

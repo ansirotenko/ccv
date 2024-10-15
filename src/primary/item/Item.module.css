@@ -5,6 +5,10 @@
     overflow: hidden;
     user-select: none;
 
+    &:nth-child(odd) {
+        background-color: var(--surface-a);
+    }
+
     &:hover {
         background-color: var(--surface-d);
     }
@@ -47,7 +51,15 @@
 }
 
 .multiLineText {
-    padding: 3px 5px;
+    padding: 1px 5px;
+    height: 28px;
+    font-size: 13px;
+    line-height: 14px;
+    white-space: pre;
+}
+
+.multiLineTextLinux {
+    padding: 5px 5px;
     height: 28px;
     font-size: 13px;
     line-height: 14px;
@@ -63,7 +75,15 @@
 }
 
 .multiLineFiles {
-    padding: 3px 5px;
+    padding: 1px 5px;
+    height: 28px;
+    font-size: 13px;
+    line-height: 14px;
+    white-space: pre;
+}
+
+.multiLineFilesLinux {
+    padding: 5px 5px;
     height: 28px;
     font-size: 13px;
     line-height: 14px;

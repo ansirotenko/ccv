@@ -1,5 +1,3 @@
 # TODOS
 - sign installers
 - brew
-- tauri 2.0
-    - systemicons for file icons
