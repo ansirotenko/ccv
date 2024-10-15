@@ -39,9 +39,22 @@ fn get_new_copy_item_value(clipboard_state: &State<Clipboard>) -> Result<CopyIte
     let mut text: Option<String> = None;
     match category {
         Files => {
-            let file_pathes = clipboard_state
+            let file_pathes: Vec<String> = clipboard_state
                 .read_files()
-                .map_err(|e| app_error!("{e}"))?;
+                .map_err(|e| app_error!("{e}"))?
+                .iter()
+                .map(|fp|{
+                    #[cfg(target_os = "linux")] {
+                        match urlencoding::decode(fp) {
+                            Err(_) => fp.to_string(),
+                            Ok(decoded) => decoded.to_string()
+                        }
+                    }
+                    #[cfg(not(target_os = "linux"))] {
+                        fp.to_string()
+                    }
+                })
+                .collect();
 
             let file_infos = file_pathes
                 .iter()
