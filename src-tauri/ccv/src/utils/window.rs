@@ -16,7 +16,8 @@ pub fn show_window(window: &Option<WebviewWindow>) -> Result<(), AppError> {
             .set_always_on_top(false)
             .map_err(|_| app_error!("Error on unset always on top"))?;
         window
-            .emit(
+            .emit_to(
+                window.label(),
                 utils::WINDOW_SHOWN_EVENT,
                 EventPayload {
                     data: format!("Window {} was shown", window.label()),
@@ -33,7 +34,8 @@ pub fn hide_window(window: &Option<WebviewWindow>) -> Result<(), AppError> {
     if let Some(window) = window {
         window.hide().map_err(|_| app_error!("Error on hide"))?;
         window
-            .emit(
+            .emit_to(
+                window.label(),
                 utils::WINDOW_HIDDEN_EVENT,
                 EventPayload {
                     data: format!("Window {} was hidden", window.label()),

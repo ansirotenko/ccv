@@ -27,12 +27,14 @@ function App() {
     const [query, setQuery] = useState<string | null>(initialQuery);
     const [categories, setCategories] = useState<CopyCategory[]>(initialCategories);
     const containerRef = useRef<HTMLDivElement>(null);
+    const topElementRef = useRef<HTMLDivElement>(null);
 
     useSubscribeEvent<string>(ITEMS_CHANGED, () => search(query, categories));
     useSubscribeEvent<string>(WINDOW_HIDDEN_EVENT, () => {
         // to make refresh in invisible mode
         setSelectedIndex(0);
         toolbarChanged(initialQuery, initialCategories);
+        topElementRef?.current?.scrollIntoView();
     });
     const reuseItemWithoutLoop = useListenClipboard((newItem) => applyNewActiveItem(newItem));
 
@@ -124,6 +126,7 @@ function App() {
             }
         }
         setNewlyActivedId(newItem.id);
+        topElementRef?.current?.scrollIntoView();
         delayedResetNewlyActive();
     }
 
@@ -134,6 +137,7 @@ function App() {
 
     return (
         <Container onHide={refreshAndHide} selectedIndex={selectedIndex} onSelect={select} onActivate={activate}>
+            <div ref={topElementRef}></div>
             <Toolbar
                 query={query}
                 categories={categories}
