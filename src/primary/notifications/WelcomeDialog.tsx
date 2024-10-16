@@ -3,6 +3,7 @@ import { Dialog } from 'primereact/dialog';
 import { ComponentProps, useContext } from 'react';
 import { SettingsContext } from '../../common/SettingsContext';
 import { shortcutDisplay } from '../../common/keyboard';
+import { AboutContext } from '../../common/AboutContext';
 
 interface WelcomeDialogProps extends ComponentProps<'div'> {
     onOk: () => void;
@@ -10,6 +11,7 @@ interface WelcomeDialogProps extends ComponentProps<'div'> {
 
 export function WelcomeDialog({ onOk }: WelcomeDialogProps) {
     const settings = useContext(SettingsContext);
+    const about = useContext(AboutContext);
 
     return (
         <Dialog
@@ -36,7 +38,7 @@ export function WelcomeDialog({ onOk }: WelcomeDialogProps) {
             <p>
                 Press{' '}
                 <b>
-                    <em>{shortcutDisplay(settings.allShortcuts.openCcv)}</em>
+                    <em>{shortcutDisplay(settings.allShortcuts.openCcv, about!.os)}</em>
                 </b>{' '}
                 to display main window. Next time, main window will be hidden at startup.
             </p>

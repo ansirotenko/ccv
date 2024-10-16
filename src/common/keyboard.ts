@@ -1,4 +1,4 @@
-import { Shortcut } from '../common/contract';
+import { Shortcut, Os } from '../common/contract';
 
 export type AppKeyboardEvent = {
     altKey: boolean;
@@ -32,7 +32,7 @@ export function shortcutFromEvent(event: AppKeyboardEvent): Shortcut {
     };
 }
 
-export function shortcutDisplay(shortcut: Shortcut): string {
+export function shortcutDisplay(shortcut: Shortcut, os: Os): string {
     let keys: string[] = [];
     if (shortcut.ctrlKey) {
         keys.push('Ctrl');
@@ -44,7 +44,11 @@ export function shortcutDisplay(shortcut: Shortcut): string {
         keys.push('Shift');
     }
     if (shortcut.metaKey) {
-        keys.push('Meta');
+        if (os === 'MacOs') {
+            keys.push('Command');
+        } else {
+            keys.push('Super');
+        }
     }
     if (shortcut.code && shortcut.code in keyMapByCode) {
         keys.push(keyMapByCode[shortcut.code]);

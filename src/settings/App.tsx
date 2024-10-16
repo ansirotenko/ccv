@@ -12,6 +12,7 @@ import { SettingsContext } from '../common/SettingsContext';
 import { shortcutDisplay, shortcutFromEvent } from '../common/keyboard';
 import { hideSettingsWindow, removeCopyItems, removeCopyItemsOlder, setSettings } from '../common/commands';
 import { Checkbox } from 'primereact/checkbox';
+import { AboutContext } from '../common/AboutContext';
 
 import styles from './App.module.css';
 
@@ -23,6 +24,7 @@ function App() {
     const shortcutValue = useRef<HTMLInputElement>(null);
     const toast = useRef<Toast>(null);
     const newShortcutRef = useRef<Shortcut | null>();
+    const about = useContext(AboutContext);
 
     const saveSettings = async (newSettings: Settings) => {
         try {
@@ -65,7 +67,7 @@ function App() {
             header: 'Press new shortcut',
             message: (
                 <div className={styles.shortcutEdit} onKeyDown={keyDown} tabIndex={0} ref={shortcutDialog}>
-                    <label>Old combination:</label> <span>{shortcutDisplay(settings?.allShortcuts.openCcv)}</span>
+                    <label>Old combination:</label> <span>{shortcutDisplay(settings?.allShortcuts.openCcv, about!.os)}</span>
                     <label>New combination:</label> <InputText ref={shortcutValue} disabled={true} />
                 </div>
             ),
@@ -88,7 +90,7 @@ function App() {
         }
 
         if (shortcutValue.current) {
-            shortcutValue.current.value = !newShortcut ? '' : shortcutDisplay(newShortcut);
+            shortcutValue.current.value = !newShortcut ? '' : shortcutDisplay(newShortcut, about!.os);
         }
     };
 
@@ -195,7 +197,7 @@ function App() {
                 <Fieldset legend="Shortcuts">
                     <div className="p-inputgroup">
                         <span className="p-inputgroup-addon">Open ccv</span>
-                        <InputText value={shortcutDisplay(settings?.allShortcuts.openCcv)} disabled={true} />
+                        <InputText value={shortcutDisplay(settings?.allShortcuts.openCcv, about!.os)} disabled={true} />
                         <Button
                             className={styles.settingsButton}
                             onClick={confirmShortcuts}
