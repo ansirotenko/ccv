@@ -25,22 +25,22 @@ export function WelcomeDialog({ onOk }: WelcomeDialogProps) {
             closable={false}
         >
             <p>
-                Ccv will save the history of your clipboard exchange. Find desired item using search. Press{' '}
-                <b>
+                Ccv will save the history of your clipboard exchange.
+                Press{' '}<b><em>{shortcutDisplay(settings.allShortcuts.openCcv, about!.os)}</em></b>{' '}to display main window.
+                Find desired item using search. 
+            </p>
+            <p>
+                Press{' '}<b>
                     <em>Ctrl + 1</em>
                 </b>{' '}
                 to put first match at clipboard.{' '}
                 <b>
                     <em>Ctrl + 2</em>
                 </b>{' '}
-                for second and so on. Same applies for double click.
+                for second and so on. Same applies for double click.{' '}
             </p>
             <p>
-                Press{' '}
-                <b>
-                    <em>{shortcutDisplay(settings.allShortcuts.openCcv, about!.os)}</em>
-                </b>{' '}
-                to display main window. Next time, main window will be hidden at startup.
+                Next time, main window will be hidden at startup.
             </p>
         </Dialog>
     );
