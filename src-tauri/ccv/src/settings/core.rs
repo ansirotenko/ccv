@@ -65,8 +65,16 @@ fn fix_settings(mut value: serde_json::Value, default_settings: Settings) -> Set
     };
     value[VERSION_KEY] = serde_json::json!(default_settings.version);
 
-    if let Err(_) = serde_json::from_value::<Vec<String>>(value[NOTIFICATIONS_KEY].clone()) {
-        value[NOTIFICATIONS_KEY] = serde_json::Value::Null;
+    match serde_json::from_value::<Vec<String>>(value[NOTIFICATIONS_KEY].clone()) {
+        Err(_) => {
+            value[NOTIFICATIONS_KEY] = serde_json::Value::Null;
+        },
+        Ok(mut notifications) => {
+            if let Some(occupied_shortcut_index) = notifications.iter().position(|n| n.as_str() == settings::OCCUPIED_SHORTCUT_NOTIFICATION) {
+                notifications.remove(occupied_shortcut_index);
+                value[NOTIFICATIONS_KEY] = serde_json::json!(notifications);
+            }
+        }
     }
 
     if let Err(_) = serde_json::from_value::<Theme>(value[THEME_KEY].clone()) {
@@ -95,6 +103,12 @@ fn fix_settings(mut value: serde_json::Value, default_settings: Settings) -> Set
 }
 
 fn get_default_settings() -> Settings {
+    #[cfg(target_os = "macos")]
+    let use_control = false;
+    
+    #[cfg(not(target_os = "macos"))]
+    let use_control = true;
+
     Settings {
         notifications: Some(vec![settings::WELCOME_NOTIFICATION.to_string()]),
         version: DEFAULT_VERSION.to_string(),
@@ -102,8 +116,8 @@ fn get_default_settings() -> Settings {
         all_shortcuts: AllShortcuts {
             open_ccv: Shortcut {
                 alt_key: false,
-                ctrl_key: true,
-                meta_key: false,
+                ctrl_key: use_control,
+                meta_key: !use_control,
                 shift_key: false,
                 code: Some("Backquote".to_string()),
             },
@@ -285,6 +299,47 @@ mod tests {
         let json_value = serde_json::json!({
             VERSION_KEY: DEFAULT_VERSION.to_string(),
             NOTIFICATIONS_KEY: vec![settings::WELCOME_NOTIFICATION.to_string()],
+            THEME_KEY: Theme::Dark,
+            AUTOSTART_KEY: true,
+            ALL_SHORTCUTS_KEY: AllShortcuts{
+                open_ccv: Shortcut{
+                    alt_key: true,
+                    shift_key: true,
+                    ctrl_key: true,
+                    meta_key: true,
+                    code: Some("Q".to_string())
+                }
+            }
+        });
+        let actual = fix_settings(json_value, get_default_settings());
+
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn occupied_shortcut_notification_is_erased() {
+        let expected = Settings {
+            notifications: Some(vec![settings::WELCOME_NOTIFICATION.to_string()]),
+            version: DEFAULT_VERSION.to_string(),
+            theme: Theme::Dark,
+            all_shortcuts: AllShortcuts {
+                open_ccv: Shortcut {
+                    alt_key: true,
+                    ctrl_key: true,
+                    meta_key: true,
+                    shift_key: true,
+                    code: Some("Q".to_string()),
+                },
+            },
+            autostart: true
+        };
+
+        let json_value = serde_json::json!({
+            VERSION_KEY: DEFAULT_VERSION.to_string(),
+            NOTIFICATIONS_KEY: vec![
+                settings::WELCOME_NOTIFICATION.to_string(),
+                settings::OCCUPIED_SHORTCUT_NOTIFICATION.to_string()
+            ],
             THEME_KEY: Theme::Dark,
             AUTOSTART_KEY: true,
             ALL_SHORTCUTS_KEY: AllShortcuts{

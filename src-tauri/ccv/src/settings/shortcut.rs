@@ -1,10 +1,14 @@
+use crate::{primary, settings, utils::window::show_window};
 use ccv_contract::{
     app_error,
     error::AppError,
-    models::{AllShortcuts, Shortcut},
+    models::{AllShortcuts, EventPayload, MainShortcutPressedPayload, Shortcut},
 };
-use tauri::AppHandle;
-use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut as HotKey};
+use tauri::{AppHandle, WebviewWindow};
+use tauri::{Emitter, Manager};
+use tauri_plugin_global_shortcut::{
+    Code, GlobalShortcutExt, Modifiers, Shortcut as HotKey, ShortcutState,
+};
 
 pub fn register_shortcuts(
     app_handle: &AppHandle,
@@ -26,6 +30,70 @@ pub fn register_shortcuts(
     }
 
     Ok(())
+}
+
+pub fn register_handlers(app_handle: &AppHandle) -> Result<(), AppError> {
+    app_handle
+        .plugin(
+            tauri_plugin_global_shortcut::Builder::new()
+                .with_handler(move |app_handle, shortcut, event| match event.state() {
+                    ShortcutState::Pressed => {
+                        let settings_state = app_handle.state::<settings::state::SettingsState>();
+                        let settings = settings_state.settings.lock().unwrap();
+
+                        if let Some(settings) = settings.as_ref() {
+                            if let Some(open_ccv_shortcut) =
+                                settings::shortcut::get_shortcut(&settings.all_shortcuts.open_ccv)
+                            {
+                                if shortcut == &open_ccv_shortcut {
+                                    activate_primary_window(
+                                        &app_handle.get_webview_window(primary::SCREEN),
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    ShortcutState::Released => {}
+                })
+                .build(),
+        )
+        .map_err(|err| app_error!("Unable to initialize global shortcut plugin. {err}"))
+}
+
+fn activate_primary_window(primary_window_option: &Option<WebviewWindow>) -> () {
+    if let Some(primary_window) = primary_window_option {
+        let was_visible_before = primary_window.is_visible().unwrap_or(false);
+        if let Err(err) = show_window(primary_window_option) {
+            log::error!("Unable to show primary window by shortcut. {err}");
+        } else {
+            if let Err(err) = primary_window.emit_to(
+                primary::SCREEN,
+                primary::MAIN_SHORTCUT_PRESSED_EVENT,
+                EventPayload {
+                    data: MainShortcutPressedPayload {
+                        changed_from_hidden_to_visile: !was_visible_before,
+                    },
+                },
+            ) {
+                log::error!("Unable to send shortcut pressed event. {err}");
+            }
+        }
+    }
+
+    // for some reason on linux app doesnt show form the first attempt
+    #[cfg(target_os = "linux")]
+    {
+        let copy = primary_window_option.clone();
+
+        std::thread::spawn(move || {
+            std::thread::sleep(std::time::Duration::from_millis(50));
+            if let Some(primary_window) = copy {
+                if let Err(err) = show_window(&Some(primary_window.clone())) {
+                    log::error!("Unable to show primary window by shortcut. {err}");
+                }
+            }
+        });
+    }
 }
 
 pub fn get_shortcut(shortcut: &Shortcut) -> Option<HotKey> {
