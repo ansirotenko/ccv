@@ -20,12 +20,12 @@ jobs:
       run: |
         file_path="src-tauri/ccv/tauri.conf.json";
         if [ ! -f ${file_path} ]; then
-          echo "${file_path} not found!";
-          exit 1;
+            echo "${file_path} not found!";
+            exit 1;
         fi
-        version=$(jq src-tauri/ccv/tauri.conf.json .version)
-        if [ -z "$(git tag -l "${version}")" ]; then
-          echo "${version} already exists. Please update version"
-          exit 1;
+        version="ccv-v$(jq .version src-tauri/ccv/tauri.conf.json -r)"
+        if [ -n "$(git tag -l "${version}")" ]; then
+            echo "${version} already exists. Please update version"
+            exit 1;
         fi
   
