@@ -1,0 +1,11 @@
+.container {
+    white-space: nowrap;
+    position: relative;
+    margin-left: 18px;
+
+    & [class~='iconus'] {
+        position: absolute;
+        left: -18px;
+        top: 2px;
+    }
+}

@@ -2,7 +2,7 @@ import { ComponentProps, useContext } from 'react';
 import { CopyItem } from '../../common/contract';
 import { Message } from 'primereact/message';
 import { Image } from 'primereact/image';
-import { FilePreview } from './FilePreview';
+import { File } from '../file/File';
 import DOMPurify from 'dompurify';
 import { RtfPreview } from './RtfPreview';
 import { SearchContext, textToHighlightedHtml, htmlToHighlightedHtml } from '../SearchContext';
@@ -28,9 +28,7 @@ export function ItemPreview({ item }: ItemPreviewProps) {
         if (item.value.files) {
             return (
                 <div className={styles.filesContent}>
-                    {item.value.files.map((f) => (
-                        <FilePreview key={f.fullPath} file={f} />
-                    ))}
+                    {item.value.files.map((f) => (<File key={f.fullPath} file={f} />))}
                 </div>
             );
         }

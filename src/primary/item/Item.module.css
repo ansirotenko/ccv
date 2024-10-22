@@ -70,24 +70,60 @@
     height: 28px;
     padding: 0 5px;
     font-size: 14px;
-    line-height: 28px;
     white-space: pre;
+
+    & [class~='file'] {
+        line-height: 28px;
+        img {
+            height: 17px;
+        }
+        [class~='pi'] {
+            font-size: 17px;
+        }
+        [class~='iconus'] {
+            top: 4px;
+        }
+    }
 }
 
 .multiLineFiles {
-    padding: 1px 5px;
+    padding: 0px 5px;
     height: 28px;
     font-size: 13px;
-    line-height: 14px;
     white-space: pre;
+    
+    & [class~='file'] {
+        line-height: 14px;
+        img {
+            height: 13px;
+        }
+        [class~='pi'] {
+            font-size: 13px;
+        }
+        [class~='iconus'] {
+            top: 1px;
+        }
+    }
 }
 
 .multiLineFilesLinux {
     padding: 5px 5px;
     height: 28px;
     font-size: 13px;
-    line-height: 14px;
-    white-space: pre;
+    white-space: pre; 
+
+    & [class~='file'] {
+        line-height: 14px;
+        img {
+            height: 13px;
+        }
+        [class~='pi'] {
+            font-size: 13px;
+        }
+        [class~='iconus'] {
+            top: 1px;
+        }
+    }
 }
 
 .imageContent {

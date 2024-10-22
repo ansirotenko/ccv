@@ -2,18 +2,18 @@ import { ComponentProps, useContext } from 'react';
 import { FileInfo } from '../../common/contract';
 import { SearchContext, textToHighlightedHtml } from '../SearchContext';
 
-import styles from './FilePreview.module.css';
+import styles from './File.module.css';
 
-interface FilePreviewProps extends ComponentProps<'div'> {
+interface FileProps extends ComponentProps<'div'> {
     file: FileInfo;
 }
 
-export function FilePreview({ file }: FilePreviewProps) {
+export function File({ file }: FileProps) {
     const search = useContext(SearchContext);
     return (
-        <div className={styles.container}>
-            <div className={styles.iconus}>
-                {file.iconBase64 && <img src={`data:image/png;base64, ${file.iconBase64}`} height="16" />}
+        <div className={`file ${styles.container}`}>
+            <div className="iconus">
+                {file.iconBase64 && <img src={`data:image/png;base64, ${file.iconBase64}`} />}
                 {!file.iconBase64 && !file.isDirectory && <i className="pi pi-file"></i>}
                 {!file.iconBase64 && file.isDirectory && <i className="pi pi-folder"></i>}
             </div>

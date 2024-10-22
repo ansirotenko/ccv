@@ -6,6 +6,7 @@ import DOMPurify from 'dompurify';
 import { Tooltip } from 'primereact/tooltip';
 import { SearchContext, textToHighlightedHtml, htmlToHighlightedHtml } from '../SearchContext';
 import { AboutContext } from '../../common/AboutContext';
+import { File } from '../file/File';
 
 import styles from './Item.module.css';
 
@@ -50,13 +51,7 @@ export function Item({ item, index, selectedIndex, newlyActivedId, onSelect, onA
                       : styles.multiLineFiles;
             return (
                 <div className={fileClass}>
-                    {item.value.files.map((f) => (
-                        <div key={f.fullPath}>
-                            <em dangerouslySetInnerHTML={{ __html: textToHighlightedHtml(f.fileName, search) }}></em>
-                            <em> @ </em>
-                            <em dangerouslySetInnerHTML={{ __html: textToHighlightedHtml(f.directoryPath, search) }}></em>
-                        </div>
-                    ))}
+                    {item.value.files.map((f) => (<File file={f} key={f.fullPath}/>))}
                 </div>
             );
         }
