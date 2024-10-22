@@ -11,7 +11,11 @@ To address common issues such as, "I'm gonna share a link with you, just give me
 
 It uses sqlite to store the entire clipboard history, allows you to search and reuse old items. Supported formats: *Text*, *Html*, *Rtf*, *Images*, *Files*.
 
-The download file for the installation can be found on the [releases](https://github.com/ansirotenko/ccv/releases) page. In the future, it will be available on the [brew ](https://brew.sh/)
+#### macOS
+`brew install ansirotenko/repo/ccv`
+
+#### Windows and Linux
+The download file for the installation can be found on the [releases](https://github.com/ansirotenko/ccv/releases) page. 
 
 > Note: Currently the installers are not signed yet for Linux and Windows. Work on this task continues.
 

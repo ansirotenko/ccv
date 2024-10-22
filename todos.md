@@ -1,6 +1,4 @@
 # TODOS
-- sign installers
-- brew
+- sign installers for windows and linux
 - file icons at items list
 - pickup system theme
-- default menu on mac closed
