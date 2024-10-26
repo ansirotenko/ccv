@@ -13,8 +13,10 @@ import { shortcutDisplay, shortcutFromEvent } from '../common/keyboard';
 import { hideSettingsWindow, showPrimaryWindow, removeCopyItems, removeCopyItemsOlder, setSettings } from '../common/commands';
 import { Checkbox } from 'primereact/checkbox';
 import { AboutContext } from '../common/AboutContext';
+import itemIdImage from '../assets/itemId.png';
 
 import styles from './App.module.css';
+import { Tooltip } from 'primereact/tooltip';
 
 function App() {
     const settings = useContext(SettingsContext);
@@ -204,13 +206,14 @@ function App() {
                         <span className="p-inputgroup-addon">Open ccv</span>
                         <InputText value={shortcutDisplay(settings?.allShortcuts.openCcv, about!.os)} disabled={true} />
                         <Button
-                            className={styles.settingsButton}
+                            className={`${styles.settingsButton} changeOpenCcvShortcut`}
                             onClick={confirmShortcuts}
-                            tooltip="Change shortcut to open ccv"
-                            tooltipOptions={{ position: 'left', style: { fontSize: 13 } }}
                         >
                             Change
                         </Button>
+                        <Tooltip target=".changeOpenCcvShortcut" position='left' style={{ fontSize: 13, maxWidth: "380px", textAlign: "center" }} showOnDisabled={true}>
+                            Change shortcut to open ccv.
+                        </Tooltip>
                     </div>
                 </Fieldset>
                 <Fieldset legend="Deletion">
@@ -232,26 +235,30 @@ function App() {
                             hideOnDateTimeSelect={true}
                         />
                         <Button
-                            className={styles.settingsButton}
+                            className={`${styles.settingsButton} deleteByTime`}
                             disabled={deleteDate == null}
                             onClick={confirmDeleteOlder}
-                            tooltip={`Clear history up to selected date${deleteDate == null ? '. Please specify date' : ''}`}
-                            tooltipOptions={{ position: 'left', style: { fontSize: 13 }, showOnDisabled: true }}
                         >
                             Delete older
                         </Button>
+                        <Tooltip target=".deleteByTime" position='left' style={{ fontSize: 13, maxWidth: "380px", textAlign: "center" }} showOnDisabled={true}>
+                            {`Clear history up to selected date. ${deleteDate == null ? 'Please specify date.' : ''}`}
+                        </Tooltip>
                     </div>
                     <div className="p-inputgroup">
-                        <InputText placeholder="55,555,5,5555..." value={selectedIds} onChange={(e) => setSelectedIds(e.target.value)} />
+                        <InputText placeholder="12345..." value={selectedIds} onChange={(e) => setSelectedIds(e.target.value)} />
                         <Button
-                            className={styles.settingsButton}
+                            className={`${styles.settingsButton} deleteById`}
                             disabled={!selectedIds}
                             onClick={confirmDeleteIds}
-                            tooltip={`Delete items by ids separated by comma${!selectedIds ? '. Please specify ids' : ''}`}
-                            tooltipOptions={{ position: 'left', style: { fontSize: 13 }, showOnDisabled: true }}
                         >
                             Delete ids
                         </Button>
+                        <Tooltip target=".deleteById" position='left' style={{ fontSize: 13, maxWidth: "380px", textAlign: "center" }} showOnDisabled={true}>
+                            Delete items by ids separated by comma. 
+                            Id of the item could be found at the bottom of primary view.
+                            <img src={itemIdImage} width="350px" />
+                        </Tooltip>
                     </div>
                 </Fieldset>
                 <section className={styles.okButtonContainer}>
