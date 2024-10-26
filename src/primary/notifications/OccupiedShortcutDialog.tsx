@@ -25,9 +25,11 @@ export function OccupiedShortcutDialog({ onOk }: OccupiedShortcutDialogProps) {
             closable={false}
         >
             <p>
-                The default shortcut for open application {' '}
-                <b><em>{shortcutDisplay(settings.allShortcuts.openCcv, about!.os)}</em></b>
-                {' '}is already occupied in your system. Please change it in the settings (button at the top right corner).
+                The default shortcut for open application{' '}
+                <b>
+                    <em>{shortcutDisplay(settings.allShortcuts.openCcv, about!.os)}</em>
+                </b>{' '}
+                is already occupied in your system. Please change it in the settings (button at the top right corner).
             </p>
         </Dialog>
     );

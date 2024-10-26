@@ -25,11 +25,13 @@ pub fn build(app_handle: &AppHandle) -> Result<(), AppError> {
         .build(app_handle.app_handle())
         .map_err(|err| app_error!("Tray builder error. {err}"))?;
 
-    #[cfg(target_os = "macos")] {
-        app_handle.set_activation_policy(tauri::ActivationPolicy::Accessory)
-        .map_err(|err| app_error!("Tray builder error. {err}"))?;    
+    #[cfg(target_os = "macos")]
+    {
+        app_handle
+            .set_activation_policy(tauri::ActivationPolicy::Accessory)
+            .map_err(|err| app_error!("Tray builder error. {err}"))?;
     }
-    
+
     Ok(())
 }
 

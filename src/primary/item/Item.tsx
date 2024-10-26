@@ -50,7 +50,9 @@ export function Item({ item, index, selectedIndex, newlyActivedId, onSelect, onA
                       : styles.multiLineFiles;
             return (
                 <div className={fileClass}>
-                    {item.value.files.map((f) => (<File file={f} key={f.fullPath}/>))}
+                    {item.value.files.map((f) => (
+                        <File file={f} key={f.fullPath} />
+                    ))}
                 </div>
             );
         }
@@ -67,19 +69,13 @@ export function Item({ item, index, selectedIndex, newlyActivedId, onSelect, onA
 
         if (item.value.rtf) {
             return (
-                <div
-                    className={styles.htmlContent}
-                    dangerouslySetInnerHTML={{ __html: htmlToHighlightedHtml(item.value.rtf, search) }}
-                />
+                <div className={styles.htmlContent} dangerouslySetInnerHTML={{ __html: htmlToHighlightedHtml(item.value.rtf, search) }} />
             );
         }
 
         if (item.value.html) {
             return (
-                <div
-                    className={styles.htmlContent}
-                    dangerouslySetInnerHTML={{ __html: htmlToHighlightedHtml(item.value.html, search) }}
-                />
+                <div className={styles.htmlContent} dangerouslySetInnerHTML={{ __html: htmlToHighlightedHtml(item.value.html, search) }} />
             );
         }
 

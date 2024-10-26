@@ -24,7 +24,11 @@ export function Notifications() {
             case WELCOME:
                 return <WelcomeDialog onOk={() => eraseNotification(WELCOME, settings)}></WelcomeDialog>;
             case OCCUPIED_SHORTCUT_NOTIFICATION:
-                return <OccupiedShortcutDialog onOk={() => eraseNotification(OCCUPIED_SHORTCUT_NOTIFICATION, settings)}></OccupiedShortcutDialog>;
+                return (
+                    <OccupiedShortcutDialog
+                        onOk={() => eraseNotification(OCCUPIED_SHORTCUT_NOTIFICATION, settings)}
+                    ></OccupiedShortcutDialog>
+                );
         }
     }
 

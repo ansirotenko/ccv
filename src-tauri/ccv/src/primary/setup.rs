@@ -42,7 +42,8 @@ pub fn init_repository(app_handle: &AppHandle, app_data_dir: &PathBuf) -> Result
         }
     };
 
-    #[cfg(target_os = "linux")] {
+    #[cfg(target_os = "linux")]
+    {
         systemicons::init();
     }
 

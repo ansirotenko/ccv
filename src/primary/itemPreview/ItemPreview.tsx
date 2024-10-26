@@ -27,7 +27,9 @@ export function ItemPreview({ item }: ItemPreviewProps) {
         if (item.value.files) {
             return (
                 <div className={styles.filesContent}>
-                    {item.value.files.map((f) => (<File key={f.fullPath} file={f} />))}
+                    {item.value.files.map((f) => (
+                        <File key={f.fullPath} file={f} />
+                    ))}
                 </div>
             );
         }
@@ -38,10 +40,7 @@ export function ItemPreview({ item }: ItemPreviewProps) {
 
         if (item.value.html) {
             return (
-                <div
-                    className={styles.htmlContent}
-                    dangerouslySetInnerHTML={{ __html: htmlToHighlightedHtml(item.value.html, search) }}
-                />
+                <div className={styles.htmlContent} dangerouslySetInnerHTML={{ __html: htmlToHighlightedHtml(item.value.html, search) }} />
             );
         }
 

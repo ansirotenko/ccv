@@ -55,10 +55,7 @@ export function RtfPreview({ rtf }: RtfPreviewProps) {
 
     return (
         <div className={styles.rtfContent}>
-            {html &&
-                html.map((h, i) => (
-                    <div key={i} dangerouslySetInnerHTML={{ __html: htmlToHighlightedHtml(h, search) }} />
-                ))}
+            {html && html.map((h, i) => <div key={i} dangerouslySetInnerHTML={{ __html: htmlToHighlightedHtml(h, search) }} />)}
         </div>
     );
 }

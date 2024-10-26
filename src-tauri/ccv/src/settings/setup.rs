@@ -16,11 +16,16 @@ pub fn read_settings_and_register_shortcuts(
             settings::autostart::adjust_autostart(app_handle, initial_settings.autostart)?;
             settings::shortcut::register_handlers(app_handle)?;
 
-            if let Err(err) = settings::shortcut::register_shortcuts(app_handle, &initial_settings.all_shortcuts, false) {
+            if let Err(err) = settings::shortcut::register_shortcuts(
+                app_handle,
+                &initial_settings.all_shortcuts,
+                false,
+            ) {
                 println!("err {err}");
                 let mut initial_settings_with_notification = initial_settings.clone();
                 let notification = settings::OCCUPIED_SHORTCUT_NOTIFICATION.to_string();
-                if let Some(ref mut notifcations) = initial_settings_with_notification.notifications {
+                if let Some(ref mut notifcations) = initial_settings_with_notification.notifications
+                {
                     if !notifcations.contains(&notification) {
                         notifcations.push(notification);
                     }

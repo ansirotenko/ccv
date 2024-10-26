@@ -14,7 +14,7 @@ export function escapeSearch(search: string | null): string | null {
 
 // TODO can be improved
 export function htmlToHighlightedHtml(html: string | HTMLElement, search: string | null): string {
-    const sanitizedHtml = DOMPurify.sanitize(html, { FORBID_ATTR: [ "href" ], FORBID_TAGS: [ "script", "iframe"] })
+    const sanitizedHtml = DOMPurify.sanitize(html, { FORBID_ATTR: ['href'], FORBID_TAGS: ['script', 'iframe'] });
 
     if (!search) {
         return sanitizedHtml;

@@ -43,14 +43,16 @@ fn get_new_copy_item_value(clipboard_state: &State<Clipboard>) -> Result<CopyIte
                 .read_files()
                 .map_err(|e| app_error!("{e}"))?
                 .iter()
-                .map(|fp|{
-                    #[cfg(target_os = "linux")] {
+                .map(|fp| {
+                    #[cfg(target_os = "linux")]
+                    {
                         match urlencoding::decode(fp) {
                             Err(_) => fp.to_string(),
-                            Ok(decoded) => decoded.to_string()
+                            Ok(decoded) => decoded.to_string(),
                         }
                     }
-                    #[cfg(not(target_os = "linux"))] {
+                    #[cfg(not(target_os = "linux"))]
+                    {
                         fp.to_string()
                     }
                 })
