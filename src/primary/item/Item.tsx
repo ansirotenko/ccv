@@ -2,7 +2,6 @@ import { ComponentProps, useContext, useEffect, useRef } from 'react';
 import { CopyItem } from '../../common/contract';
 import { Message } from 'primereact/message';
 import { Image } from 'primereact/image';
-import DOMPurify from 'dompurify';
 import { Tooltip } from 'primereact/tooltip';
 import { SearchContext, textToHighlightedHtml, htmlToHighlightedHtml } from '../SearchContext';
 import { AboutContext } from '../../common/AboutContext';
@@ -70,7 +69,7 @@ export function Item({ item, index, selectedIndex, newlyActivedId, onSelect, onA
             return (
                 <div
                     className={styles.htmlContent}
-                    dangerouslySetInnerHTML={{ __html: htmlToHighlightedHtml(DOMPurify.sanitize(item.value.rtf), search) }}
+                    dangerouslySetInnerHTML={{ __html: htmlToHighlightedHtml(item.value.rtf, search) }}
                 />
             );
         }
@@ -79,7 +78,7 @@ export function Item({ item, index, selectedIndex, newlyActivedId, onSelect, onA
             return (
                 <div
                     className={styles.htmlContent}
-                    dangerouslySetInnerHTML={{ __html: htmlToHighlightedHtml(DOMPurify.sanitize(item.value.html), search) }}
+                    dangerouslySetInnerHTML={{ __html: htmlToHighlightedHtml(item.value.html, search) }}
                 />
             );
         }

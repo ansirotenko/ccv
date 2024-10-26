@@ -1,7 +1,6 @@
 import { ComponentProps, useContext, useEffect, useState } from 'react';
 import { Message } from 'primereact/message';
 import { ProgressSpinner } from 'primereact/progressspinner';
-import DOMPurify from 'dompurify';
 import { EMFJS, RTFJS, WMFJS } from 'rtf.js';
 import { SearchContext, htmlToHighlightedHtml } from '../SearchContext';
 
@@ -58,7 +57,7 @@ export function RtfPreview({ rtf }: RtfPreviewProps) {
         <div className={styles.rtfContent}>
             {html &&
                 html.map((h, i) => (
-                    <div key={i} dangerouslySetInnerHTML={{ __html: htmlToHighlightedHtml(DOMPurify.sanitize(h), search) }} />
+                    <div key={i} dangerouslySetInnerHTML={{ __html: htmlToHighlightedHtml(h, search) }} />
                 ))}
         </div>
     );

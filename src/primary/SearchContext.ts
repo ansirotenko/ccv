@@ -1,4 +1,5 @@
 import { createContext } from 'react';
+import DOMPurify from 'dompurify';
 
 const highlightClass = 'highlight';
 
@@ -12,11 +13,13 @@ export function escapeSearch(search: string | null): string | null {
 }
 
 // TODO can be improved
-export function htmlToHighlightedHtml(html: string, search: string | null): string {
+export function htmlToHighlightedHtml(html: string | HTMLElement, search: string | null): string {
+    const sanitizedHtml = DOMPurify.sanitize(html, { FORBID_ATTR: [ "href" ], FORBID_TAGS: [ "script", "iframe"] })
+
     if (!search) {
-        return html;
+        return sanitizedHtml;
     }
-    return html.replace(/>([^<]+)</g, function (_, p1) {
+    return sanitizedHtml.replace(/>([^<]+)</g, function (_, p1) {
         return `>${textToHighlightedHtml(makeUnsafeText(p1), search)}<`;
     });
 }

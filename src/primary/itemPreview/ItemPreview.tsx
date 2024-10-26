@@ -3,7 +3,6 @@ import { CopyItem } from '../../common/contract';
 import { Message } from 'primereact/message';
 import { Image } from 'primereact/image';
 import { File } from '../file/File';
-import DOMPurify from 'dompurify';
 import { RtfPreview } from './RtfPreview';
 import { SearchContext, textToHighlightedHtml, htmlToHighlightedHtml } from '../SearchContext';
 
@@ -41,7 +40,7 @@ export function ItemPreview({ item }: ItemPreviewProps) {
             return (
                 <div
                     className={styles.htmlContent}
-                    dangerouslySetInnerHTML={{ __html: htmlToHighlightedHtml(DOMPurify.sanitize(item.value.html), search) }}
+                    dangerouslySetInnerHTML={{ __html: htmlToHighlightedHtml(item.value.html, search) }}
                 />
             );
         }
