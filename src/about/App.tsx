@@ -3,7 +3,7 @@ import { Button } from 'primereact/button';
 import { Skeleton } from 'primereact/skeleton';
 import { BlockUI } from 'primereact/blockui';
 import { useSubscribeEvent, HIGHLIGHT_REPORT_BUG } from '../common/events';
-import { hideAboutWindow, openAnything as openUri } from '../common/commands';
+import { hideAboutWindow, showPrimaryWindow, openAnything } from '../common/commands';
 import { AboutContext } from '../common/AboutContext';
 
 import styles from './App.module.css';
@@ -12,6 +12,11 @@ function App() {
     const [reportBugHightlighted, setReportBugHightlighted] = useState<boolean>(false);
     const aboutData = useContext(AboutContext);
     useSubscribeEvent<string>(HIGHLIGHT_REPORT_BUG, () => setReportBugHightlighted(true));
+
+    async function closeAbout() {
+        await showPrimaryWindow();
+        await hideAboutWindow();
+    }
 
     return (
         <div
@@ -24,7 +29,7 @@ function App() {
                 <span className={styles.toolbarTitle} data-tauri-drag-region>
                     About
                 </span>
-                <Button className={`pi pi-times ${styles.toolbarButton}`} onClick={hideAboutWindow} />
+                <Button className={`pi pi-times ${styles.toolbarButton}`} onClick={closeAbout} />
             </div>
             <div className={styles.content}>
                 <BlockUI blocked={reportBugHightlighted}>
@@ -44,7 +49,7 @@ function App() {
                             <a
                                 href="#"
                                 onClick={() => {
-                                    openUri(aboutData.homepage);
+                                    openAnything(aboutData.homepage);
                                 }}
                             >
                                 {aboutData.homepage}
@@ -58,7 +63,7 @@ function App() {
                         {aboutData?.appDirectory ? (
                             <em
                                 onClick={() => {
-                                    openUri(aboutData.appDirectory!);
+                                    openAnything(aboutData.appDirectory!);
                                 }}
                             >
                                 {aboutData.appDirectory}
@@ -72,7 +77,7 @@ function App() {
                         {aboutData?.appDataDirectory ? (
                             <em
                                 onClick={() => {
-                                    openUri(aboutData.appDataDirectory!);
+                                    openAnything(aboutData.appDataDirectory!);
                                 }}
                             >
                                 {aboutData.appDataDirectory}
@@ -86,7 +91,7 @@ function App() {
                         {aboutData?.appLogsDirectory ? (
                             <em
                                 onClick={() => {
-                                    openUri(aboutData.appLogsDirectory!);
+                                    openAnything(aboutData.appLogsDirectory!);
                                 }}
                             >
                                 {aboutData.appLogsDirectory}
@@ -101,7 +106,7 @@ function App() {
                     <a
                         href="#"
                         onClick={() => {
-                            openUri('https://github.com/ansirotenko/ccv/issues/new');
+                            openAnything('https://github.com/ansirotenko/ccv/issues/new');
                         }}
                     >
                         github
@@ -110,7 +115,7 @@ function App() {
                     <a
                         href="#"
                         onClick={() => {
-                            openUri('mailto:panshirotenski@gmail.com');
+                            openAnything('mailto:panshirotenski@gmail.com');
                         }}
                     >
                         email
@@ -119,7 +124,7 @@ function App() {
                 </div>
                 <BlockUI blocked={reportBugHightlighted}>
                     <section className={styles.okButtonContainer}>
-                        <Button className={styles.okButton} onClick={hideAboutWindow}>
+                        <Button className={styles.okButton} onClick={closeAbout}>
                             Ok
                         </Button>
                     </section>

@@ -10,7 +10,7 @@ import * as log from '@tauri-apps/plugin-log';
 import { AppError, Settings, Shortcut } from '../common/contract';
 import { SettingsContext } from '../common/SettingsContext';
 import { shortcutDisplay, shortcutFromEvent } from '../common/keyboard';
-import { hideSettingsWindow, removeCopyItems, removeCopyItemsOlder, setSettings } from '../common/commands';
+import { hideSettingsWindow, showPrimaryWindow, removeCopyItems, removeCopyItemsOlder, setSettings } from '../common/commands';
 import { Checkbox } from 'primereact/checkbox';
 import { AboutContext } from '../common/AboutContext';
 
@@ -25,6 +25,11 @@ function App() {
     const toast = useRef<Toast>(null);
     const newShortcutRef = useRef<Shortcut | null>();
     const about = useContext(AboutContext);
+
+    async function closeSettings() {
+        await showPrimaryWindow();
+        await hideSettingsWindow();
+    }
 
     const saveSettings = async (newSettings: Settings) => {
         try {
@@ -150,7 +155,7 @@ function App() {
                 <span className={styles.toolbarTitle} data-tauri-drag-region>
                     Settings
                 </span>
-                <Button className={`pi pi-times ${styles.toolbarButton}`} onClick={hideSettingsWindow} />
+                <Button className={`pi pi-times ${styles.toolbarButton}`} onClick={closeSettings} />
             </div>
             <div className={styles.content}>
                 <Fieldset legend="General">
@@ -250,7 +255,7 @@ function App() {
                     </div>
                 </Fieldset>
                 <section className={styles.okButtonContainer}>
-                    <Button className={styles.okButton} onClick={hideSettingsWindow}>
+                    <Button className={styles.okButton} onClick={closeSettings}>
                         Ok
                     </Button>
                 </section>
