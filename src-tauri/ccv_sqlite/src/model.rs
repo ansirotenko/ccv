@@ -1,6 +1,6 @@
 use crate::schema::{copy_items, file_infos};
-use diesel::prelude::*;
 use chrono::NaiveDateTime;
+use diesel::prelude::*;
 
 #[derive(Queryable, Selectable, Identifiable, PartialEq, Debug, Clone)]
 #[diesel(table_name = copy_items)]
@@ -14,7 +14,7 @@ pub struct CopyItemEntity {
     pub html: Option<String>,
     pub rtf: Option<String>,
     pub files_text: Option<String>,
-    pub image: Option<String>
+    pub image: Option<String>,
 }
 
 #[derive(Insertable)]
@@ -27,7 +27,7 @@ pub struct NewCopyItemEntity<'a> {
     pub html: Option<&'a str>,
     pub rtf: Option<&'a str>,
     pub files_text: Option<&'a str>,
-    pub image: Option<&'a str>
+    pub image: Option<&'a str>,
 }
 
 #[derive(Queryable, Selectable, PartialEq, Identifiable, Associations, Debug, Clone)]
@@ -41,7 +41,7 @@ pub struct FileInfoEntity {
     pub file_name: Option<String>,
     pub directory_path: Option<String>,
     pub icon_base64: Option<String>,
-    pub is_directory: bool
+    pub is_directory: bool,
 }
 
 #[derive(Insertable)]
@@ -52,5 +52,5 @@ pub struct NewFileInfoEntity<'a> {
     pub file_name: Option<&'a str>,
     pub directory_path: Option<&'a str>,
     pub icon_base64: Option<&'a str>,
-    pub is_directory: bool
+    pub is_directory: bool,
 }

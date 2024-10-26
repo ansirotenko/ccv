@@ -1,6 +1,6 @@
 use serde::Serialize;
-use std::fmt::{self, Display};
 use std::error::Error;
+use std::fmt::{self, Display};
 
 #[derive(Serialize, Clone, Debug)]
 pub struct AppError {
@@ -23,8 +23,9 @@ macro_rules! app_error {
     }
 }
 
-pub fn log_error<TOk, TErr>(value: Result<TOk, TErr>, error_message: &str) -> Result<TOk, AppError> 
-where TErr : Display
+pub fn log_error<TOk, TErr>(value: Result<TOk, TErr>, error_message: &str) -> Result<TOk, AppError>
+where
+    TErr: Display,
 {
     match value {
         Err(err) => {
@@ -32,8 +33,6 @@ where TErr : Display
             log::error!("{app_error}");
             Err(app_error)
         }
-        Ok(res) => {
-            Ok(res)
-        }
+        Ok(res) => Ok(res),
     }
 }

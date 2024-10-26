@@ -1,13 +1,13 @@
 import { Button } from 'primereact/button';
 import { Fieldset } from 'primereact/fieldset';
-import { useRef, useState, KeyboardEvent, useContext } from 'react';
+import { useRef, useState, KeyboardEvent, useContext, ReactNode } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Calendar } from 'primereact/calendar';
 import { RadioButton } from 'primereact/radiobutton';
 import { Toast } from 'primereact/toast';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import * as log from '@tauri-apps/plugin-log';
-import { AppError, Settings, Shortcut } from '../common/contract';
+import { AppError, DeleteSummary, Settings, Shortcut } from '../common/contract';
 import { SettingsContext } from '../common/SettingsContext';
 import { shortcutDisplay, shortcutFromEvent } from '../common/keyboard';
 import { hideSettingsWindow, showPrimaryWindow, removeCopyItems, removeCopyItemsOlder, setSettings } from '../common/commands';
@@ -36,7 +36,7 @@ function App() {
     const saveSettings = async (newSettings: Settings) => {
         try {
             await setSettings(newSettings);
-            showSuccess(`Settings were changed`);
+            showSuccess(`Settings were changed`, 500);
         } catch (e) {
             const appError = e as AppError;
             log.error(appError.message);
@@ -44,9 +44,9 @@ function App() {
         }
     };
 
-    const showSuccess = (message: string) => {
+    const showSuccess = (message: string | ReactNode, life: number) => {
         if (toast.current) {
-            toast.current.show({ severity: 'success', summary: 'Success', detail: message, life: 500 });
+            toast.current.show({ severity: 'success', summary: 'Success', detail: message, life: life });
         }
     };
 
@@ -106,8 +106,8 @@ function App() {
             accept: async () => {
                 try {
                     if (selectedIds) {
-                        await removeCopyItems(selectedIds);
-                        showSuccess(`Deletion completed`);
+                        const deleteSummary = await removeCopyItems(selectedIds);
+                        showSuccessfulDeletion(deleteSummary);
                     } else {
                         const errorMessage = `Ids are empty`;
                         log.error(errorMessage);
@@ -130,8 +130,8 @@ function App() {
             accept: async () => {
                 try {
                     if (deleteDate) {
-                        await removeCopyItemsOlder(deleteDate);
-                        showSuccess(`Deletion completed`);
+                        const deleteSummary = await removeCopyItemsOlder(deleteDate);
+                        showSuccessfulDeletion(deleteSummary);
                     } else {
                         const errorMessage = `Deletion date is null`;
                         log.error(errorMessage);
@@ -148,6 +148,15 @@ function App() {
             message: <>Are you sure you want to clear history up to {deleteDate?.toLocaleString()}?</>,
         });
     };
+
+    function showSuccessfulDeletion(deleteSummary: DeleteSummary) {
+        const noteCurrentValue = deleteSummary.isActiveRestored ? ' Current copy buffer value was restored as first item. ' : '';
+        const plural = deleteSummary.deletedCount !== 1 ? 's' : '';
+        showSuccess(
+            `${deleteSummary.deletedCount} item${plural} were deleted.${noteCurrentValue}`,
+            deleteSummary.isActiveRestored ? 6000 : 3000,
+        );
+    }
 
     return (
         <div className={styles.container}>
@@ -205,13 +214,15 @@ function App() {
                     <div className="p-inputgroup">
                         <span className="p-inputgroup-addon">Open ccv</span>
                         <InputText value={shortcutDisplay(settings?.allShortcuts.openCcv, about!.os)} disabled={true} />
-                        <Button
-                            className={`${styles.settingsButton} changeOpenCcvShortcut`}
-                            onClick={confirmShortcuts}
-                        >
+                        <Button className={`${styles.settingsButton} changeOpenCcvShortcut`} onClick={confirmShortcuts}>
                             Change
                         </Button>
-                        <Tooltip target=".changeOpenCcvShortcut" position='left' style={{ fontSize: 13, maxWidth: "380px", textAlign: "center" }} showOnDisabled={true}>
+                        <Tooltip
+                            target=".changeOpenCcvShortcut"
+                            position="left"
+                            style={{ fontSize: 13, maxWidth: '380px', textAlign: 'center' }}
+                            showOnDisabled={true}
+                        >
                             Change shortcut to open ccv.
                         </Tooltip>
                     </div>
@@ -241,22 +252,27 @@ function App() {
                         >
                             Delete older
                         </Button>
-                        <Tooltip target=".deleteByTime" position='left' style={{ fontSize: 13, maxWidth: "380px", textAlign: "center" }} showOnDisabled={true}>
+                        <Tooltip
+                            target=".deleteByTime"
+                            position="left"
+                            style={{ fontSize: 13, maxWidth: '380px', textAlign: 'center' }}
+                            showOnDisabled={true}
+                        >
                             {`Clear history up to selected date. ${deleteDate == null ? 'Please specify date.' : ''}`}
                         </Tooltip>
                     </div>
                     <div className="p-inputgroup">
                         <InputText placeholder="12345..." value={selectedIds} onChange={(e) => setSelectedIds(e.target.value)} />
-                        <Button
-                            className={`${styles.settingsButton} deleteById`}
-                            disabled={!selectedIds}
-                            onClick={confirmDeleteIds}
-                        >
+                        <Button className={`${styles.settingsButton} deleteById`} disabled={!selectedIds} onClick={confirmDeleteIds}>
                             Delete ids
                         </Button>
-                        <Tooltip target=".deleteById" position='left' style={{ fontSize: 13, maxWidth: "380px", textAlign: "center" }} showOnDisabled={true}>
-                            Delete items by ids separated by comma. 
-                            Id of the item could be found at the bottom of primary view.
+                        <Tooltip
+                            target=".deleteById"
+                            position="left"
+                            style={{ fontSize: 13, maxWidth: '380px', textAlign: 'center' }}
+                            showOnDisabled={true}
+                        >
+                            Delete items by ids separated by comma. Id of the item could be found at the bottom of primary view.
                             <img src={itemIdImage} width="350px" />
                         </Tooltip>
                     </div>

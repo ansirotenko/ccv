@@ -65,7 +65,7 @@ pub struct FileInfo {
 pub enum Os {
     Linux,
     MacOs,
-    Windows
+    Windows,
 }
 
 #[derive(Serialize, Clone, Debug, PartialEq)]
@@ -138,5 +138,13 @@ pub struct EventPayload<T> {
 #[derive(Clone, Serialize, Debug)]
 pub struct MainShortcutPressedPayload {
     #[serde(rename = "changedFromHiddenToVisile")]
-    pub changed_from_hidden_to_visile: bool 
+    pub changed_from_hidden_to_visile: bool,
+}
+
+#[derive(Clone, Serialize, Debug)]
+pub struct DeleteSummary {
+    #[serde(rename = "deletedCount")]
+    pub deleted_count: usize,
+    #[serde(rename = "isActiveRestored")]
+    pub is_active_restored: bool,
 }

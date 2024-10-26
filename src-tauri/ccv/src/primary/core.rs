@@ -1,6 +1,6 @@
 use ccv_contract::{
     app_error,
-    error::{log_error, AppError},
+    error::AppError,
     models::{
         CopyCategory::{self, Files, Html, Image, Rtf, Text, Unknown},
         CopyItem, CopyItemValue, FileInfo,
@@ -11,22 +11,28 @@ use std::path::Path;
 use tauri::State;
 use tauri_plugin_clipboard::Clipboard;
 
+pub struct InsertIfNotFoundResult {
+    pub copy_item: CopyItem,
+    pub already_exist: bool,
+}
+
 pub fn insert_copy_item_if_not_found(
     repository: &dyn Repository,
     clipboard: &State<Clipboard>,
-) -> Result<CopyItem, AppError> {
-    let new_copy_item_value = log_error(
-        get_new_copy_item_value(clipboard),
-        "Failed to get new copy item",
-    )?;
+) -> Result<InsertIfNotFoundResult, AppError> {
+    let new_copy_item_value = get_new_copy_item_value(clipboard)?;
     let existed_item = repository.find_by_value(&new_copy_item_value)?;
     if let Some(existed_item) = existed_item {
-        Ok(existed_item)
+        Ok(InsertIfNotFoundResult {
+            copy_item: existed_item,
+            already_exist: true,
+        })
     } else {
-        log_error(
-            repository.insert(&new_copy_item_value),
-            "Error on inserting new copy item",
-        )
+        let new_copy_item = repository.insert(&new_copy_item_value)?;
+        Ok(InsertIfNotFoundResult {
+            copy_item: new_copy_item,
+            already_exist: false,
+        })
     }
 }
 
@@ -195,13 +201,11 @@ pub fn write_reused_copy_item(
                 .lock()
                 .map_err(|err| app_error!("{err}"))?;
 
-            log_error(
-                ctx.set(vec![
-                    ClipboardContent::Text(copy_item.value.text.as_ref().unwrap().clone()),
-                    ClipboardContent::Rtf(copy_item.value.rtf.as_ref().unwrap().clone()),
-                ]),
-                "Unable to write rtf and text content",
-            )?;
+            ctx.set(vec![
+                ClipboardContent::Text(copy_item.value.text.as_ref().unwrap().clone()),
+                ClipboardContent::Rtf(copy_item.value.rtf.as_ref().unwrap().clone()),
+            ])
+            .map_err(|e| app_error!("{e}"))?;
 
             // clipboard_state
             //     .write_text(copy_item.value.text.as_ref().unwrap().clone())

@@ -4,7 +4,7 @@ use crate::utils::window::{hide_window, show_window};
 use ccv_contract::{
     app_error,
     error::{log_error, AppError},
-    models::{EventPayload, Settings},
+    models::{EventPayload, Settings, DeleteSummary},
 };
 use chrono::{DateTime, Utc};
 use tauri::{command, AppHandle, Emitter, Manager, State};
@@ -56,17 +56,17 @@ pub fn remove_copy_items(
     app_handle: AppHandle,
     state: State<primary::state::PrimaryState>,
     clipboard_state: State<Clipboard>,
-) -> Result<(), AppError> {
+) -> Result<DeleteSummary, AppError> {
     let splitted_item_ids: Vec<&str> = item_ids.split(",").into_iter().map(|x| x.trim()).collect();
     if splitted_item_ids.is_empty() {
         return Err(app_error!("No id specified"));
     }
     let repository = state.repository.lock().unwrap();
-    log_error(
+    let delete_result = log_error(
         repository.remove(&splitted_item_ids),
         "Error on removing copy items",
     )?;
-    log_error(
+    let insert_result = log_error(
         primary::core::insert_copy_item_if_not_found(repository.as_ref(), &clipboard_state),
         "Unable to insert item after deletion",
     )?;
@@ -82,7 +82,7 @@ pub fn remove_copy_items(
         "Unable to send event",
     )?;
 
-    Ok(())
+    Ok(DeleteSummary{ deleted_count: delete_result, is_active_restored: !insert_result.already_exist})
 }
 
 #[command]
@@ -91,13 +91,13 @@ pub fn remove_copy_items_older(
     app_handle: AppHandle,
     state: State<primary::state::PrimaryState>,
     clipboard_state: State<Clipboard>,
-) -> Result<(), AppError> {
+) -> Result<DeleteSummary, AppError> {
     let repository = state.repository.lock().unwrap();
-    log_error(
+    let delete_result = log_error(
         repository.remove_older(sinse),
         "Error on removing old copy items",
     )?;
-    log_error(
+    let insert_result = log_error(
         primary::core::insert_copy_item_if_not_found(repository.as_ref(), &clipboard_state),
         "Unable to insert item after deletion",
     )?;
@@ -113,5 +113,5 @@ pub fn remove_copy_items_older(
         "Unable to send event",
     )?;
 
-    Ok(())
+    Ok(DeleteSummary{ deleted_count: delete_result, is_active_restored: !insert_result.already_exist})
 }

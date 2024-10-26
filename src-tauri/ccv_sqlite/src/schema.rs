@@ -28,7 +28,4 @@ diesel::table! {
 
 diesel::joinable!(file_infos -> copy_items (copy_item_id));
 
-diesel::allow_tables_to_appear_in_same_query!(
-    copy_items,
-    file_infos,
-);
+diesel::allow_tables_to_appear_in_same_query!(copy_items, file_infos,);

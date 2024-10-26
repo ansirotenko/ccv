@@ -49,11 +49,11 @@ impl Repository for UninitalizedRepository {
         Err(app_error!("Repository is unitialzed"))
     }
 
-    fn remove(&self, _item_ids: &Vec<&str>) -> Result<(), AppError> {
+    fn remove(&self, _item_ids: &Vec<&str>) -> Result<usize, AppError> {
         Err(app_error!("Repository is unitialzed"))
     }
 
-    fn remove_older(&self, _sinse: chrono::DateTime<chrono::Utc>) -> Result<(), AppError> {
+    fn remove_older(&self, _sinse: chrono::DateTime<chrono::Utc>) -> Result<usize, AppError> {
         Err(app_error!("Repository is unitialzed"))
     }
 }

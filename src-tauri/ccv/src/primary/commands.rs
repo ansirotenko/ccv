@@ -55,10 +55,12 @@ pub fn insert_copy_item(
     clipboard_state: State<Clipboard>,
 ) -> Result<CopyItem, AppError> {
     let repository = state.repository.lock().unwrap();
-    log_error(
+    let result = log_error(
         primary::core::insert_copy_item_if_not_found(repository.as_ref(), &clipboard_state),
         "Error on inserting new copy item",
-    )
+    )?;
+
+    Ok(result.copy_item)
 }
 
 #[command]

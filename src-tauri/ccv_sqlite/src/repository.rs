@@ -344,7 +344,7 @@ impl Repository for SqliteRepository {
         }
     }
 
-    fn remove(&self, item_ids: &Vec<&str>) -> Result<(), AppError> {
+    fn remove(&self, item_ids: &Vec<&str>) -> Result<usize, AppError> {
         let pool = self.pool.lock().unwrap();
         let mut connection = pool
             .get()
@@ -358,26 +358,28 @@ impl Repository for SqliteRepository {
             .collect::<Vec<i32>>();
 
         use crate::schema::copy_items::dsl::{copy_items, id};
-        diesel::delete(copy_items.filter(id.eq_any(parsed_item_ids)))
-            .returning(CopyItemEntity::as_select())
-            .get_results(&mut connection)
-            .map_err(|err| app_error!("Failed to delete CopyItems. {}", err))?;
+        let deleted_copy_items: Vec<CopyItemEntity> =
+            diesel::delete(copy_items.filter(id.eq_any(parsed_item_ids)))
+                .returning(CopyItemEntity::as_select())
+                .get_results(&mut connection)
+                .map_err(|err| app_error!("Failed to delete CopyItems. {}", err))?;
 
-        Ok(())
+        Ok(deleted_copy_items.len())
     }
 
-    fn remove_older(&self, sinse: DateTime<Utc>) -> Result<(), AppError> {
+    fn remove_older(&self, sinse: DateTime<Utc>) -> Result<usize, AppError> {
         let pool = self.pool.lock().unwrap();
         let mut connection = pool
             .get()
             .map_err(|err| app_error!("Unable to get connection. {}", err))?;
 
         use crate::schema::copy_items::dsl::{copy_items, last_reuse};
-        diesel::delete(copy_items.filter(last_reuse.le(sinse.naive_utc())))
-            .returning(CopyItemEntity::as_select())
-            .get_results(&mut connection)
-            .map_err(|err| app_error!("Failed to delete CopyItems. {}", err))?;
+        let deleted_copy_items: Vec<CopyItemEntity> =
+            diesel::delete(copy_items.filter(last_reuse.le(sinse.naive_utc())))
+                .returning(CopyItemEntity::as_select())
+                .get_results(&mut connection)
+                .map_err(|err| app_error!("Failed to delete CopyItems. {}", err))?;
 
-        Ok(())
+        Ok(deleted_copy_items.len())
     }
 }

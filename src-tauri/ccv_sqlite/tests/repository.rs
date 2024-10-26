@@ -919,7 +919,8 @@ fn remove_happy_path() {
     let inserted_file_infos =
         insert_file_infos(&database_url, vec![file_item2, file_item3_1, file_item3_2]);
 
-    repo.remove(&vec!["1", "3"]).unwrap();
+    let result = repo.remove(&vec!["1", "3"]).unwrap();
+    assert_eq!(result, 2);
 
     let loaded_copy_items = load_all_copy_items(&database_url);
     assert_eq!(&loaded_copy_items[..], &inserted_copy_items[1..2]);
@@ -941,7 +942,8 @@ fn remove_has_no_effect() {
     let file_item2 = new_file_info_entity(2, "sss2", true);
     let inserted_file_infos = insert_file_infos(&database_url, vec![file_item2]);
 
-    repo.remove(&vec!["4", "3"]).unwrap();
+    let result = repo.remove(&vec!["4", "3"]).unwrap();
+    assert_eq!(result, 0);
 
     let loaded_copy_items = load_all_copy_items(&database_url);
     assert_eq!(loaded_copy_items, inserted_copy_items);
@@ -976,7 +978,8 @@ fn remove_older_happy_path() {
         vec![t2_1_file_item, t2_2_file_item, t3_file_item],
     );
 
-    repo.remove_older(sinse).unwrap();
+    let result = repo.remove_older(sinse).unwrap();
+    assert_eq!(result, 2);
 
     let loaded_copy_items = load_all_copy_items(&database_url);
     assert_eq!(&loaded_copy_items[..], &inserted_copy_items[2..]);
@@ -1001,7 +1004,8 @@ fn remove_older_has_no_effect() {
     let t2_file_item = new_file_info_entity(2, "sss2", true);
     let inserted_file_infos = insert_file_infos(&database_url, vec![t2_file_item]);
 
-    repo.remove_older(sinse).unwrap();
+    let result = repo.remove_older(sinse).unwrap();
+    assert_eq!(result, 0);
 
     let loaded_copy_items = load_all_copy_items(&database_url);
     assert_eq!(loaded_copy_items, inserted_copy_items);

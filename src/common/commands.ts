@@ -1,5 +1,5 @@
 import { invoke } from '@tauri-apps/api/core';
-import { AboutData, CopyCategory, CopyItem, SearchResult, Settings } from './contract';
+import { AboutData, CopyCategory, CopyItem, DeleteSummary, SearchResult, Settings } from './contract';
 
 export async function getAboutData() {
     return await invoke<AboutData>('get_about_data');
@@ -30,11 +30,11 @@ export async function showSettingsWindow() {
 }
 
 export async function removeCopyItems(itemIds: string) {
-    await invoke<void>('remove_copy_items', { itemIds: itemIds });
+    return await invoke<DeleteSummary>('remove_copy_items', { itemIds: itemIds });
 }
 
 export async function removeCopyItemsOlder(sinse: Date) {
-    await invoke<void>('remove_copy_items_older', { sinse: sinse });
+    return await invoke<DeleteSummary>('remove_copy_items_older', { sinse: sinse });
 }
 
 type CopyItemRaw = Omit<CopyItem, 'lastReuse' | 'created'> & {

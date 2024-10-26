@@ -75,3 +75,8 @@ export interface EventPayload<T> {
 export interface MainShortcutPressedPayload {
     changedFromHiddenToVisile: boolean;
 }
+
+export interface DeleteSummary {
+    deletedCount: number;
+    isActiveRestored: boolean;
+}
