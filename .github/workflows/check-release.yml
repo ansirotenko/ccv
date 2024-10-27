@@ -34,11 +34,11 @@ jobs:
       id: check_change_log
       run: |
         CHANGE_LOG_FILE_PATH="./change-log.json";
-        if [ $(jq -r 'has("'${steps.check_version.outputs.version}'")' ${CHANGE_LOG_FILE_PATH}) == false ]; then
-            echo "Change log for version ${steps.check_version.outputs.version} is not defined"
+        if [ $(jq -r 'has("${{steps.check_version.outputs.version}}")' ${CHANGE_LOG_FILE_PATH}) == false ]; then
+            echo "Change log for version ${{steps.check_version.outputs.version}} is not defined"
             exit 1;
         fi
-        CHANGE_LOG=$(jq -r '."'${steps.check_version.outputs.version}'" | if type=="array" then map("- " + .) | join("\n\r") else . end' ${CHANGE_LOG_FILE_PATH});
+        CHANGE_LOG=$(jq -r '."${{steps.check_version.outputs.version}}" | if type=="array" then map("- " + .) | join("\n\r") else . end' ${CHANGE_LOG_FILE_PATH});
         echo ${CHANGE_LOG};
         echo "change_log=${CHANGE_LOG}" >> "$GITHUB_OUTPUT"
   
