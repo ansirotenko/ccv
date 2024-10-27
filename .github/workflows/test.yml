@@ -1,8 +1,6 @@
-name: Tests
+name: Test
 
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
     branches: [ "main", "release" ]
 
@@ -11,18 +9,29 @@ env:
 
 jobs:
   build:
-
+    name: test
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
+
+    - name: install Rust stable
+      uses: dtolnay/rust-toolchain@1.79.0
+    
     - name: Install dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+    
+    - name: Rust cache
+      uses: swatinem/rust-cache@v2
+      with:
+        workspaces: './src-tauri -> target'
+    
     - name: Build
       working-directory: src-tauri
       run: cargo build --verbose
-    - name: Run tests
+    
+    - name: Run test
       working-directory: src-tauri
       run: cargo test --verbose

@@ -6,6 +6,7 @@ on:
 
 jobs:
   publish-tauri:
+    name: release
     permissions:
       contents: write
     strategy:
