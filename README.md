@@ -15,7 +15,7 @@ It uses sqlite to store the entire clipboard history, allows you to search and r
 `brew install ansirotenko/repo/ccv`
 
 #### Windows and Linux
-The download file for the installation can be found on the [releases](https://github.com/ansirotenko/ccv/releases) page. 
+The download file for the installation can be found on the [releases](https://github.com/ansirotenko/ccv/releases/latest) page. 
 
 > Note: Currently the installers are not signed yet for Linux and Windows. Work on this task continues. See [planned features](./wish-list.md)
 

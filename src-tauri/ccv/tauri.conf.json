@@ -30,7 +30,7 @@
     "updater": {
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDVFNkQ2NUVCQjJEM0FCMjAKUldRZ3E5T3k2MlZ0WGlpeW9ka2kxdTZRV1oxZkphbDdKNWRqaWtOYTdjVThldFdlMUx2dlp1L04K",
       "endpoints": [
-        "https://raw.githubusercontent.com/ansirotenko/ccv/main/latest.json"
+        "https://github.com/ansirotenko/ccv/releases/latest/download/latest.json"
       ],
       "windows": {
         "installMode": "passive"
@@ -39,13 +39,7 @@
   },
   "app": {
     "security": {
-      "csp": {
-        "default-src": "'self' customprotocol: asset:",
-        "connect-src": "ipc: http://ipc.localhost",
-        "font-src": ["https://fonts.gstatic.com"],
-        "img-src": "'self' asset: http://asset.localhost blob: data:",
-        "style-src": "'unsafe-inline' 'self' https://fonts.googleapis.com"
-      },
+      "csp": null,
       "capabilities": ["ccv-capability"]
     },
     "windows": [
