@@ -3,7 +3,7 @@ members = ["ccv", "ccv_contract", "ccv_in_memory", "ccv_sqlite"]
 resolver = "2"
 
 [workspace.package]
-version = "0.2.2" # Also update version at ./ccv/tarui.conf.json
+version = "0.2.3" # Also update version at ./ccv/tarui.conf.json
 authors = ["Andrei Sirotenko <panshirotenski@gmail.com>"]
 homepage = "https://github.com/ansirotenko/ccv"
 license-file = "../LICENSE"
