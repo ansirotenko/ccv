@@ -5,8 +5,27 @@ on:
     branches: [ "release" ]
 
 jobs:
+  change-log:
+    runs-on: ubuntu-latest
+    outputs:
+      change_log: ${{ steps.change_log.outputs.change_log }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Change log
+        id: change_log
+        run: |
+          CONFIG_FILE_PATH="src-tauri/ccv/tauri.conf.json"
+          VERSION="$(jq -r .version ${CONFIG_FILE_PATH})"
+          CHANGE_LOG_FILE_PATH="./change-log.json"
+          CHANGE_LOG=$(jq -r '."'${VERSION}'" | if type=="array" then map("- " + .) | join("\n\r") else . end' ${CHANGE_LOG_FILE_PATH})
+          echo "change_log<<EOF" >> "$GITHUB_OUTPUT"
+          echo "${CHANGE_LOG}" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
   publish-tauri:
     name: release
+    needs: change-log
     permissions:
       contents: write
     strategy:
@@ -50,7 +69,7 @@ jobs:
 
       - name: install frontend dependencies
         run: npm ci
-
+          
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -68,7 +87,7 @@ jobs:
         with:
           tagName: ccv-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
           releaseName: 'ccv v__VERSION__'
-          releaseBody: '${{ github.event.head_commit.message }}'
+          releaseBody: '${{ needs.change-log.outputs.change_log }}'
           releaseDraft: true
           prerelease: false
           args: ${{ matrix.args }}

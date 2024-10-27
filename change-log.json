@@ -27,5 +27,9 @@
     "0.2.4": [
         "fix visual bug",
         "fix updater url"
+    ],
+    "0.2.5": [
+        "fix visual bug",
+        "fix updater url"
     ]
 }
