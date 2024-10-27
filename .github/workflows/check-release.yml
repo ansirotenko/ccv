@@ -47,5 +47,5 @@ jobs:
 
     - name: test1
       run: |
-        TEST='${{steps.check_change_log.outputs.change_log*}}'
+        TEST='${{ steps.check_change_log.outputs.change_log }}'
         echo ${TEST}  
