@@ -24,7 +24,7 @@
   },
   "productName": "ccv",
   "mainBinaryName": "ccv",
-  "version": "0.2.5",
+  "version": "0.2.4",
   "identifier": "com.ansirotenko.ccv",
   "plugins": {
     "updater": {
