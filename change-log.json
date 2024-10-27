@@ -28,8 +28,5 @@
         "fix visual bug",
         "fix updater url"
     ],
-    "0.2.5": [
-        "fix visual bug123",
-        "fix updater url3545"
-    ]
+    "0.2.5": "fix visual bug123"
 }
