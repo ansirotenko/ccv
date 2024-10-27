@@ -71,3 +71,19 @@ jobs:
           releaseDraft: true
           prerelease: false
           args: ${{ matrix.args }}
+
+      - name: calculating sha for macOS ARM
+        if: matrix.args == '--target aarch64-apple-darwin'
+        run: |
+          VERSION=$(jq -r '.version' ./src-tauri/ccv/tauri.conf.json)
+          ARTIFACT_PATH=${GITHUB_WORKSPACE}/src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/ccv_${VERSION}_aarch64.dmg
+          echo "ARTIFACT_PATH ${ARTIFACT_PATH}"
+          shasum --algorithm 256 ${ARTIFACT_PATH}
+          
+      - name: calculating sha for macOS Intel
+        if: matrix.args == '--target x86_64-apple-darwin'
+        run: |
+          VERSION=$(jq -r '.version' ./src-tauri/ccv/tauri.conf.json)
+          ARTIFACT_PATH=${GITHUB_WORKSPACE}/src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/ccv_${VERSION}_x64.dmg
+          echo "ARTIFACT_PATH ${ARTIFACT_PATH}"
+          shasum --algorithm 256 ${ARTIFACT_PATH}
