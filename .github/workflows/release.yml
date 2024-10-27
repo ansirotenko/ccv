@@ -67,7 +67,7 @@ jobs:
         with:
           tagName: ccv-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
           releaseName: 'ccv v__VERSION__'
-          releaseBody: 'See the assets to download this version and install.'
+          releaseBody: '${{ github.event.head_commit.message }}'
           releaseDraft: true
           prerelease: false
           args: ${{ matrix.args }}
