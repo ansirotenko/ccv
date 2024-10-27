@@ -19,101 +19,91 @@ jobs:
           VERSION="$(jq -r .version ${CONFIG_FILE_PATH})"
           CHANGE_LOG_FILE_PATH="./change-log.json"
           CHANGE_LOG=$(jq -r '."'${VERSION}'" | if type=="array" then map("- " + .) | join("\n\r") else . end' ${CHANGE_LOG_FILE_PATH})
-          echo ${CHANGE_LOG}
           echo "change_log<<EOF" >> "$GITHUB_OUTPUT"
           echo "${CHANGE_LOG}" >> "$GITHUB_OUTPUT"
           echo "EOF" >> "$GITHUB_OUTPUT"
 
   publish-tauri:
-    runs-on: ubuntu-latest
+    name: release
     needs: change-log
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: 'macos-latest' # for Arm based macs (M1 and above).
+            args: '--target aarch64-apple-darwin'
+          - platform: 'macos-latest' # for Intel based macs.
+            args: '--target x86_64-apple-darwin'
+          - platform: 'ubuntu-22.04' # for Tauri v1 you could replace this with ubuntu-20.04.
+            args: ''
+          - platform: 'windows-latest'
+            args: ''
+
+    runs-on: ${{ matrix.platform }}
     steps:
-      - name: test1
+      - uses: actions/checkout@v4
+
+      - name: install dependencies (ubuntu only)
+        if: matrix.platform == 'ubuntu-22.04' # This must match the platform value defined above.
         run: |
-          TEST='${{ needs.change-log.outputs.change_log }}'
-          echo ${TEST}  
-
-
-  # publish-tauri:
-  #   name: release
-  #   permissions:
-  #     contents: write
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       include:
-  #         - platform: 'macos-latest' # for Arm based macs (M1 and above).
-  #           args: '--target aarch64-apple-darwin'
-  #         - platform: 'macos-latest' # for Intel based macs.
-  #           args: '--target x86_64-apple-darwin'
-  #         - platform: 'ubuntu-22.04' # for Tauri v1 you could replace this with ubuntu-20.04.
-  #           args: ''
-  #         - platform: 'windows-latest'
-  #           args: ''
-
-  #   runs-on: ${{ matrix.platform }}
-  #   steps:
-  #     - uses: actions/checkout@v4
-
-  #     - name: install dependencies (ubuntu only)
-  #       if: matrix.platform == 'ubuntu-22.04' # This must match the platform value defined above.
-  #       run: |
-  #         sudo apt-get update
-  #         sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf 
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf 
           
-  #     - name: setup node
-  #       uses: actions/setup-node@v4
-  #       with:
-  #         node-version: 22.3.0
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.3.0
 
-  #     - name: install Rust stable
-  #       uses: dtolnay/rust-toolchain@1.79.0
-  #       with:
-  #         # Those targets are only used on macos runners so it's in an `if` to slightly speed up windows and linux builds.
-  #         targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+      - name: install Rust stable
+        uses: dtolnay/rust-toolchain@1.79.0
+        with:
+          # Those targets are only used on macos runners so it's in an `if` to slightly speed up windows and linux builds.
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
-  #     - name: Rust cache
-  #       uses: swatinem/rust-cache@v2
-  #       with:
-  #         workspaces: './src-tauri -> target'
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
 
-  #     - name: install frontend dependencies
-  #       run: npm ci
+      - name: install frontend dependencies
+        run: npm ci
           
-  #     - uses: tauri-apps/tauri-action@v0
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #         TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.CCV_UPDATER_PRIVATE_KEY }}
-  #         TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.CCV_UPDATER_PASSWORD }}
-  #         APPLE_CERTIFICATE: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_CERTIFICATE }}
-  #         APPLE_CERTIFICATE_PASSWORD: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_CERTIFICATE_PASSWORD }}
-  #         APPLE_SIGNING_IDENTITY: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_SIGNING_IDENTITY }}
-  #         APPLE_ID: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_ID }}
-  #         APPLE_PASSWORD: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_PASSWORD }}
-  #         APPLE_TEAM_ID: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_TEAM_ID }}
-  #         SIGN: "1"
-  #         SIGN_KEY: ${{ secrets.CCV_SIGNING_KEY }} 
-  #         APPIMAGETOOL_SIGN_PASSPHRASE: ${{ secrets.CCV_APPIMAGETOOL_SIGN_PASSPHRASE }} 
-  #       with:
-  #         tagName: ccv-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
-  #         releaseName: 'ccv v__VERSION__'
-  #         releaseBody: '${{ needs.change-log.outputs.change_log }}'
-  #         releaseDraft: true
-  #         prerelease: false
-  #         args: ${{ matrix.args }}
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.CCV_UPDATER_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.CCV_UPDATER_PASSWORD }}
+          APPLE_CERTIFICATE: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_TEAM_ID }}
+          SIGN: "1"
+          SIGN_KEY: ${{ secrets.CCV_SIGNING_KEY }} 
+          APPIMAGETOOL_SIGN_PASSPHRASE: ${{ secrets.CCV_APPIMAGETOOL_SIGN_PASSPHRASE }} 
+        with:
+          tagName: ccv-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
+          releaseName: 'ccv v__VERSION__'
+          releaseBody: '${{ needs.change-log.outputs.change_log }}'
+          releaseDraft: true
+          prerelease: false
+          args: ${{ matrix.args }}
 
-  #     - name: calculating sha for macOS ARM
-  #       if: matrix.args == '--target aarch64-apple-darwin'
-  #       run: |
-  #         VERSION=$(jq -r '.version' ./src-tauri/ccv/tauri.conf.json)
-  #         ARTIFACT_PATH=${GITHUB_WORKSPACE}/src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/ccv_${VERSION}_aarch64.dmg
-  #         echo "ARTIFACT_PATH ${ARTIFACT_PATH}"
-  #         shasum --algorithm 256 ${ARTIFACT_PATH}
+      - name: calculating sha for macOS ARM
+        if: matrix.args == '--target aarch64-apple-darwin'
+        run: |
+          VERSION=$(jq -r '.version' ./src-tauri/ccv/tauri.conf.json)
+          ARTIFACT_PATH=${GITHUB_WORKSPACE}/src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/ccv_${VERSION}_aarch64.dmg
+          echo "ARTIFACT_PATH ${ARTIFACT_PATH}"
+          shasum --algorithm 256 ${ARTIFACT_PATH}
           
-  #     - name: calculating sha for macOS Intel
-  #       if: matrix.args == '--target x86_64-apple-darwin'
-  #       run: |
-  #         VERSION=$(jq -r '.version' ./src-tauri/ccv/tauri.conf.json)
-  #         ARTIFACT_PATH=${GITHUB_WORKSPACE}/src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/ccv_${VERSION}_x64.dmg
-  #         echo "ARTIFACT_PATH ${ARTIFACT_PATH}"
-  #         shasum --algorithm 256 ${ARTIFACT_PATH}
+      - name: calculating sha for macOS Intel
+        if: matrix.args == '--target x86_64-apple-darwin'
+        run: |
+          VERSION=$(jq -r '.version' ./src-tauri/ccv/tauri.conf.json)
+          ARTIFACT_PATH=${GITHUB_WORKSPACE}/src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/ccv_${VERSION}_x64.dmg
+          echo "ARTIFACT_PATH ${ARTIFACT_PATH}"
+          shasum --algorithm 256 ${ARTIFACT_PATH}
