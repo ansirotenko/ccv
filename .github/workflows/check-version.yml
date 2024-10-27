@@ -37,6 +37,6 @@ jobs:
             echo "Change log for version ${VERSION} is not defined"
             exit 1;
         fi
-        CHANGE_LOG=$(jq -r '."'${VERSION}'" | if type=="array" then join("\n\r") else . end' ${CHANGE_LOG_FILE_PATH});
+        CHANGE_LOG=$(jq -r '."'${VERSION}'" | if type=="array" then map("- " + .) | join("\n\r") else . end' ${CHANGE_LOG_FILE_PATH});
         echo ${CHANGE_LOG};
   
