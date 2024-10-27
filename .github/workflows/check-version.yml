@@ -2,12 +2,12 @@ name: Check Version
 
 on:
   pull_request:
-    branches: [ "release" ]
+    branches: [ "release", "main" ]
 
 jobs:
   build:
     name: check-version
-    
+
     runs-on: ubuntu-latest
 
     steps:
@@ -15,16 +15,27 @@ jobs:
       uses: actions/checkout@v4
       with:
           fetch-depth: 0
-    - name: Check for tag
+    - name: Check for existing release
       run: |
-        file_path="src-tauri/ccv/tauri.conf.json";
-        if [ ! -f ${file_path} ]; then
-            echo "${file_path} not found!";
+        CONFIG_FILE_PATH="src-tauri/ccv/tauri.conf.json";
+        if [ ! -f ${CONFIG_FILE_PATH} ]; then
+            echo "${CONFIG_FILE_PATH} not found!";
             exit 1;
         fi
-        version="ccv-v$(jq .version src-tauri/ccv/tauri.conf.json -r)"
-        if [ -n "$(git tag -l "${version}")" ]; then
-            echo "${version} already exists. Please update version"
+        VERSION="ccv-v$(jq -r .version ${CONFIG_FILE_PATH})"
+        if [ -n "$(git tag -l "${VERSION}")" ]; then
+            echo "${VERSION} already exists. Please update version"
             exit 1;
         fi
+    - name: Check for change log
+      run: |
+        CONFIG_FILE_PATH="src-tauri/ccv/tauri.conf.json";
+        VERSION="$(jq -r .version ${CONFIG_FILE_PATH})"
+        CHANGE_LOG_FILE_PATH="./change-log.json";
+        if [ -n "$(jq -r .${VERSION} ${CHANGE_LOG_FILE_PATH})" ]; then
+            echo "Change log for version ${VERSION} is not defined"
+            exit 1;
+        fi
+        CHANGE_LOG=$(jq -r '.${VERSION} | join("\n")' ${CHANGE_LOG_FILE_PATH});
+        echo CHANGE_LOG;
   
