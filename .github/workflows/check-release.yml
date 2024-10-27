@@ -1,0 +1,45 @@
+name: Check Release
+
+on:
+  pull_request:
+    branches: [ "release" ]
+
+jobs:
+  build:
+    name: check-release
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+          fetch-depth: 0
+    - name: Check for existing version
+      id: check_version
+      run: |
+        CONFIG_FILE_PATH="src-tauri/ccv/tauri.conf.json"
+        if [ ! -f ${CONFIG_FILE_PATH} ]; then
+            echo "${CONFIG_FILE_PATH} not found!"
+            exit 1
+        fi
+        VERSION="$(jq -r .version ${CONFIG_FILE_PATH})"
+        if [ -n "$(git tag -l "ccv-v${VERSION}")" ]; then
+            echo "${VERSION} already exists. Please update version"
+            exit 1
+        fi
+        echo "version ${VERSION}"
+        echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+    - name: Check for change log
+      id: check_change_log
+      run: |
+        VERSION=${{steps.check_version.outputs.version}}
+        CHANGE_LOG_FILE_PATH="./change-log.json"
+        if [ $(jq -r 'has("'${VERSION}'")' ${CHANGE_LOG_FILE_PATH}) == false ]; then
+            echo "Change log for version ${VERSION} is not defined"
+            exit 1
+        fi
+        CHANGE_LOG=$(jq -r '."'${VERSION}'" | if type=="array" then map("- " + .) | join("\\n") else . end' ${CHANGE_LOG_FILE_PATH})
+        echo ${CHANGE_LOG}
+        echo "change_log=\"${CHANGE_LOG}\"" >> "$GITHUB_OUTPUT"
+  
