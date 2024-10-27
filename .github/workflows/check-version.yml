@@ -27,14 +27,16 @@ jobs:
             echo "${VERSION} already exists. Please update version"
             exit 1;
         fi
-        echo ${VERSION} >> $GITHUB_OUTPUT
+        echo "version ${VERSION}"
     - name: Check for change log
       run: |
+        CONFIG_FILE_PATH="src-tauri/ccv/tauri.conf.json";
+        VERSION="$(jq -r .version ${CONFIG_FILE_PATH})"
         CHANGE_LOG_FILE_PATH="./change-log.json";
-        if [ $(jq -r 'has("'${OUTPUT1}'")' ${CHANGE_LOG_FILE_PATH}) == false ]; then
-            echo "Change log for version ${OUTPUT1} is not defined"
+        if [ $(jq -r 'has("'${VERSION}'")' ${CHANGE_LOG_FILE_PATH}) == false ]; then
+            echo "Change log for version ${VERSION} is not defined"
             exit 1;
         fi
-        CHANGE_LOG=$(jq -r '."'${OUTPUT1}'" | if type=="array" then join("\n\r") else . end' ${CHANGE_LOG_FILE_PATH});
+        CHANGE_LOG=$(jq -r '."'${VERSION}'" | if type=="array" then join("\n\r") else . end' ${CHANGE_LOG_FILE_PATH});
         echo ${CHANGE_LOG};
   
