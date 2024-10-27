@@ -26,6 +26,7 @@ jobs:
 
   publish-tauri:
     runs-on: ubuntu-latest
+    needs: change-log
     steps:
       - name: test1
         run: |
