@@ -27,7 +27,7 @@ jobs:
         if: matrix.args == '--target aarch64-apple-darwin'
         run: |
           VERSION=$(jq -r '.version' ./src-tauri/ccv/tauri.conf.json)
-          ARTIFACT_PATH=${GITHUB_WORKSPACE}ccv/src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/ccv_${VERSION}_aarch64.dmg
+          ARTIFACT_PATH=${GITHUB_WORKSPACE}/src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/ccv_${VERSION}_aarch64.dmg
           echo "shasum version $(shasum --version)"
           echo "ARTIFACT_PATH ${ARTIFACT_PATH}"
           
@@ -35,6 +35,6 @@ jobs:
         if: matrix.args == '--target x86_64-apple-darwin'
         run: |
           VERSION=$(jq -r '.version' ./src-tauri/ccv/tauri.conf.json)
-          ARTIFACT_PATH=${GITHUB_WORKSPACE}ccv/src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/ccv_${VERSION}_x64.dmg
+          ARTIFACT_PATH=${GITHUB_WORKSPACE}/src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/ccv_${VERSION}_x64.dmg
           echo "shasum version $(shasum --version)"
           echo "ARTIFACT_PATH ${ARTIFACT_PATH}"
