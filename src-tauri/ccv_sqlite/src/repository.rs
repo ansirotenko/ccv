@@ -136,9 +136,13 @@ impl Repository for SqliteRepository {
             let result = copy_items.into_boxed().filter(category.eq_any(&categories));
 
             if let Some(q) = query {
+                let replaced_string = q
+                    .replace("\\", "\\\\")
+                    .replace("_", "\\_")
+                    .replace("%", "\\%");
                 return result.filter(
-                    text.like(format!("%{q}%"))
-                        .or(files_text.like(format!("%{q}%"))),
+                    text.like(format!("%{replaced_string}%")).escape('\\')
+                        .or(files_text.like(format!("%{q}%")).escape('\\')),
                 );
             }
 
