@@ -12,16 +12,12 @@ import { useSubscribeEvent, emitEvent, ITEMS_CHANGED, WINDOW_HIDDEN_EVENT, HIGHL
 import { Container } from './container/Container';
 import { hidePrimaryWindow, searchCopyItems, showAboutWindow, showSettingsWindow } from '../common/commands';
 import { Notifications } from './notifications/Notifications';
-import { ProgressSpinner } from 'primereact/progressspinner';
-
-import styles from './App.module.css';
 
 const initialQuery = null;
 const possibleCategories: CopyCategory[] = ['Files', 'Html', 'Image', 'Rtf', 'Text'];
 const initialCategories: CopyCategory[] = possibleCategories;
 
 function App() {
-    const [loading, setLoading] = useState(true);
     const [error, setError] = useState<AppError | null>(null);
     const [page, setPage] = useState<number>(0);
     const [result, setResult] = useState<SearchResult>({ items: [], totalNumber: 0 });
@@ -61,7 +57,6 @@ function App() {
     }
 
     async function search(searchQuery: string | null, searchCategories: CopyCategory[]) {
-        setLoading(true);
         setError(null);
         setPage(0);
         setSelectedIndex(0);
@@ -72,13 +67,10 @@ function App() {
         } catch (e) {
             log.error((e as AppError).message);
             setError({ message: (e as AppError).message });
-        } finally {
-            setLoading(false);
         }
     }
 
     async function loadMore() {
-        setLoading(true);
         try {
             const resultItems = await searchCopyItems(query, page + 1, pageSize, categories);
             setResult({
@@ -90,8 +82,6 @@ function App() {
         } catch (e) {
             log.error((e as AppError).message);
             setError({ message: (e as AppError).message });
-        } finally {
-            setLoading(false);
         }
     }
 
@@ -143,7 +133,6 @@ function App() {
     return (
         <Container onHide={refreshAndHide} selectedIndex={selectedIndex} onSelect={select} onActivate={activate}>
             <div ref={topElementRef}></div>
-            { loading && <ProgressSpinner className={styles.loading} />}
             <Toolbar
                 query={query}
                 categories={categories}
