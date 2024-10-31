@@ -24,7 +24,7 @@ function App() {
     const [categories, setCategories] = useState<CopyCategory[]>(defaultCategories);
     const containerRef = useRef<HTMLDivElement>(null);
     const about = useContext(AboutContext);
-    const pageSize = about?.os === 'Linux' ? 20 : 100;
+    const pageSize = about?.os === 'Linux' ? 25 : 100;
 
     useSubscribeEvent<string>(ITEMS_CHANGED, () => search(query, categories));
     useSubscribeEvent<MainShortcutPressedPayload>(MAIN_SHORTCUT_PRESSED_EVENT, (mainShortcutPressedPayload) => {
