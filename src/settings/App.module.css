@@ -86,7 +86,7 @@
         background-color: var(--surface-b);
         padding: 0 10px;
         font-size: 14px;
-        line-height: 22px;
+        line-height: 18px;
         padding: 4px 8px;
         display: block;
     }
@@ -152,7 +152,7 @@
     font-size: 14px;
     padding: 4px 8px;
     border-radius: 2px;
-    line-height: 22px;
+    line-height: 18px;
 }
 
 .okButtonContainer {
