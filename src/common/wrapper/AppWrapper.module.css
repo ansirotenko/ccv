@@ -8,6 +8,11 @@ body {
     width: 100vw;
     height: 100vh;
 
+    button {
+        display: block;
+    }
+
+
     & [class~='p-image-toolbar'] {
         display: none;
     }

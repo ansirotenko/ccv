@@ -86,6 +86,9 @@
         background-color: var(--surface-b);
         padding: 0 10px;
         font-size: 14px;
+        line-height: 22px;
+        padding: 4px 8px;
+        display: block;
     }
 }
 
