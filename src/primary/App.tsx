@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useContext } from 'react';
 import { Toolbar } from './toolbar/Toolbar';
 import { ItemsList } from './itemsList/ItemsList';
 import { CopyItem, CopyCategory, AppError, SearchResult } from '../common/contract';
@@ -7,15 +7,18 @@ import { useDebouncedCallback } from '../common/useDebouncedCallback';
 import { useListenClipboard } from './useListenClipboard';
 import * as log from '@tauri-apps/plugin-log';
 import { SearchContext, escapeSearch } from './SearchContext';
+import { AboutContext } from '../common/AboutContext';
 import { useSubscribeEvent, emitEvent, ITEMS_CHANGED, WINDOW_HIDDEN_EVENT, HIGHLIGHT_REPORT_BUG } from '../common/events';
 import { Container } from './container/Container';
 import { hidePrimaryWindow, searchCopyItems, showAboutWindow, showSettingsWindow } from '../common/commands';
 import { Notifications } from './notifications/Notifications';
+import { ProgressSpinner } from 'primereact/progressspinner';
+
+import styles from './App.module.css';
 
 const initialQuery = null;
 const possibleCategories: CopyCategory[] = ['Files', 'Html', 'Image', 'Rtf', 'Text'];
 const initialCategories: CopyCategory[] = possibleCategories;
-const pageSize = 100;
 
 function App() {
     const [loading, setLoading] = useState(true);
@@ -28,6 +31,8 @@ function App() {
     const [categories, setCategories] = useState<CopyCategory[]>(initialCategories);
     const containerRef = useRef<HTMLDivElement>(null);
     const topElementRef = useRef<HTMLDivElement>(null);
+    const about = useContext(AboutContext);
+    const pageSize = about?.os === 'Linux' ? 20 : 100;
 
     useSubscribeEvent<string>(ITEMS_CHANGED, () => search(query, categories));
     useSubscribeEvent<string>(WINDOW_HIDDEN_EVENT, () => {
@@ -60,7 +65,7 @@ function App() {
         setError(null);
         setPage(0);
         setSelectedIndex(0);
-        setResult({ items: [], totalNumber: 0 });
+        //setResult({ items: [], totalNumber: 0 });
         try {
             const resultItems = await searchCopyItems(searchQuery, 0, pageSize, searchCategories);
             setResult(resultItems);
@@ -138,6 +143,7 @@ function App() {
     return (
         <Container onHide={refreshAndHide} selectedIndex={selectedIndex} onSelect={select} onActivate={activate}>
             <div ref={topElementRef}></div>
+            { loading && <ProgressSpinner className={styles.loading} />}
             <Toolbar
                 query={query}
                 categories={categories}
@@ -149,7 +155,6 @@ function App() {
             />
             <SearchContext.Provider value={escapeSearch(query)}>
                 <ItemsList
-                    loading={loading}
                     error={error}
                     result={result}
                     selectedIndex={selectedIndex}
