@@ -5,12 +5,8 @@ pub mod splashscreen;
 pub mod tray;
 pub mod utils;
 
-use ccv_contract::{app_error, error::AppError};
 use std::thread;
-use tauri::{
-    async_runtime, generate_context, generate_handler, Builder, Manager,
-    WindowEvent::{CloseRequested, Focused},
-};
+use tauri::{async_runtime, generate_context, generate_handler, Builder, Manager, WindowEvent};
 use utils::window::{close_window, hide_window, show_window};
 
 pub fn run() -> () {
@@ -68,11 +64,6 @@ pub fn run() -> () {
                         return Err(Box::new(err));
                     }
 
-                    // #[cfg(debug_assertions)] // only include this code on debug builds
-                    // {
-                    //     app_handle.get_webview_window(primary::SCREEN).unwrap().open_devtools();
-                    // }
-
                     let splash_screen_window = app_handle.get_webview_window(splashscreen::SCREEN);
                     async_runtime::spawn(async move {
                         thread::sleep(std::time::Duration::from_millis(500));
@@ -107,7 +98,7 @@ pub fn run() -> () {
         .manage(primary::state::PrimaryState::new_uninitialized())
         .manage(settings::state::SettingsState::new())
         .on_window_event(|window, event| match event {
-            CloseRequested { api, .. } => {
+            WindowEvent::CloseRequested { api, .. } => {
                 match hide_window(&window.get_webview_window(window.label())) {
                     Ok(_) => {
                         api.prevent_close();
@@ -117,7 +108,10 @@ pub fn run() -> () {
                     }
                 }
             }
-            Focused(is_focused) => {
+            #[cfg(not(debug_assertions))]
+            WindowEvent::Focused(is_focused) => {
+                use ccv_contract::{app_error, error::AppError};
+
                 if !is_focused && window.label() == primary::SCREEN {
                     match window.is_visible() {
                         Ok(is_visible) => {

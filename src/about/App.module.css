@@ -49,7 +49,7 @@
 
         > section {
             > strong {
-                font-weight: 300;
+                font-weight: normal;
                 margin-right: 3px;
                 font-size: 13px;
             }

@@ -4,39 +4,42 @@ import { ComponentProps, useEffect, useRef, useState } from 'react';
 import { useDebouncedCallback } from '../../common/useDebouncedCallback';
 import { CopyCategory } from '../../common/contract';
 import { Checkbox } from 'primereact/checkbox';
-import { useSubscribeEvent, WINDOW_SHOWN_EVENT } from '../../common/events';
+import { useSubscribeEvent, WINDOW_SHOWN_EVENT, WINDOW_HIDDEN_EVENT } from '../../common/events';
 import { getCategoriesText, toCategoriesArray, toCategoriesNumber } from './categoryHelper';
+import { defaultCategories, possibleCategories, defaultQuery } from '../SearchContext';
 import bugImage from '../../assets/bug.png';
 
 import styles from './Toolbar.module.css';
 
 interface ToolbarProps extends Omit<ComponentProps<'div'>, 'onChange'> {
-    query: string | null;
-    categories: CopyCategory[];
-    possibleCategories: CopyCategory[];
     onChange?: (query: string | null, categories: CopyCategory[]) => void;
     onSettings?: () => void;
     onReportIssue?: () => void;
     onClose?: () => void;
 }
 
-export function Toolbar({ onChange, onSettings, onReportIssue, onClose, query, categories, possibleCategories }: ToolbarProps) {
+const defaultCategoriesNumber = toCategoriesNumber(defaultCategories, possibleCategories);
+const defaultCategoriesText = getCategoriesText(defaultCategoriesNumber, possibleCategories);
+
+export function Toolbar({ onChange, onSettings, onReportIssue, onClose }: ToolbarProps) {
+    const [inputValue, setInputValue] = useState<string>(defaultQuery);
+    const [categoriesNumber, setCategoriesNumber] = useState<number>(defaultCategoriesNumber);
+    const [categoriesText, setCategoriesText] = useState<string>(defaultCategoriesText);
     const [isFilterVisible, setIsFilterVisible] = useState<boolean>(false);
     const filterPopupRef = useRef<HTMLDivElement>(null);
     const filterButtonRef = useRef<Button>(null);
 
     const [counter, setCounter] = useState<number>(0);
-    const [inputValue, setInputValue] = useState<string>(query || '');
-    const categoriesNumber = toCategoriesNumber(categories, possibleCategories);
-    const categoriesText = getCategoriesText(categoriesNumber, possibleCategories);
 
     useSubscribeEvent<string>(WINDOW_SHOWN_EVENT, () => {
-        setCounter((c) => c + 1); // to provoke rerender
+        setCounter((c) => c + 1); // to provoke rerender, that would focus input
     });
-
-    useEffect(() => {
-        setInputValue(query || '');
-    }, [query]);
+    useSubscribeEvent<string>(WINDOW_HIDDEN_EVENT, () => {
+        setCategoriesNumber(defaultCategoriesNumber);
+        setCategoriesText(defaultCategoriesText);
+        setInputValue(defaultQuery);
+        somethingChanged(defaultQuery, defaultCategoriesNumber);
+    });
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -56,11 +59,11 @@ export function Toolbar({ onChange, onSettings, onReportIssue, onClose, query, c
         };
     }, [filterPopupRef, filterButtonRef]);
 
-    const onInputValueChange = useDebouncedCallback((query: string | undefined) => {
+    const onInputValueChange = useDebouncedCallback((query: string) => {
         somethingChanged(query, categoriesNumber);
     }, 200);
 
-    function somethingChanged(query: string | undefined, categoriesNumber: number) {
+    function somethingChanged(query: string, categoriesNumber: number) {
         if (onChange != null) {
             onChange(query || null, toCategoriesArray(categoriesNumber, possibleCategories));
         }
@@ -97,6 +100,8 @@ export function Toolbar({ onChange, onSettings, onReportIssue, onClose, query, c
                     className={styles.filterItem}
                     onClick={() => {
                         const newCategoriesNumber = (1 << possibleCategories.length) - 1;
+                        setCategoriesNumber(newCategoriesNumber);
+                        setCategoriesText(getCategoriesText(newCategoriesNumber, possibleCategories));
                         somethingChanged(inputValue, newCategoriesNumber);
                     }}
                 >
@@ -115,6 +120,8 @@ export function Toolbar({ onChange, onSettings, onReportIssue, onClose, query, c
                                 const newCategoriesNumber = hasCategory
                                     ? categoriesNumber | (1 << index)
                                     : categoriesNumber & (((1 << possibleCategories.length) - 1) ^ (1 << index));
+                                setCategoriesNumber(newCategoriesNumber);
+                                setCategoriesText(getCategoriesText(newCategoriesNumber, possibleCategories));
                                 somethingChanged(inputValue, newCategoriesNumber);
                             }}
                         >

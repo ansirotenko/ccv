@@ -11,7 +11,7 @@ pub enum CopyCategory {
     Unknown,
 }
 
-#[derive(Serialize, Clone, Debug)]
+#[derive(Serialize, Clone, Debug, PartialEq)]
 pub struct SearchResult {
     #[serde(rename = "items")]
     pub items: Vec<CopyItem>,
