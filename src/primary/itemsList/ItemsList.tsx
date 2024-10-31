@@ -1,11 +1,13 @@
 import { ComponentProps } from 'react';
 import { AppError, SearchResult } from '../../common/contract';
+import { ProgressSpinner } from 'primereact/progressspinner';
 import { Message } from 'primereact/message';
 import { Item } from '../item/Item';
 
 import styles from './ItemsList.module.css';
 
 interface ItemsListProps extends Omit<ComponentProps<'div'>, 'onSelect'> {
+    loading: boolean;
     error: AppError | null;
     result: SearchResult;
     selectedIndex: number;
@@ -15,13 +17,17 @@ interface ItemsListProps extends Omit<ComponentProps<'div'>, 'onSelect'> {
     onLoadMore: () => void;
 }
 
-export function ItemsList({ error, result, selectedIndex, newlyActivedId, onSelect, onActivate, onLoadMore }: ItemsListProps) {
+export function ItemsList({ loading, error, result, selectedIndex, newlyActivedId, onSelect, onActivate, onLoadMore }: ItemsListProps) {
     if (error) {
         return <Message severity="error" className={styles.failed} text={error.message} />;
     }
 
     if (!result.items.length) {
-        return <em className={styles.empty}>Nothing was found</em>;
+        if (loading) {
+            return <ProgressSpinner className={styles.loading} />;
+        } else {
+            return <em className={styles.empty}>Nothing was found</em>;
+        }
     }
 
     return (
@@ -37,7 +43,7 @@ export function ItemsList({ error, result, selectedIndex, newlyActivedId, onSele
                     onActivate={onActivate}
                 />
             ))}
-            {result.totalNumber > result.items.length && (
+            {!loading && result.totalNumber > result.items.length && (
                 <a
                     className={styles.hasMore}
                     href="#"
@@ -49,6 +55,11 @@ export function ItemsList({ error, result, selectedIndex, newlyActivedId, onSele
                 >
                     {`and ${result.totalNumber - result.items.length} more...`}
                 </a>
+            )}
+            {loading && (
+                <>
+                    <ProgressSpinner className={styles.loading} />
+                </>
             )}
         </div>
     );

@@ -14,6 +14,7 @@ import { hidePrimaryWindow, searchCopyItems, showAboutWindow, showSettingsWindow
 import { Notifications } from './notifications/Notifications';
 
 function App() {
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState<AppError | null>(null);
     const [page, setPage] = useState<number>(0);
     const [result, setResult] = useState<SearchResult>({ items: [], totalNumber: 0 });
@@ -53,20 +54,24 @@ function App() {
     }
 
     async function search(searchQuery: string | null, searchCategories: CopyCategory[]) {
+        setLoading(true);
         setError(null);
         setPage(0);
         setSelectedIndex(0);
-        //setResult({ items: [], totalNumber: 0 });
+        setResult({ items: [], totalNumber: 0 });
         try {
             const resultItems = await searchCopyItems(searchQuery, 0, pageSize, searchCategories);
             setResult(resultItems);
         } catch (e) {
             log.error((e as AppError).message);
             setError({ message: (e as AppError).message });
+        } finally {
+            setLoading(false);
         }
     }
 
     async function loadMore() {
+        setLoading(true);
         try {
             const resultItems = await searchCopyItems(query, page + 1, pageSize, categories);
             setResult({
@@ -78,6 +83,8 @@ function App() {
         } catch (e) {
             log.error((e as AppError).message);
             setError({ message: (e as AppError).message });
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -141,6 +148,7 @@ function App() {
             <Toolbar onChange={toolbarChanged} onClose={hidePrimaryWindow} onSettings={showSettingsWindow} onReportIssue={reportIssue} />
             <SearchContext.Provider value={escapeSearch(query)}>
                 <ItemsList
+                    loading={loading}
                     error={error}
                     result={result}
                     selectedIndex={selectedIndex}
