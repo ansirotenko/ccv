@@ -135,8 +135,8 @@ function App() {
         document.querySelectorAll(`.${copyItemSelectorClass}`)[0]?.scrollIntoView({
             behavior: 'instant',
             block: 'nearest',
-        })
-    }; 
+        });
+    }
 
     async function reportIssue() {
         await showAboutWindow();

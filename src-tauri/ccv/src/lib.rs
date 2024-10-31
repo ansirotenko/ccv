@@ -6,9 +6,7 @@ pub mod tray;
 pub mod utils;
 
 use std::thread;
-use tauri::{
-    async_runtime, generate_context, generate_handler, Builder, Manager, WindowEvent
-};
+use tauri::{async_runtime, generate_context, generate_handler, Builder, Manager, WindowEvent};
 use utils::window::{close_window, hide_window, show_window};
 
 pub fn run() -> () {
@@ -110,7 +108,7 @@ pub fn run() -> () {
                     }
                 }
             }
-            #[cfg(not(debug_assertions))]                
+            #[cfg(not(debug_assertions))]
             WindowEvent::Focused(is_focused) => {
                 use ccv_contract::{app_error, error::AppError};
 
