@@ -141,8 +141,9 @@ impl Repository for SqliteRepository {
                     .replace("_", "\\_")
                     .replace("%", "\\%");
                 return result.filter(
-                    text.like(format!("%{replaced_string}%")).escape('\\')
-                        .or(files_text.like(format!("%{q}%")).escape('\\')),
+                    text.like(format!("%{replaced_string}%"))
+                        .escape('\\')
+                        .or(files_text.like(format!("%{replaced_string}%")).escape('\\')),
                 );
             }
 

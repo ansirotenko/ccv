@@ -54,8 +54,8 @@ fn schema_pre_exists() {
 
     assert_eq!(
         search_result,
-        SearchResult { 
-            total_number: 1, 
+        SearchResult {
+            total_number: 1,
             items: vec![copy_item_files("4", "ab", t, t)]
         }
     );
@@ -158,8 +158,8 @@ fn search_paging() {
 
     assert_eq!(
         result,
-        SearchResult { 
-            total_number: 6, 
+        SearchResult {
+            total_number: 6,
             items: vec![
                 copy_item_files("4", "ab", t, t4),
                 copy_item_image("3", "ab", t, t3),
@@ -205,8 +205,8 @@ fn search_sorting() {
 
     assert_eq!(
         result,
-        SearchResult { 
-            total_number: 6, 
+        SearchResult {
+            total_number: 6,
             items: vec![
                 copy_item_unknown("6", t, t6),
                 copy_item_text("5", "ab", t, t5),
@@ -250,8 +250,8 @@ fn search_filter_by_query_and_category() {
 
     assert_eq!(
         result,
-        SearchResult { 
-            total_number: 2, 
+        SearchResult {
+            total_number: 2,
             items: vec![
                 copy_item_rtf("1", "ab", t, t),
                 copy_item_files("4", "ab", t, t),
@@ -289,8 +289,8 @@ fn search_filter_by_category() {
 
     assert_eq!(
         result,
-        SearchResult { 
-            total_number: 1, 
+        SearchResult {
+            total_number: 1,
             items: vec![copy_item_image("3", "ab", t, t)]
         }
     );
@@ -332,8 +332,8 @@ fn search_filter_by_query_upper_case() {
 
     assert_eq!(
         result,
-        SearchResult { 
-            total_number: 4, 
+        SearchResult {
+            total_number: 4,
             items: vec![
                 copy_item_rtf("1", "ab", t, t),
                 copy_item_html("2", "ab", t, t),
@@ -380,8 +380,8 @@ fn search_filter_by_query_lower_case() {
 
     assert_eq!(
         result,
-        SearchResult { 
-            total_number: 4, 
+        SearchResult {
+            total_number: 4,
             items: vec![
                 copy_item_rtf("1", "AB", t, t),
                 copy_item_html("2", "AB", t, t),
@@ -403,56 +403,84 @@ fn search_filter_by_query_special_characters() {
         vec![
             new_copy_item_entity_text("ab", t, t),
             new_copy_item_entity_text("abc", t, t),
+            new_copy_item_entity_files("abe", t, t),
             new_copy_item_entity_text("ab\\", t, t),
             new_copy_item_entity_text("ab\\c", t, t),
+            new_copy_item_entity_files("ab\\e", t, t),
             new_copy_item_entity_text("ab\\\\", t, t),
             new_copy_item_entity_text("ab\\\\c", t, t),
+            new_copy_item_entity_files("ab\\\\e", t, t),
             new_copy_item_entity_text("ab_", t, t),
             new_copy_item_entity_text("ab_c", t, t),
+            new_copy_item_entity_files("ab_e", t, t),
             new_copy_item_entity_text("ab%", t, t),
             new_copy_item_entity_text("ab%c", t, t),
+            new_copy_item_entity_files("ab%e", t, t),
             new_copy_item_entity_text("ab*", t, t),
             new_copy_item_entity_text("ab*c", t, t),
+            new_copy_item_entity_files("ab*e", t, t),
+        ],
+    );
+
+    insert_file_infos(
+        &database_url,
+        vec![
+            new_file_info_entity(3, "abe", true),
+            new_file_info_entity(3, "abe", false),
+            new_file_info_entity(6, "ab\\e", true),
+            new_file_info_entity(6, "ab\\e", false),
+            new_file_info_entity(9, "ab\\\\e", true),
+            new_file_info_entity(9, "ab\\\\e", false),
+            new_file_info_entity(12, "ab_e", true),
+            new_file_info_entity(12, "ab_e", false),
+            new_file_info_entity(15, "ab%e", true),
+            new_file_info_entity(15, "ab%e", false),
+            new_file_info_entity(18, "ab*e", true),
+            new_file_info_entity(18, "ab*e", false),
         ],
     );
 
     assert_eq!(
-        repo.search(Some("b%"), 0, 10, vec![Text]).unwrap(), 
-        SearchResult { 
-            total_number: 2, 
+        repo.search(Some("b%"), 0, 100, vec![Text, Files]).unwrap(),
+        SearchResult {
+            total_number: 3,
             items: vec![
-                copy_item_text("9", "ab%", t, t),
-                copy_item_text("10", "ab%c", t, t)
+                copy_item_text("13", "ab%", t, t),
+                copy_item_text("14", "ab%c", t, t),
+                copy_item_files("15", "ab%e", t, t)
             ]
         }
     );
     assert_eq!(
-        repo.search(Some("b_"), 0, 10, vec![Text]).unwrap(), 
-        SearchResult { 
-            total_number: 2, 
+        repo.search(Some("b_"), 0, 100, vec![Text, Files]).unwrap(),
+        SearchResult {
+            total_number: 3,
             items: vec![
-                copy_item_text("7", "ab_", t, t),
-                copy_item_text("8", "ab_c", t, t)
+                copy_item_text("10", "ab_", t, t),
+                copy_item_text("11", "ab_c", t, t),
+                copy_item_files("12", "ab_e", t, t)
             ]
         }
     );
     assert_eq!(
-        repo.search(Some("b\\\\"), 0, 10, vec![Text]).unwrap(), 
-        SearchResult { 
-            total_number: 2, 
+        repo.search(Some("b\\\\"), 0, 100, vec![Text, Files]).unwrap(),
+        SearchResult {
+            total_number: 3,
             items: vec![
-                copy_item_text("5", "ab\\\\", t, t),
-                copy_item_text("6", "ab\\\\c", t, t)
+                copy_item_text("7", "ab\\\\", t, t),
+                copy_item_text("8", "ab\\\\c", t, t),
+                copy_item_files("9", "ab\\\\e", t, t),
             ]
         }
     );
     assert_eq!(
-        repo.search(Some("b*"), 0, 10, vec![Text]).unwrap(), 
-        SearchResult { 
-            total_number: 2, 
+        repo.search(Some("b*"), 0, 100, vec![Text, Files]).unwrap(),
+        SearchResult {
+            total_number: 3,
             items: vec![
-                copy_item_text("11", "ab*", t, t),
-                copy_item_text("12", "ab*c", t, t)
+                copy_item_text("16", "ab*", t, t),
+                copy_item_text("17", "ab*c", t, t),
+                copy_item_files("18", "ab*e", t, t)
             ]
         }
     );
@@ -489,8 +517,8 @@ fn search_empty_filter() {
 
     assert_eq!(
         result,
-        SearchResult { 
-            total_number: 6, 
+        SearchResult {
+            total_number: 6,
             items: vec![
                 copy_item_rtf("1", "ab", t, t),
                 copy_item_html("2", "ab", t, t),
@@ -539,8 +567,8 @@ fn search_filter_false_query() {
 
     assert_eq!(
         result,
-        SearchResult { 
-            total_number: 0, 
+        SearchResult {
+            total_number: 0,
             items: vec![]
         }
     );
@@ -575,8 +603,8 @@ fn search_filter_empty_categories() {
 
     assert_eq!(
         result,
-        SearchResult { 
-            total_number: 0, 
+        SearchResult {
+            total_number: 0,
             items: vec![]
         }
     );

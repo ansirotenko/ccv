@@ -153,6 +153,7 @@
     padding: 4px 8px;
     border-radius: 2px;
     line-height: 18px;
+    display: block;
 }
 
 .okButtonContainer {
