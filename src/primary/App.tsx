@@ -1,21 +1,17 @@
 import { useEffect, useState, useRef, useContext } from 'react';
 import { Toolbar } from './toolbar/Toolbar';
 import { ItemsList } from './itemsList/ItemsList';
-import { CopyItem, CopyCategory, AppError, SearchResult } from '../common/contract';
+import { CopyItem, CopyCategory, AppError, SearchResult, MainShortcutPressedPayload } from '../common/contract';
 import { ItemPreview } from './itemPreview/ItemPreview';
 import { useDebouncedCallback } from '../common/useDebouncedCallback';
 import { useListenClipboard } from './useListenClipboard';
 import * as log from '@tauri-apps/plugin-log';
-import { SearchContext, escapeSearch } from './SearchContext';
+import { SearchContext, escapeSearch, defaultQuery, defaultCategories, copyItemSelectorClass } from './SearchContext';
 import { AboutContext } from '../common/AboutContext';
-import { useSubscribeEvent, emitEvent, ITEMS_CHANGED, WINDOW_HIDDEN_EVENT, HIGHLIGHT_REPORT_BUG } from '../common/events';
+import { useSubscribeEvent, emitEvent, ITEMS_CHANGED, HIGHLIGHT_REPORT_BUG, MAIN_SHORTCUT_PRESSED_EVENT } from '../common/events';
 import { Container } from './container/Container';
 import { hidePrimaryWindow, searchCopyItems, showAboutWindow, showSettingsWindow } from '../common/commands';
 import { Notifications } from './notifications/Notifications';
-
-const initialQuery = null;
-const possibleCategories: CopyCategory[] = ['Files', 'Html', 'Image', 'Rtf', 'Text'];
-const initialCategories: CopyCategory[] = possibleCategories;
 
 function App() {
     const [error, setError] = useState<AppError | null>(null);
@@ -23,20 +19,20 @@ function App() {
     const [result, setResult] = useState<SearchResult>({ items: [], totalNumber: 0 });
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [newlyActivedId, setNewlyActivedId] = useState<string | null>(null);
-    const [query, setQuery] = useState<string | null>(initialQuery);
-    const [categories, setCategories] = useState<CopyCategory[]>(initialCategories);
+    const [query, setQuery] = useState<string | null>(defaultQuery || null);
+    const [categories, setCategories] = useState<CopyCategory[]>(defaultCategories);
     const containerRef = useRef<HTMLDivElement>(null);
-    const topElementRef = useRef<HTMLDivElement>(null);
     const about = useContext(AboutContext);
     const pageSize = about?.os === 'Linux' ? 20 : 100;
 
     useSubscribeEvent<string>(ITEMS_CHANGED, () => search(query, categories));
-    useSubscribeEvent<string>(WINDOW_HIDDEN_EVENT, () => {
-        // to make refresh in invisible mode
-        setSelectedIndex(0);
-        toolbarChanged(initialQuery, initialCategories);
-        topElementRef?.current?.scrollIntoView();
+    useSubscribeEvent<MainShortcutPressedPayload>(MAIN_SHORTCUT_PRESSED_EVENT, (mainShortcutPressedPayload) => {
+        if (mainShortcutPressedPayload.changedFromHiddenToVisile) {
+            setSelectedIndex(0);
+            scrollTop();
+        }
     });
+
     const reuseItemWithoutLoop = useListenClipboard((newItem) => applyNewActiveItem(newItem));
 
     useEffect(() => {
@@ -48,7 +44,7 @@ function App() {
     }, 250);
 
     function toolbarChanged(newQuery: string | null, newCategories: CopyCategory[]) {
-        setQuery(newQuery);
+        setQuery(newQuery || null);
         setCategories(newCategories);
     }
 
@@ -121,9 +117,19 @@ function App() {
             }
         }
         setNewlyActivedId(newItem.id);
-        topElementRef?.current?.scrollIntoView();
         delayedResetNewlyActive();
+        // prevents autoscroll of current selected item
+        setTimeout(() => {
+            scrollTop();
+        }, 50);
     }
+
+    function scrollTop() {
+        document.querySelectorAll(`.${copyItemSelectorClass}`)[0]?.scrollIntoView({
+            behavior: 'instant',
+            block: 'nearest',
+        })
+    }; 
 
     async function reportIssue() {
         await showAboutWindow();
@@ -132,16 +138,7 @@ function App() {
 
     return (
         <Container onHide={refreshAndHide} selectedIndex={selectedIndex} onSelect={select} onActivate={activate}>
-            <div ref={topElementRef}></div>
-            <Toolbar
-                query={query}
-                categories={categories}
-                possibleCategories={possibleCategories}
-                onChange={toolbarChanged}
-                onClose={hidePrimaryWindow}
-                onSettings={showSettingsWindow}
-                onReportIssue={reportIssue}
-            />
+            <Toolbar onChange={toolbarChanged} onClose={hidePrimaryWindow} onSettings={showSettingsWindow} onReportIssue={reportIssue} />
             <SearchContext.Provider value={escapeSearch(query)}>
                 <ItemsList
                     error={error}
