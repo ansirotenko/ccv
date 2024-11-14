@@ -1,4 +1,4 @@
-name: ccv
+name: ccv-clip-manager
 base: core22
 version: '0.2.5'
 summary: Lightweight crossplatform clipboard manager
