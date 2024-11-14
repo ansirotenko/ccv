@@ -29,7 +29,7 @@ parts:
   build-app:
     plugin: dump
     build-snaps:
-      - node/20/stable
+      - node/22/stable
       - rustup/latest/stable
     build-packages:
       - libwebkit2gtk-4.1-dev
@@ -48,7 +48,8 @@ parts:
     source: .
     override-build: |
       set -eu
-      npm install
-      npm run tauri build -- --bundles deb
+      npm ci
+      rustup default stable
+      cargo tauri build -- --bundles deb
       dpkg -x src-tauri/target/release/bundle/deb/*.deb $SNAPCRAFT_PART_INSTALL/
       sed -i -e "s|Icon=ccv|Icon=/usr/share/icons/hicolor/32x32/apps/ccv.png|g" $SNAPCRAFT_PART_INSTALL/usr/share/applications/ccv.desktop
