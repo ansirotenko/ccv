@@ -17,6 +17,12 @@ pub fn build(app_handle: &AppHandle) -> Result<(), AppError> {
 
     let builder = TrayIconBuilder::new()
         .icon(app_handle.default_window_icon().unwrap().clone())
+        .tooltip(
+            match app_handle.config().product_name.as_ref() {
+                Some(product_name) => product_name.as_str(),
+                None => ""
+            }
+        )
         .menu(&menu)
         .on_menu_event(menu_event_handler)
         .on_tray_icon_event(tray_icon_event_handler);
