@@ -1,5 +1,8 @@
 use crate::about;
-use crate::utils::window::{hide_window, show_window};
+use crate::utils::{
+    get_app_data_dir, get_app_log_dir,
+    window::{hide_window, show_window},
+};
 use ccv_contract::{
     error::{log_error, AppError},
     models::{AboutData, Os},
@@ -14,14 +17,8 @@ pub fn get_about_data(app_handle: AppHandle) -> Result<AboutData, AppError> {
     let minor_version = env!("CARGO_PKG_VERSION_MINOR");
     let patch_version = env!("CARGO_PKG_VERSION_PATCH");
     let exe_path = log_error(current_exe(), "Unable to get current app location")?;
-    let app_data_dir = log_error(
-        app_handle.path().app_data_dir(),
-        "Unable to get path to application data",
-    )?;
-    let app_logs_dir = log_error(
-        app_handle.path().app_log_dir(),
-        "Unable to get path to application logs",
-    )?;
+    let app_data_dir = log_error(get_app_data_dir(&app_handle), "Failed to get data dir")?;
+    let app_logs_dir = log_error(get_app_log_dir(&app_handle), "Failed to get log dir")?;
 
     let os = if cfg!(target_os = "macos") {
         Os::MacOs
