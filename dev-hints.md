@@ -1,4 +1,16 @@
 
+# Update brew
+
+1. after successfull release find sha for amd and intel architectures for macOS generateed at ./.github/workflows/release.yml 
+2. make a commit to https://github.com/ansirotenko/homebrew-repo with updated sha's and version
+
+# Update snap
+
+1. Do not forget to update version snapcraft.yaml
+2. Builds for snap are done automatically after each commit to master.
+3. find proper build at snapcraft https://snapcraft.io/ccv-clip-manager/builds
+4. promote new release to stable here https://snapcraft.io/ccv-clip-manager/releases 
+
 # Generate icons
 
 1. replace `src-tauri/ccv/icons/original.png`
