@@ -31,5 +31,10 @@
     "0.2.5": [
         "fix visual bug",
         "fix updater url"
+    ],
+    "0.2.6": [
+        "optimize performance",
+        "visual fixes",
+        "fix bug with tray and linux daata directory"
     ]
 }
