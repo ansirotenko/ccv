@@ -22,7 +22,7 @@ pub fn get_app_data_dir(app_handle: &AppHandle) -> Result<PathBuf, AppError> {
         }
     }
 
-    //#[cfg(not(target_os = "linux"))]
+    #[cfg(not(target_os = "linux"))]
     {
         app_handle
         .path()
