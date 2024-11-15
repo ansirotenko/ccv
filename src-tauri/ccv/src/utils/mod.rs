@@ -11,6 +11,11 @@ pub const WINDOW_HIDDEN_EVENT: &str = "window-hidden";
 pub fn get_app_data_dir(app_handle: &AppHandle) -> Result<PathBuf, AppError> {
     #[cfg(target_os = "linux")]
     {
+        // TODO remove this later
+        log::warn!("{:?}", std::env::var_os("HOME"));
+        log::warn!("{:?}", std::env::var_os("XDG_DATA_HOME"));
+        log::warn!("{:?}", dirs_sys::home_dir());
+
         // by default XDG_DATA_HOME environment variable is used instead of HOME environment variable
         // In case application was started by desktop-launch script, this variable is set to
         // export XDG_CONFIG_HOME=$SNAP_USER_DATA/.config
