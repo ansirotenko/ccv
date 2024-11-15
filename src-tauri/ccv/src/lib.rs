@@ -7,7 +7,10 @@ pub mod utils;
 
 use std::thread;
 use tauri::{async_runtime, generate_context, generate_handler, Builder, Manager, WindowEvent};
-use utils::window::{close_window, hide_window, show_window};
+use utils::{
+    get_app_data_dir,
+    window::{close_window, hide_window, show_window},
+};
 
 pub fn run() -> () {
     let builder = Builder::default()
@@ -41,7 +44,7 @@ pub fn run() -> () {
                 return Err(Box::new(err));
             }
 
-            match app_handle.path().app_data_dir() {
+            match get_app_data_dir(&app_handle) {
                 Ok(app_data_dir) => {
                     if !app_data_dir.exists() {
                         if let Err(err) = std::fs::create_dir_all(app_data_dir.clone()) {
@@ -49,9 +52,7 @@ pub fn run() -> () {
                             return Err(Box::new(err));
                         }
                     }
-                    if let Err(err) =
-                        primary::setup::init_repository(app.app_handle(), &app_data_dir)
-                    {
+                    if let Err(err) = primary::setup::init_repository(app.app_handle()) {
                         log::error!("Unable to initialize repository. {err}");
                         return Err(Box::new(err));
                     }
