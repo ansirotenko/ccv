@@ -11,13 +11,19 @@ pub const WINDOW_HIDDEN_EVENT: &str = "window-hidden";
 pub fn get_app_data_dir(app_handle: &AppHandle) -> Result<PathBuf, AppError> {
     #[cfg(target_os = "linux")]
     {
-        None
+        return match dirs_sys::home_dir() {
+            None => Err(app_error!("Unable to get path to $HOME directory")),
+            Some(home_dir) => Ok(home_dir.join(".local/share").join(app_handle.config().identifier.as_str()))
+        }
     }
 
-    app_handle
+    #[cfg(not(target_os = "linux"))]
+    {
+        app_handle
         .path()
         .app_data_dir()
         .map_err(|err| app_error!("Unable to get path to application data directory {err}"))
+    }
 }
 
 pub fn get_app_log_dir(app_handle: &AppHandle) -> Result<PathBuf, AppError> {

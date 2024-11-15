@@ -10,7 +10,7 @@ use std::{
     io::{Read, Write},
     path::PathBuf,
 };
-use tauri::{AppHandle, Emitter, Manager};
+use tauri::{AppHandle, Emitter};
 
 const SETTINGS_FILE_NAME: &str = "settings.json";
 const DEFAULT_VERSION: &str = "v1";
