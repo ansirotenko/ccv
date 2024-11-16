@@ -19,10 +19,7 @@ apps:
   ccv:
     command: usr/bin/ccv
     environment:
-      XDG_DATA_HOME: $SNAP_USER_COMMON/.local/share
       HOME: $SNAP_USER_COMMON
-      SUC: $SNAP_USER_COMMON
-      SRH: $SNAP_REAL_HOME
     desktop: usr/share/applications/ccv.desktop
     extensions: [gnome]
 
