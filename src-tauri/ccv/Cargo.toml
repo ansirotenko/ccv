@@ -34,7 +34,6 @@ tauri-plugin-updater = { version = "2.0.2" }
 
 [target."cfg(target_os = \"linux\")".dependencies]
 urlencoding = { version = "2.1.3" }
-dirs-sys = { version = "0.4.1" }
 
 [features]
 default = ["sqlite"]

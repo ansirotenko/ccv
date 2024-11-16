@@ -18,6 +18,8 @@ layout:
 apps:
   ccv:
     command: usr/bin/ccv
+    environment:
+      XDG_DATA_HOME: $SNAP_USER_COMMON/.local/share
     desktop: usr/share/applications/ccv.desktop
     extensions: [gnome]
 
