@@ -19,7 +19,7 @@ apps:
   ccv:
     command: usr/bin/ccv
     environment:
-      HOME: $SNAP_REAL_HOME
+      HOME: $SNAP_USER_COMMON
     desktop: usr/share/applications/ccv.desktop
     extensions: [gnome]
 

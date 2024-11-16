@@ -12,6 +12,8 @@ pub fn init_repository(app_handle: &AppHandle) -> Result<(), AppError> {
     {
         let app_data_dir = get_app_data_dir(app_handle)?;
         let database_path = app_data_dir.join("ccv.db");
+        log::warn!("Database path {:?}", database_path);
+
         let sqlite_repo =
             ccv_sqlite::repository::SqliteRepository::new(database_path.to_str().unwrap())?;
         *repository = Box::new(sqlite_repo);
