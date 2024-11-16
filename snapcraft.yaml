@@ -15,13 +15,20 @@ layout:
   /usr/lib/$SNAPCRAFT_ARCH_TRIPLET/webkit2gtk-4.1:
     bind: $SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/webkit2gtk-4.1
 
+plugs:
+  dot-local-share-com-ansirotenko-ccv:
+    write:
+    - $HOME/.local/share/com.ansirotenko.ccv
+
 apps:
   ccv:
     command: usr/bin/ccv
     environment:
-      CCV_HOME: $SNAP_USER_COMMON
+      CCV_HOME: $SNAP_REAL_HOME
     desktop: usr/share/applications/ccv.desktop
     extensions: [gnome]
+    slots:
+    - dot-local-share-com-ansirotenko-ccv
 
 package-repositories:
   - type: apt
