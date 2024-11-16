@@ -683,7 +683,6 @@ dependencies = [
  "ccv_sqlite",
  "chrono",
  "clipboard-rs",
- "dirs-sys 0.4.1",
  "log",
  "serde",
  "serde_json",

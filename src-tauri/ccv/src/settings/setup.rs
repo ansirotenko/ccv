@@ -7,6 +7,7 @@ pub fn read_settings_and_register_shortcuts(
     app_handle: &AppHandle,
     app_data_dir: &PathBuf,
 ) -> Result<(), AppError> {
+    // TODO GET RID OF THIS
     log::warn!("Settings data dir {:?}", app_data_dir);
 
     let settings_state = app_handle.state::<settings::state::SettingsState>();
