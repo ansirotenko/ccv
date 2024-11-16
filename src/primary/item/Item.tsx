@@ -3,7 +3,7 @@ import { CopyItem } from '../../common/contract';
 import { Message } from 'primereact/message';
 import { Image } from 'primereact/image';
 import { Tooltip } from 'primereact/tooltip';
-import { SearchContext, textToHighlightedHtml, htmlToHighlightedHtml } from '../SearchContext';
+import { SearchContext, textToHighlightedHtml, htmlToHighlightedHtml, copyItemSelectorClass } from '../SearchContext';
 import { AboutContext } from '../../common/AboutContext';
 import { File } from '../file/File';
 
@@ -85,7 +85,7 @@ export function Item({ item, index, selectedIndex, newlyActivedId, onSelect, onA
     return (
         <div
             ref={ref}
-            className={`${styles.container} ${selectedIndex === index ? styles.selected : ''} ${newlyActivedId === item.id ? styles.newlyActive : ''}`}
+            className={`${copyItemSelectorClass} ${styles.container} ${selectedIndex === index ? styles.selected : ''} ${newlyActivedId === item.id ? styles.newlyActive : ''}`}
             onClick={() => {
                 if (onSelect) {
                     onSelect(index);

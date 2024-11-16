@@ -20,7 +20,16 @@ pub fn insert_copy_item_if_not_found(
     repository: &dyn Repository,
     clipboard: &State<Clipboard>,
 ) -> Result<InsertIfNotFoundResult, AppError> {
+    let category = get_clipboard_category(clipboard)?;
+    if category == CopyCategory::Unknown {
+        log::warn!("Found copy item category Unknown, waiting 50 ms");
+        std::thread::sleep(std::time::Duration::from_millis(50));
+    }
     let new_copy_item_value = get_new_copy_item_value(clipboard)?;
+    if new_copy_item_value.category == CopyCategory::Unknown {
+        log::warn!("Found copy item category Unknown even after thread sleep");
+    }
+
     let existed_item = repository.find_by_value(&new_copy_item_value)?;
     if let Some(existed_item) = existed_item {
         Ok(InsertIfNotFoundResult {

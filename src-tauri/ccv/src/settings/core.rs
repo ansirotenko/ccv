@@ -1,4 +1,5 @@
 use crate::settings;
+use crate::utils::get_app_data_dir;
 use ccv_contract::{
     app_error,
     error::AppError,
@@ -9,7 +10,7 @@ use std::{
     io::{Read, Write},
     path::PathBuf,
 };
-use tauri::{AppHandle, Emitter, Manager};
+use tauri::{AppHandle, Emitter};
 
 const SETTINGS_FILE_NAME: &str = "settings.json";
 const DEFAULT_VERSION: &str = "v1";
@@ -156,10 +157,7 @@ pub fn store_and_notify_settings(
     old_settings: &Option<Settings>,
     new_settings: &Settings,
 ) -> Result<(), AppError> {
-    let app_data_dir = app_handle
-        .path()
-        .app_data_dir()
-        .map_err(|err| app_error!("Unable to get appication directory. {err}"))?;
+    let app_data_dir = get_app_data_dir(app_handle)?;
     settings::core::write_settings(&app_data_dir, &new_settings)?;
 
     match old_settings {

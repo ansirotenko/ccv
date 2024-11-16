@@ -3,7 +3,7 @@ mod common;
 use ccv_contract::{
     models::{
         CopyCategory::{Files, Html, Image, Rtf, Text, Unknown},
-        CopyItem, CopyItemValue,
+        CopyItem, CopyItemValue, SearchResult,
     },
     repository::Repository,
 };
@@ -52,8 +52,13 @@ fn schema_pre_exists() {
     let search_result = repo.search(None, 0, 1, vec![Files]).unwrap();
     let insert_result = repo.insert(&copy_item_text("", "c", t, t).value).unwrap();
 
-    assert_eq!(search_result.items, vec![copy_item_files("4", "ab", t, t),]);
-    assert_eq!(search_result.total_number, 1);
+    assert_eq!(
+        search_result,
+        SearchResult {
+            total_number: 1,
+            items: vec![copy_item_files("4", "ab", t, t)]
+        }
+    );
     assert_eq!(insert_result.id, "7".to_string());
 }
 
@@ -152,13 +157,15 @@ fn search_paging() {
         .unwrap();
 
     assert_eq!(
-        result.items,
-        vec![
-            copy_item_files("4", "ab", t, t4),
-            copy_item_image("3", "ab", t, t3),
-        ]
+        result,
+        SearchResult {
+            total_number: 6,
+            items: vec![
+                copy_item_files("4", "ab", t, t4),
+                copy_item_image("3", "ab", t, t3),
+            ]
+        }
     );
-    assert_eq!(result.total_number, 6);
 }
 
 #[test]
@@ -197,17 +204,19 @@ fn search_sorting() {
         .unwrap();
 
     assert_eq!(
-        result.items,
-        vec![
-            copy_item_unknown("6", t, t6),
-            copy_item_text("5", "ab", t, t5),
-            copy_item_files("4", "ab", t, t4),
-            copy_item_image("3", "ab", t, t3),
-            copy_item_html("2", "ab", t, t2),
-            copy_item_rtf("1", "ab", t, t1)
-        ]
+        result,
+        SearchResult {
+            total_number: 6,
+            items: vec![
+                copy_item_unknown("6", t, t6),
+                copy_item_text("5", "ab", t, t5),
+                copy_item_files("4", "ab", t, t4),
+                copy_item_image("3", "ab", t, t3),
+                copy_item_html("2", "ab", t, t2),
+                copy_item_rtf("1", "ab", t, t1)
+            ]
+        }
     );
-    assert_eq!(result.total_number, 6);
 }
 
 #[test]
@@ -240,13 +249,15 @@ fn search_filter_by_query_and_category() {
         .unwrap();
 
     assert_eq!(
-        result.items,
-        vec![
-            copy_item_rtf("1", "ab", t, t),
-            copy_item_files("4", "ab", t, t),
-        ]
+        result,
+        SearchResult {
+            total_number: 2,
+            items: vec![
+                copy_item_rtf("1", "ab", t, t),
+                copy_item_files("4", "ab", t, t),
+            ]
+        }
     );
-    assert_eq!(result.total_number, 2);
 }
 
 #[test]
@@ -276,8 +287,13 @@ fn search_filter_by_category() {
 
     let result = repo.search(None, 0, 100, vec![Image]).unwrap();
 
-    assert_eq!(result.items, vec![copy_item_image("3", "ab", t, t)]);
-    assert_eq!(result.total_number, 1);
+    assert_eq!(
+        result,
+        SearchResult {
+            total_number: 1,
+            items: vec![copy_item_image("3", "ab", t, t)]
+        }
+    );
 }
 
 #[test]
@@ -315,15 +331,17 @@ fn search_filter_by_query_upper_case() {
         .unwrap();
 
     assert_eq!(
-        result.items,
-        vec![
-            copy_item_rtf("1", "ab", t, t),
-            copy_item_html("2", "ab", t, t),
-            copy_item_files("4", "ab", t, t),
-            copy_item_text("5", "ab", t, t)
-        ]
+        result,
+        SearchResult {
+            total_number: 4,
+            items: vec![
+                copy_item_rtf("1", "ab", t, t),
+                copy_item_html("2", "ab", t, t),
+                copy_item_files("4", "ab", t, t),
+                copy_item_text("5", "ab", t, t)
+            ]
+        }
     );
-    assert_eq!(result.total_number, 4);
 }
 
 #[test]
@@ -361,15 +379,111 @@ fn search_filter_by_query_lower_case() {
         .unwrap();
 
     assert_eq!(
-        result.items,
-        vec![
-            copy_item_rtf("1", "AB", t, t),
-            copy_item_html("2", "AB", t, t),
-            copy_item_files("4", "AB", t, t),
-            copy_item_text("5", "AB", t, t)
-        ]
+        result,
+        SearchResult {
+            total_number: 4,
+            items: vec![
+                copy_item_rtf("1", "AB", t, t),
+                copy_item_html("2", "AB", t, t),
+                copy_item_files("4", "AB", t, t),
+                copy_item_text("5", "AB", t, t)
+            ]
+        }
     );
-    assert_eq!(result.total_number, 4);
+}
+
+#[test]
+fn search_filter_by_query_special_characters() {
+    let database_url = get_test_data_base_url("search_filter_by_query_special_characters");
+    let t = Utc.with_ymd_and_hms(2000, 1, 1, 0, 0, 0).unwrap();
+    let repo = SqliteRepository::new(&database_url).unwrap();
+
+    insert_copy_items(
+        &database_url,
+        vec![
+            new_copy_item_entity_text("ab", t, t),
+            new_copy_item_entity_text("abc", t, t),
+            new_copy_item_entity_files("abe", t, t),
+            new_copy_item_entity_text("ab\\", t, t),
+            new_copy_item_entity_text("ab\\c", t, t),
+            new_copy_item_entity_files("ab\\e", t, t),
+            new_copy_item_entity_text("ab\\\\", t, t),
+            new_copy_item_entity_text("ab\\\\c", t, t),
+            new_copy_item_entity_files("ab\\\\e", t, t),
+            new_copy_item_entity_text("ab_", t, t),
+            new_copy_item_entity_text("ab_c", t, t),
+            new_copy_item_entity_files("ab_e", t, t),
+            new_copy_item_entity_text("ab%", t, t),
+            new_copy_item_entity_text("ab%c", t, t),
+            new_copy_item_entity_files("ab%e", t, t),
+            new_copy_item_entity_text("ab*", t, t),
+            new_copy_item_entity_text("ab*c", t, t),
+            new_copy_item_entity_files("ab*e", t, t),
+        ],
+    );
+
+    insert_file_infos(
+        &database_url,
+        vec![
+            new_file_info_entity(3, "abe", true),
+            new_file_info_entity(3, "abe", false),
+            new_file_info_entity(6, "ab\\e", true),
+            new_file_info_entity(6, "ab\\e", false),
+            new_file_info_entity(9, "ab\\\\e", true),
+            new_file_info_entity(9, "ab\\\\e", false),
+            new_file_info_entity(12, "ab_e", true),
+            new_file_info_entity(12, "ab_e", false),
+            new_file_info_entity(15, "ab%e", true),
+            new_file_info_entity(15, "ab%e", false),
+            new_file_info_entity(18, "ab*e", true),
+            new_file_info_entity(18, "ab*e", false),
+        ],
+    );
+
+    assert_eq!(
+        repo.search(Some("b%"), 0, 100, vec![Text, Files]).unwrap(),
+        SearchResult {
+            total_number: 3,
+            items: vec![
+                copy_item_text("13", "ab%", t, t),
+                copy_item_text("14", "ab%c", t, t),
+                copy_item_files("15", "ab%e", t, t)
+            ]
+        }
+    );
+    assert_eq!(
+        repo.search(Some("b_"), 0, 100, vec![Text, Files]).unwrap(),
+        SearchResult {
+            total_number: 3,
+            items: vec![
+                copy_item_text("10", "ab_", t, t),
+                copy_item_text("11", "ab_c", t, t),
+                copy_item_files("12", "ab_e", t, t)
+            ]
+        }
+    );
+    assert_eq!(
+        repo.search(Some("b\\\\"), 0, 100, vec![Text, Files]).unwrap(),
+        SearchResult {
+            total_number: 3,
+            items: vec![
+                copy_item_text("7", "ab\\\\", t, t),
+                copy_item_text("8", "ab\\\\c", t, t),
+                copy_item_files("9", "ab\\\\e", t, t),
+            ]
+        }
+    );
+    assert_eq!(
+        repo.search(Some("b*"), 0, 100, vec![Text, Files]).unwrap(),
+        SearchResult {
+            total_number: 3,
+            items: vec![
+                copy_item_text("16", "ab*", t, t),
+                copy_item_text("17", "ab*c", t, t),
+                copy_item_files("18", "ab*e", t, t)
+            ]
+        }
+    );
 }
 
 #[test]
@@ -402,17 +516,19 @@ fn search_empty_filter() {
         .unwrap();
 
     assert_eq!(
-        result.items,
-        vec![
-            copy_item_rtf("1", "ab", t, t),
-            copy_item_html("2", "ab", t, t),
-            copy_item_image("3", "ab", t, t),
-            copy_item_files("4", "ab", t, t),
-            copy_item_text("5", "ab", t, t),
-            copy_item_unknown("6", t, t)
-        ]
+        result,
+        SearchResult {
+            total_number: 6,
+            items: vec![
+                copy_item_rtf("1", "ab", t, t),
+                copy_item_html("2", "ab", t, t),
+                copy_item_image("3", "ab", t, t),
+                copy_item_files("4", "ab", t, t),
+                copy_item_text("5", "ab", t, t),
+                copy_item_unknown("6", t, t)
+            ]
+        }
     );
-    assert_eq!(result.total_number, 6);
 }
 
 #[test]
@@ -449,8 +565,13 @@ fn search_filter_false_query() {
         )
         .unwrap();
 
-    assert_eq!(result.items.len(), 0);
-    assert_eq!(result.total_number, 0);
+    assert_eq!(
+        result,
+        SearchResult {
+            total_number: 0,
+            items: vec![]
+        }
+    );
 }
 
 #[test]
@@ -480,8 +601,13 @@ fn search_filter_empty_categories() {
 
     let result = repo.search(Some("a"), 0, 100, Vec::new()).unwrap();
 
-    assert_eq!(result.items.len(), 0);
-    assert_eq!(result.total_number, 0);
+    assert_eq!(
+        result,
+        SearchResult {
+            total_number: 0,
+            items: vec![]
+        }
+    );
 }
 
 #[test]

@@ -9,9 +9,9 @@ pub fn read_settings_and_register_shortcuts(
 ) -> Result<(), AppError> {
     let settings_state = app_handle.state::<settings::state::SettingsState>();
     let mut settings = settings_state.settings.lock().unwrap();
-    
+
     let default_theme = get_default_theme(app_handle);
-    
+
     match settings::core::read_settings(app_data_dir, default_theme) {
         Ok(initial_settings) => {
             *settings = Some(initial_settings.clone());
@@ -46,18 +46,15 @@ pub fn read_settings_and_register_shortcuts(
     }
 }
 
-
 fn get_default_theme(app_handle: &AppHandle) -> Theme {
     match app_handle.get_webview_window(settings::SCREEN) {
         None => Theme::Light,
-        Some(settings_window) => {
-            match settings_window.theme() {
-                Err(_) => Theme::Light,
-                Ok(theme) => match theme {
-                    tauri::Theme::Dark => Theme::Dark,
-                    _ => Theme::Light
-                }
-            }
-        }       
+        Some(settings_window) => match settings_window.theme() {
+            Err(_) => Theme::Light,
+            Ok(theme) => match theme {
+                tauri::Theme::Dark => Theme::Dark,
+                _ => Theme::Light,
+            },
+        },
     }
 }

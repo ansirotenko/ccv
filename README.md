@@ -1,4 +1,10 @@
 
+![GitHub Release](https://img.shields.io/github/v/release/ansirotenko/ccv)
+[![Test](https://github.com/ansirotenko/ccv/actions/workflows/test.yml/badge.svg)](https://github.com/ansirotenko/ccv/workflows/test.yml)
+![GitHub License](https://img.shields.io/github/license/ansirotenko/ccv)
+[![ccv-clip-manager](https://snapcraft.io/ccv-clip-manager/badge.svg)](https://snapcraft.io/ccv-clip-manager)
+
+
 <p align="center">
   <img height="150" src="./src/assets/logo256.png"/>
 </p>
@@ -14,10 +20,13 @@ It uses sqlite to store the entire clipboard history, allows you to search and r
 #### macOS
 `brew install ansirotenko/repo/ccv`
 
-#### Windows and Linux
+#### linux 
+`snap install ccv-clip-manager`
+
+#### Windows
 The download file for the installation can be found on the [releases](https://github.com/ansirotenko/ccv/releases/latest) page. 
 
-> Note: Currently the installers are not signed yet for Linux and Windows. Work on this task continues. See [planned features](./wish-list.md)
+> Note: Currently the installers are not signed yet for Windows. Work on this task continues. See [planned features](./wish-list.md)
 
 <p align="center">
   <img src="./demo.gif"/>

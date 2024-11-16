@@ -1,15 +1,16 @@
 use crate::primary;
+use crate::utils::get_app_data_dir;
 use ccv_contract::{error::AppError, models::CopyCategory::Unknown};
-use std::path::PathBuf;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_clipboard::Clipboard;
 
-pub fn init_repository(app_handle: &AppHandle, app_data_dir: &PathBuf) -> Result<(), AppError> {
+pub fn init_repository(app_handle: &AppHandle) -> Result<(), AppError> {
     let clipboard_state = app_handle.state::<Clipboard>();
     let state = app_handle.state::<primary::state::PrimaryState>();
     let mut repository = state.repository.lock().unwrap();
     #[cfg(feature = "sqlite")]
     {
+        let app_data_dir = get_app_data_dir(app_handle)?;
         let database_path = app_data_dir.join("ccv.db");
         let sqlite_repo =
             ccv_sqlite::repository::SqliteRepository::new(database_path.to_str().unwrap())?;

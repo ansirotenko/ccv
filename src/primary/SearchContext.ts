@@ -1,9 +1,16 @@
 import { createContext } from 'react';
 import DOMPurify from 'dompurify';
+import { CopyCategory } from '../common/contract';
 
 const highlightClass = 'highlight';
 
 export const SearchContext = createContext<string | null>(null);
+
+export const defaultQuery = '';
+export const possibleCategories: CopyCategory[] = ['Files', 'Html', 'Image', 'Rtf', 'Text'];
+export const defaultCategories: CopyCategory[] = possibleCategories;
+
+export const copyItemSelectorClass = 'copy-item';
 
 export function escapeSearch(search: string | null): string | null {
     if (!search) {

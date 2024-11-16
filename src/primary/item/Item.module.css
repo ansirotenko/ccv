@@ -6,6 +6,10 @@
     user-select: none;
 
     &:nth-child(odd) {
+        background-color: var(--surface-50);
+    }
+
+    &:nth-child(even) {
         background-color: var(--surface-a);
     }
 

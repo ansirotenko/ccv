@@ -5,13 +5,12 @@ pub mod splashscreen;
 pub mod tray;
 pub mod utils;
 
-use ccv_contract::{app_error, error::AppError};
 use std::thread;
-use tauri::{
-    async_runtime, generate_context, generate_handler, Builder, Manager,
-    WindowEvent::{CloseRequested, Focused},
+use tauri::{async_runtime, generate_context, generate_handler, Builder, Manager, WindowEvent};
+use utils::{
+    get_app_data_dir,
+    window::{close_window, hide_window, show_window},
 };
-use utils::window::{close_window, hide_window, show_window};
 
 pub fn run() -> () {
     let builder = Builder::default()
@@ -45,7 +44,7 @@ pub fn run() -> () {
                 return Err(Box::new(err));
             }
 
-            match app_handle.path().app_data_dir() {
+            match get_app_data_dir(&app_handle) {
                 Ok(app_data_dir) => {
                     if !app_data_dir.exists() {
                         if let Err(err) = std::fs::create_dir_all(app_data_dir.clone()) {
@@ -53,9 +52,7 @@ pub fn run() -> () {
                             return Err(Box::new(err));
                         }
                     }
-                    if let Err(err) =
-                        primary::setup::init_repository(app.app_handle(), &app_data_dir)
-                    {
+                    if let Err(err) = primary::setup::init_repository(app.app_handle()) {
                         log::error!("Unable to initialize repository. {err}");
                         return Err(Box::new(err));
                     }
@@ -67,11 +64,6 @@ pub fn run() -> () {
                         log::error!("Unable to initialize settings. {err}");
                         return Err(Box::new(err));
                     }
-
-                    // #[cfg(debug_assertions)] // only include this code on debug builds
-                    // {
-                    //     app_handle.get_webview_window(primary::SCREEN).unwrap().open_devtools();
-                    // }
 
                     let splash_screen_window = app_handle.get_webview_window(splashscreen::SCREEN);
                     async_runtime::spawn(async move {
@@ -107,7 +99,7 @@ pub fn run() -> () {
         .manage(primary::state::PrimaryState::new_uninitialized())
         .manage(settings::state::SettingsState::new())
         .on_window_event(|window, event| match event {
-            CloseRequested { api, .. } => {
+            WindowEvent::CloseRequested { api, .. } => {
                 match hide_window(&window.get_webview_window(window.label())) {
                     Ok(_) => {
                         api.prevent_close();
@@ -117,7 +109,10 @@ pub fn run() -> () {
                     }
                 }
             }
-            Focused(is_focused) => {
+            #[cfg(not(debug_assertions))]
+            WindowEvent::Focused(is_focused) => {
+                use ccv_contract::{app_error, error::AppError};
+
                 if !is_focused && window.label() == primary::SCREEN {
                     match window.is_visible() {
                         Ok(is_visible) => {
