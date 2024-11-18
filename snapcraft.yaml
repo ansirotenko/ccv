@@ -28,7 +28,7 @@ apps:
       CCV_HOME: $SNAP_REAL_HOME
     desktop: usr/share/applications/ccv.desktop
     extensions: [gnome]
-    slots:
+    plugs:
     - dot-local-share-com-ansirotenko-ccv
 
 package-repositories:
