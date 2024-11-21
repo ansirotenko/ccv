@@ -55,6 +55,7 @@
         "url": "screens/primary.html",
         "decorations": false,
         "shadow": false,
+        "alwaysOnTop": true,
         "label": "primary"
       },
       {
@@ -65,7 +66,8 @@
         "shadow": false,
         "resizable": false,
         "url": "screens/splashscreen.html",
-        "label": "splashscreen"
+        "label": "splashscreen",
+        "alwaysOnTop": true
       },
       {
         "center": true,
@@ -76,7 +78,8 @@
         "shadow": false,
         "resizable": false,
         "url": "screens/about.html",
-        "label": "about"
+        "label": "about",
+        "alwaysOnTop": true
       },
       {
         "center": true,

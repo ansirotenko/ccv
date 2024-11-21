@@ -6,15 +6,8 @@ pub fn show_window(window: &Option<WebviewWindow>) -> Result<(), AppError> {
     if let Some(window) = window {
         window.show().map_err(|_| app_error!("Error on show"))?;
         window
-            .set_always_on_top(true)
-            .map_err(|_| app_error!("Error on set always on top"))?;
-        // focus doesnt work at linux
-        window
             .set_focus()
             .map_err(|_| app_error!("Error on focus"))?;
-        window
-            .set_always_on_top(false)
-            .map_err(|_| app_error!("Error on unset always on top"))?;
         window
             .emit_to(
                 window.label(),
