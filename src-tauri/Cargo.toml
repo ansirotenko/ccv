@@ -9,6 +9,6 @@ homepage = "https://github.com/ansirotenko/ccv"
 license-file = "../LICENSE"
 
 [workspace.dependencies]
-serde = { version = "1.0.204", features = ["derive"] }
+serde = { version = "1.0.215", features = ["derive"] }
 chrono = { version = "0.4.38", features = ["serde"] }
 log = { version = "0.4"}
