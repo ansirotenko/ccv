@@ -9,12 +9,8 @@ lerna-debug.log*
 
 # ui
 node_modules
-dist
-dist-ssr
-*.local
 
-#profiling info
-profiler
+src-tauri/target/
 
 # Editor directories and files
 .vscode/*

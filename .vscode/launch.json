@@ -12,7 +12,7 @@
             "cargo": {
               "args": [
                 "build",
-                "--manifest-path=./src-tauri/ccv/Cargo.toml"
+                "--manifest-path=./src-tauri/Cargo.toml"
               ]
             }
           }

@@ -1,0 +1,32 @@
+{
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../src"
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all"
+  },
+  "productName": "ccv",
+  "mainBinaryName": "ccv",
+  "version": "0.0.0",
+  "identifier": "com.ansirotenko.ccv",
+  "app": {
+    "security": {
+      "csp": null,
+      "capabilities": []
+    },
+    "windows": [
+      {
+        "title": "ccv",
+        "width": 380,
+        "height": 520,
+        "center": true,
+        "skipTaskbar": true,
+        "decorations": false,
+        "label": "primary"
+      }
+    ]
+  }
+}

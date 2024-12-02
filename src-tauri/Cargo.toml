@@ -1,14 +1,17 @@
-[workspace]
-members = ["ccv", "ccv_contract", "ccv_in_memory", "ccv_sqlite"]
+[package]
+name = "ccv"
+version = "0.0.0"
+description = "CCV is lightweight crossplatform clipboard manager. It uses sqlite to store all clipboard history. Supports formats: Text, Html, Rtf, Images, Files."
+edition = "2021"
 resolver = "2"
 
-[workspace.package]
-version = "0.2.7" # Also update version at ./ccv/tarui.conf.json and ./snapcraft.yaml
-authors = ["Andrei Sirotenko <panshirotenski@gmail.com>"]
-homepage = "https://github.com/ansirotenko/ccv"
-license-file = "../LICENSE"
+# Needed to set up some things for Tauri at build time
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
 
-[workspace.dependencies]
-serde = { version = "1.0.215", features = ["derive"] }
-chrono = { version = "0.4.38", features = ["serde"] }
-log = { version = "0.4"}
+[dependencies]
+tauri = { version = "2.1.1", features = ["tray-icon"] }
+
+[features]
+# This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!
+custom-protocol = ["tauri/custom-protocol"]
