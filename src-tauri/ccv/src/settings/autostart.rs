@@ -11,13 +11,16 @@ fn adjust_autostart_inner(app_handle: &AppHandle, autostart: bool) -> Result<(),
     let autostart_manager = app_handle.autolaunch();
 
     if autostart && !autostart_manager.is_enabled()? {
-        autostart_manager.enable()?;
+        #[cfg(not(debug_assertions))] {
+            autostart_manager.enable()?;
+        }
 
         return Ok(());
     }
     if !autostart && autostart_manager.is_enabled()? {
-        autostart_manager.disable()?;
-
+        #[cfg(not(debug_assertions))] {
+            autostart_manager.disable()?;
+        }
         return Ok(());
     }
 

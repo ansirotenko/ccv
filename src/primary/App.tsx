@@ -139,13 +139,19 @@ function App() {
     }
 
     async function reportIssue() {
+        await hidePrimaryWindow();
         await showAboutWindow();
         await emitEvent(HIGHLIGHT_REPORT_BUG, 'Highlight bug report');
     }
 
+    async function showSettings() {
+        await hidePrimaryWindow();
+        await showSettingsWindow();
+    }
+
     return (
         <Container onHide={refreshAndHide} selectedIndex={selectedIndex} onSelect={select} onActivate={activate}>
-            <Toolbar onChange={toolbarChanged} onClose={hidePrimaryWindow} onSettings={showSettingsWindow} onReportIssue={reportIssue} />
+            <Toolbar onChange={toolbarChanged} onClose={hidePrimaryWindow} onSettings={showSettings} onReportIssue={reportIssue} />
             <SearchContext.Provider value={escapeSearch(query)}>
                 <ItemsList
                     loading={loading}

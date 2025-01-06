@@ -29,8 +29,8 @@ function App() {
     const about = useContext(AboutContext);
 
     async function closeSettings() {
-        await showPrimaryWindow();
         await hideSettingsWindow();
+        await showPrimaryWindow();
     }
 
     const saveSettings = async (newSettings: Settings) => {

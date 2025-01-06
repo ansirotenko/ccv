@@ -675,7 +675,7 @@ dependencies = [
 
 [[package]]
 name = "ccv"
-version = "0.2.6"
+version = "0.2.7"
 dependencies = [
  "base64 0.22.1",
  "ccv_contract",
@@ -702,7 +702,7 @@ dependencies = [
 
 [[package]]
 name = "ccv_contract"
-version = "0.2.6"
+version = "0.2.7"
 dependencies = [
  "chrono",
  "log",
@@ -711,7 +711,7 @@ dependencies = [
 
 [[package]]
 name = "ccv_in_memory"
-version = "0.2.6"
+version = "0.2.7"
 dependencies = [
  "ccv_contract",
  "chrono",
@@ -719,7 +719,7 @@ dependencies = [
 
 [[package]]
 name = "ccv_sqlite"
-version = "0.2.6"
+version = "0.2.7"
 dependencies = [
  "ccv_contract",
  "chrono",
