@@ -1,6 +1,8 @@
 .container {
     display: flex;
     flex-direction: column;
+    height: 100%;
+    position: relative;
     outline-style: none;
 
     & [class~='highlight'] {
