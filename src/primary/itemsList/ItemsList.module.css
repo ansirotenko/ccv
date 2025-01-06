@@ -8,6 +8,7 @@
     height: 50px;
     width: 50px;
     margin: 12px auto;
+    flex-grow: 1;
     display: block;
 }
 
@@ -15,12 +16,14 @@
     padding: 8px;
     margin: 0;
     height: 360px;
+    flex-grow: 1;
     width: 100%;
 }
 
 .empty {
     display: block;
     margin: 12px;
+    flex-grow: 1;
     text-align: center;
 }
 

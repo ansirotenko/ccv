@@ -14,8 +14,8 @@ function App() {
     useSubscribeEvent<string>(HIGHLIGHT_REPORT_BUG, () => setReportBugHightlighted(true));
 
     async function closeAbout() {
-        await showPrimaryWindow();
         await hideAboutWindow();
+        await showPrimaryWindow();
     }
 
     return (
