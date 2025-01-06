@@ -1,6 +1,6 @@
 name: ccv-clip-manager
 base: core22
-version: '0.2.6'
+version: '0.2.7'
 summary: Lightweight crossplatform clipboard manager
 description: |
   CCV is lightweight crossplatform clipboard manager. It uses sqlite to store all clipboard history. Supports formats: Text, Html, Rtf, Images, Files.
