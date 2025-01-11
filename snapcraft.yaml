@@ -19,7 +19,7 @@ plugs:
   dot-local-share-com-ansirotenko-ccv:
     interface: personal-files
     write:
-    - $HOME/.local/share/com.ansirotenko.ccv/
+    - $HOME/.local/share/ccv
 
 apps:
   ccv:
