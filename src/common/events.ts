@@ -13,7 +13,7 @@ export const WINDOW_SHOWN_EVENT = 'window-shown';
 export const WINDOW_HIDDEN_EVENT = 'window-hidden';
 
 export function useSubscribeEvent<TPayload>(name: string, handler: EventHandler<TPayload>) {
-    const handlerRef = useRef<EventHandler<TPayload>>();
+    const handlerRef = useRef<EventHandler<TPayload>>(undefined);
     handlerRef.current = handler;
 
     useEffect(() => {

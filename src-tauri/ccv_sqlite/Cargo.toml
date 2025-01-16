@@ -8,7 +8,7 @@ edition = "2021"
 
 [dependencies]
 chrono = { workspace = true, features = ["now"] }
-diesel = { version = "2.2.0", features = ["sqlite", "r2d2", "chrono", "returning_clauses_for_sqlite_3_35"] }
+diesel = { version = "2.2.6", features = ["sqlite", "r2d2", "chrono", "returning_clauses_for_sqlite_3_35"] }
 diesel_migrations = { version = "2.2.0" }
-libsqlite3-sys = { version = "0.29" , features = ["bundled"] }
+libsqlite3-sys = { version = "0.30.1" , features = ["bundled"] }
 ccv_contract = { path = "../ccv_contract"}

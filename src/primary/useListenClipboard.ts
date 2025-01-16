@@ -7,10 +7,10 @@ type ClipboardChangedHandler = (patch: CopyItem) => void;
 type UnlistendClipboardFunc = () => Promise<void>;
 
 export function useListenClipboard(onClipboardChanged: ClipboardChangedHandler) {
-    const clipboardChangeHandler = useRef<ClipboardChangedHandler>();
+    const clipboardChangeHandler = useRef<ClipboardChangedHandler>(undefined);
     clipboardChangeHandler.current = onClipboardChanged;
 
-    const unlistenSomethingUpdatedRef = useRef<UnlistendClipboardFunc>();
+    const unlistenSomethingUpdatedRef = useRef<UnlistendClipboardFunc>(undefined);
 
     async function startListenClipboard() {
         const unlistenClipboard = await startListening();

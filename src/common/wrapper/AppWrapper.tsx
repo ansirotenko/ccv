@@ -23,7 +23,7 @@ function AppWrapper({ children }: ComponentProps<'div'>) {
     const [aboutData, setAboutData] = useState<AboutData | undefined>();
     const [hasError, setHasError] = useState<boolean>();
     const [oldTheme, setOldTheme] = useState<Theme>('Light');
-    const timeout = useRef<ReturnType<typeof setTimeout>>();
+    const timeout = useRef<ReturnType<typeof setTimeout>>(undefined);
     const { changeTheme } = useContext(PrimeReactContext);
     useSubscribeEvent<Settings>(SETTINGS_UPDATED, (newSettings) => setSettings(newSettings));
 
