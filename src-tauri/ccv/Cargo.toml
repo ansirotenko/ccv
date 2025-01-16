@@ -20,17 +20,18 @@ clipboard-rs = { version = "0.2.2" }
 chrono = { workspace = true }
 log = { workspace = true }
 serde = { workspace = true }
-serde_json = { version = "1.0.128" }
+serde_json = { version = "1.0.135" }
 systemicons = { version = "0.8.0" }
-tauri = { version = "2.1.1", features = ["tray-icon"] }
-tauri-plugin-autostart = { version = "2.0.1" }
+tauri = { version = "2.2.2", features = ["tray-icon"] }
+tauri-plugin-autostart = { version = "2.2.0" }
 tauri-plugin-clipboard = { version = "2.1.11" }
-tauri-plugin-global-shortcut = { version = "2.0.1" }
-tauri-plugin-log = { version = "2.0.2" }
-tauri-plugin-process = { version = "2.0.1" }
-tauri-plugin-single-instance = { version = "2.0.1" }
-tauri-plugin-shell = { version = "2.0.2" }
-tauri-plugin-updater = { version = "2.0.2" }
+tauri-plugin-global-shortcut = { version = "2.2.0" }
+tauri-plugin-log = { version = "2.2.0" }
+tauri-plugin-opener = { version = "2.2.4" }
+tauri-plugin-process = { version = "2.2.0" }
+tauri-plugin-single-instance = { version = "2.2.1" }
+tauri-plugin-shell = { version = "2.2.0" }
+tauri-plugin-updater = { version = "2.3.1" }
 
 [target."cfg(target_os = \"linux\")".dependencies]
 urlencoding = { version = "2.1.3" }

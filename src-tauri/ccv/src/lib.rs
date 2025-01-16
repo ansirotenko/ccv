@@ -16,6 +16,7 @@ pub fn run() -> () {
     let builder = Builder::default()
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_process::init()) // required for restart after updater completes job
+        .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_autostart::init(
             tauri_plugin_autostart::MacosLauncher::LaunchAgent,
@@ -158,7 +159,8 @@ pub fn run() -> () {
             primary::commands::hide_primary_window,
             primary::commands::show_primary_window,
             about::commands::get_about_data,
-            about::commands::open_uri,
+            about::commands::open_path,
+            about::commands::open_url,
             about::commands::hide_about_window,
             about::commands::show_about_window,
             settings::commands::hide_settings_window,
