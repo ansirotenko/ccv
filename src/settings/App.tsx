@@ -25,7 +25,7 @@ function App() {
     const shortcutDialog = useRef<HTMLDivElement>(null);
     const shortcutValue = useRef<HTMLInputElement>(null);
     const toast = useRef<Toast>(null);
-    const newShortcutRef = useRef<Shortcut | null>();
+    const newShortcutRef = useRef<Shortcut | null>(undefined);
     const about = useContext(AboutContext);
 
     async function closeSettings() {

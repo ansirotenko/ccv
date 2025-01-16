@@ -78,7 +78,7 @@ export function Toolbar({ onChange, onSettings, onReportIssue, onClose }: Toolba
                     data-counter={counter}
                     placeholder="Search..."
                     value={inputValue}
-                    ref={(input) => input && input.focus()}
+                    ref={(input) => {input && input.focus();}}
                     onChange={(e) => {
                         setInputValue(e.target.value);
                         onInputValueChange(e.target.value);

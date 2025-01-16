@@ -3,7 +3,7 @@ import { Button } from 'primereact/button';
 import { Skeleton } from 'primereact/skeleton';
 import { BlockUI } from 'primereact/blockui';
 import { useSubscribeEvent, HIGHLIGHT_REPORT_BUG } from '../common/events';
-import { hideAboutWindow, showPrimaryWindow, openAnything } from '../common/commands';
+import { hideAboutWindow, showPrimaryWindow, openUrl, openPath } from '../common/commands';
 import { AboutContext } from '../common/AboutContext';
 
 import styles from './App.module.css';
@@ -49,7 +49,7 @@ function App() {
                             <a
                                 href="#"
                                 onClick={() => {
-                                    openAnything(aboutData.homepage);
+                                    openUrl(aboutData.homepage);
                                 }}
                             >
                                 {aboutData.homepage}
@@ -63,7 +63,7 @@ function App() {
                         {aboutData?.appDirectory ? (
                             <em
                                 onClick={() => {
-                                    openAnything(aboutData.appDirectory!);
+                                    openPath(aboutData.appDirectory!);
                                 }}
                             >
                                 {aboutData.appDirectory}
@@ -77,7 +77,7 @@ function App() {
                         {aboutData?.appDataDirectory ? (
                             <em
                                 onClick={() => {
-                                    openAnything(aboutData.appDataDirectory!);
+                                    openPath(aboutData.appDataDirectory!);
                                 }}
                             >
                                 {aboutData.appDataDirectory}
@@ -91,7 +91,7 @@ function App() {
                         {aboutData?.appLogsDirectory ? (
                             <em
                                 onClick={() => {
-                                    openAnything(aboutData.appLogsDirectory!);
+                                    openPath(aboutData.appLogsDirectory!);
                                 }}
                             >
                                 {aboutData.appLogsDirectory}
@@ -106,7 +106,7 @@ function App() {
                     <a
                         href="#"
                         onClick={() => {
-                            openAnything('https://github.com/ansirotenko/ccv/issues/new');
+                            openUrl('https://github.com/ansirotenko/ccv/issues/new');
                         }}
                     >
                         github
@@ -115,7 +115,7 @@ function App() {
                     <a
                         href="#"
                         onClick={() => {
-                            openAnything('mailto:panshirotenski@gmail.com');
+                            openUrl('mailto:panshirotenski@gmail.com');
                         }}
                     >
                         email

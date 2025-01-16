@@ -8,7 +8,6 @@ pub fn show_window(window: &Option<WebviewWindow>) -> Result<(), AppError> {
         window
             .set_always_on_top(true)
             .map_err(|_| app_error!("Error on set always on top"))?;
-        // focus doesnt work at linux
         window
             .set_focus()
             .map_err(|_| app_error!("Error on focus"))?;

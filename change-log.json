@@ -38,6 +38,8 @@
         "fix bug with tray and linux daata directory"
     ],
     "0.2.7": [
-        "improve ux"
+        "improve ux",
+        "fix bugs",
+        "update vendor libraries"
     ]
 }

@@ -22,7 +22,7 @@ export function Container({ selectedIndex, onSelect, onActivate, onHide, childre
     const [mainShortcutOn, setMainShortcutOn] = useState<boolean>(false);
     const [mainShortcutCounter, setMainShortcutCounter] = useState<number>(0);
     const settings = useContext(SettingsContext);
-    const eventsHandler = useRef<EventsHadler>();
+    const eventsHandler = useRef<EventsHadler>(undefined);
 
     useSubscribeEvent<MainShortcutPressedPayload>(MAIN_SHORTCUT_PRESSED_EVENT, (mainShortcutPressedPayload) => {
         if (mainShortcutPressedPayload.changedFromHiddenToVisile) {
