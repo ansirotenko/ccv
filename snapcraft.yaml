@@ -29,6 +29,7 @@ apps:
     desktop: usr/share/applications/ccv.desktop
     extensions: [gnome]
     plugs:
+    - home
     - dot-local-share-com-ansirotenko-ccv
 
 package-repositories:
