@@ -64,6 +64,6 @@ parts:
       set -eu
       npm ci
       rustup default stable
-      npm run tauri build -- --bundles deb
+      npm run tauri build -- --bundles deb --config "{\"bundle\": {\"createUpdaterArtifacts\": false}}"
       dpkg -x src-tauri/target/release/bundle/deb/*.deb $SNAPCRAFT_PART_INSTALL/
       sed -i -e "s|Icon=ccv|Icon=/usr/share/icons/hicolor/128x128/apps/ccv.png|g" $SNAPCRAFT_PART_INSTALL/usr/share/applications/ccv.desktop
