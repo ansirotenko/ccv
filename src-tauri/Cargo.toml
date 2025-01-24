@@ -3,12 +3,12 @@ members = ["ccv", "ccv_contract", "ccv_in_memory", "ccv_sqlite"]
 resolver = "2"
 
 [workspace.package]
-version = "0.2.6" # Also update version at ./ccv/tarui.conf.json and ./snapcraft.yaml
+version = "0.2.7" # Also update version at ./ccv/tarui.conf.json and ./snapcraft.yaml
 authors = ["Andrei Sirotenko <panshirotenski@gmail.com>"]
 homepage = "https://github.com/ansirotenko/ccv"
 license-file = "../LICENSE"
 
 [workspace.dependencies]
-serde = { version = "1.0.204", features = ["derive"] }
-chrono = { version = "0.4.38", features = ["serde"] }
-log = { version = "0.4"}
+serde = { version = "1.0.217", features = ["derive"] }
+chrono = { version = "0.4.39", features = ["serde"] }
+log = { version = "0.4.25"}

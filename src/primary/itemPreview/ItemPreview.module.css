@@ -1,6 +1,4 @@
 .container {
-    position: absolute;
-    bottom: 0;
     height: 154px;
     width: 100%;
     background-color: var(--surface-a);

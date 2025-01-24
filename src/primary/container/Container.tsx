@@ -1,6 +1,6 @@
-import { KeyboardEvent, useRef, ComponentProps, useState, useContext } from 'react';
+import { ComponentProps, useState, useContext, useEffect, useRef } from 'react';
 import { MainShortcutPressedPayload } from '../../common/contract';
-import { useSubscribeEvent, MAIN_SHORTCUT_PRESSED_EVENT, WINDOW_SHOWN_EVENT } from '../../common/events';
+import { useSubscribeEvent, MAIN_SHORTCUT_PRESSED_EVENT } from '../../common/events';
 import { hasModifers, matchShortcutModifiers } from '../../common/keyboard';
 import { SettingsContext } from '../../common/SettingsContext';
 
@@ -13,15 +13,16 @@ interface ContainerProps extends Omit<ComponentProps<'div'>, 'onSelect'> {
     onHide: () => void;
 }
 
+type EventsHadler = {
+    keyDown: (event: KeyboardEvent) => void,
+    keyUp: (event: KeyboardEvent) => void,
+}
+
 export function Container({ selectedIndex, onSelect, onActivate, onHide, children }: ContainerProps) {
-    const containerRef = useRef<HTMLDivElement>(null);
     const [mainShortcutOn, setMainShortcutOn] = useState<boolean>(false);
     const [mainShortcutCounter, setMainShortcutCounter] = useState<number>(0);
     const settings = useContext(SettingsContext);
-
-    useSubscribeEvent<string>(WINDOW_SHOWN_EVENT, () => {
-        containerRef.current?.focus();
-    });
+    const eventsHandler = useRef<EventsHadler>(undefined);
 
     useSubscribeEvent<MainShortcutPressedPayload>(MAIN_SHORTCUT_PRESSED_EVENT, (mainShortcutPressedPayload) => {
         if (mainShortcutPressedPayload.changedFromHiddenToVisile) {
@@ -35,48 +36,73 @@ export function Container({ selectedIndex, onSelect, onActivate, onHide, childre
         setMainShortcutCounter((count) => count + 1);
     });
 
-    const keyUp = (event: KeyboardEvent<HTMLDivElement>) => {
-        if (mainShortcutOn) {
-            if (!matchShortcutModifiers(settings.allShortcuts.openCcv, event)) {
-                if (mainShortcutCounter > 1) {
-                    onActivate(selectedIndex);
+    useEffect(() => {
+        eventsHandler.current = {
+            keyUp: (event: KeyboardEvent) => {
+                if (mainShortcutOn) {
+                    if (!matchShortcutModifiers(settings.allShortcuts.openCcv, event)) {
+                        if (mainShortcutCounter > 1) {
+                            onActivate(selectedIndex);
+                        }
+                        setMainShortcutOn(false);
+                    }
                 }
-                setMainShortcutOn(false);
+            },
+            keyDown: (event: KeyboardEvent) => {
+                if (event.key === 'Enter') {
+                    onActivate(selectedIndex);
+                    return;
+                }
+                if (event.key === 'Escape') {
+                    onHide();
+                    return;
+                }
+                if (event.key === 'ArrowUp') {
+                    if (mainShortcutOn) {
+                        setMainShortcutCounter((count) => count + 1);
+                    }
+                    onSelect(selectedIndex - 1);
+                    return;
+                }
+                if (event.key === 'ArrowDown') {
+                    if (mainShortcutOn) {
+                        setMainShortcutCounter((count) => count + 1);
+                    }
+                    onSelect(selectedIndex + 1);
+                    return;
+                }
+                if (event.ctrlKey && event.key >= '1' && event.key <= '9') {
+                    onActivate(parseInt(event.key) - 1);
+                    return;
+                }
             }
+        }
+    }, [selectedIndex, onSelect, onActivate, onHide])
+
+    const keyUp = (event: KeyboardEvent) => {
+        if (eventsHandler.current) {
+            eventsHandler.current.keyUp(event);
         }
     };
 
-    const keyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-        if (event.key === 'Enter') {
-            onActivate(selectedIndex);
-            return;
-        }
-        if (event.key === 'Escape') {
-            onHide();
-            return;
-        }
-        if (event.key === 'ArrowUp') {
-            if (mainShortcutOn) {
-                setMainShortcutCounter((count) => count + 1);
-            }
-            onSelect(selectedIndex - 1);
-            return;
-        }
-        if (event.key === 'ArrowDown') {
-            if (mainShortcutOn) {
-                setMainShortcutCounter((count) => count + 1);
-            }
-            onSelect(selectedIndex + 1);
-            return;
-        }
-        if (event.ctrlKey && event.key >= '1' && event.key <= '9') {
-            onActivate(parseInt(event.key) - 1);
-            return;
+    const keyDown = (event: KeyboardEvent) => {
+        if (eventsHandler.current) {
+            eventsHandler.current.keyDown(event);
         }
     };
+
+    useEffect(() => {
+        addEventListener("keydown", keyDown);
+        addEventListener("keyup", keyUp);
+
+        return () => {
+            removeEventListener("keydown", keyDown);
+            removeEventListener("keyup", keyUp);
+        }
+    }, [])
 
     return (
-        <div className={styles.container} onKeyDown={keyDown} onKeyUp={keyUp} ref={containerRef} tabIndex={0}>
+        <div className={styles.container}>
             {children}
         </div>
     );

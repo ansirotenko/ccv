@@ -36,5 +36,10 @@
         "optimize performance",
         "visual fixes",
         "fix bug with tray and linux daata directory"
+    ],
+    "0.2.7": [
+        "improve ux",
+        "fix bugs",
+        "update vendor libraries"
     ]
 }

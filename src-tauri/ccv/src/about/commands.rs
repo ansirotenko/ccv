@@ -7,9 +7,9 @@ use ccv_contract::{
     error::{log_error, AppError},
     models::{AboutData, Os},
 };
+use tauri_plugin_opener::OpenerExt;
 use std::env::current_exe;
 use tauri::{command, AppHandle, Manager};
-use tauri_plugin_shell::ShellExt;
 
 #[command]
 pub fn get_about_data(app_handle: AppHandle) -> Result<AboutData, AppError> {
@@ -47,8 +47,13 @@ pub fn get_about_data(app_handle: AppHandle) -> Result<AboutData, AppError> {
 }
 
 #[command]
-pub fn open_uri(target: String, app_handle: AppHandle) -> Result<(), AppError> {
-    log_error(app_handle.shell().open(target, None), "Unable to open")
+pub fn open_url(target: String, app_handle: AppHandle) -> Result<(), AppError> {
+    log_error(app_handle.opener().open_url(target.as_str(), None::<&str>), "Unable to open url")
+}
+
+#[command]
+pub fn open_path(target: String, app_handle: AppHandle) -> Result<(), AppError> {
+    log_error(app_handle.opener().open_path(target.as_str(),  None::<&str>), "Unable to open path")
 }
 
 #[command]

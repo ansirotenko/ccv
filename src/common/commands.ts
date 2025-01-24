@@ -5,8 +5,12 @@ export async function getAboutData() {
     return await invoke<AboutData>('get_about_data');
 }
 
-export async function openAnything(target: string) {
-    return await invoke<void>('open_uri', { target: target });
+export async function openPath(target: string) {
+    return await invoke<void>('open_path', { target: target });
+}
+
+export async function openUrl(target: string) {
+    return await invoke<void>('open_url', { target: target });
 }
 
 export async function hideAboutWindow() {

@@ -19,7 +19,7 @@ pub fn get_app_data_dir(app_handle: &AppHandle) -> Result<PathBuf, AppError> {
         // https://forum.snapcraft.io/t/is-xdg-data-home-modified-by-snaps-adapters/17826/7
         //
         // In case overriding $HOME or $XDG_CONFIG_HOME with with real $SNAP_REAL_HOME, autostart feature doesnt work properly
-        if let Some(ccv_home) = std::env::var_os("CCV_HOME") {
+        if let Some(ccv_home) = std::env::var_os("SNAP_REAL_HOME") {
             return Ok(PathBuf::from(ccv_home).join(".local/share").join(app_handle.config().identifier.as_str()))
         };
     }

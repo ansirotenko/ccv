@@ -1,6 +1,6 @@
 name: ccv-clip-manager
 base: core22
-version: '0.2.6'
+version: '0.2.7'
 summary: Lightweight crossplatform clipboard manager
 description: |
   CCV is lightweight crossplatform clipboard manager. It uses sqlite to store all clipboard history. Supports formats: Text, Html, Rtf, Images, Files.
@@ -17,6 +17,7 @@ layout:
 
 plugs:
   dot-local-share-com-ansirotenko-ccv:
+    interface: personal-files
     write:
     - $HOME/.local/share/com.ansirotenko.ccv
 
@@ -27,7 +28,8 @@ apps:
       CCV_HOME: $SNAP_REAL_HOME
     desktop: usr/share/applications/ccv.desktop
     extensions: [gnome]
-    slots:
+    plugs:
+    - home
     - dot-local-share-com-ansirotenko-ccv
 
 package-repositories:
@@ -62,6 +64,6 @@ parts:
       set -eu
       npm ci
       rustup default stable
-      npm run tauri build -- --bundles deb
+      npm run tauri build -- --bundles deb --config "{\"bundle\": {\"createUpdaterArtifacts\": false}}"
       dpkg -x src-tauri/target/release/bundle/deb/*.deb $SNAPCRAFT_PART_INSTALL/
       sed -i -e "s|Icon=ccv|Icon=/usr/share/icons/hicolor/128x128/apps/ccv.png|g" $SNAPCRAFT_PART_INSTALL/usr/share/applications/ccv.desktop
