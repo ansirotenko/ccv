@@ -1,6 +1,6 @@
 # set the base image to Debian
 # https://hub.docker.com/_/debian/
-FROM rust:1.79
+FROM rust:1.85.1
 
 ENV TARGET=""
 
