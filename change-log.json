@@ -41,5 +41,8 @@
         "improve ux",
         "fix bugs",
         "update vendor libraries"
+    ],
+    "0.2.8": [
+        "update vendor dependencies"
     ]
 }
