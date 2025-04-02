@@ -18,6 +18,7 @@ interface ToolbarProps extends Omit<ComponentProps<'div'>, 'onChange'> {
     onClose?: () => void;
 }
 
+const allCategoriesNumber = toCategoriesNumber(possibleCategories, possibleCategories);
 const defaultCategoriesNumber = toCategoriesNumber(defaultCategories, possibleCategories);
 const defaultCategoriesText = getCategoriesText(defaultCategoriesNumber, possibleCategories);
 
@@ -35,11 +36,13 @@ export function Toolbar({ onChange, onSettings, onReportIssue, onClose }: Toolba
         setCounter((c) => c + 1); // to provoke rerender, that would focus input
     });
     useSubscribeEvent<string>(WINDOW_HIDDEN_EVENT, () => {
-        setCategoriesNumber(defaultCategoriesNumber);
-        setCategoriesText(defaultCategoriesText);
         setInputValue(defaultQuery);
-        somethingChanged(defaultQuery, defaultCategoriesNumber);
+        setCategoriesNumber(defaultCategoriesNumber);
     });
+    useEffect(() => {
+        setCategoriesText(getCategoriesText(categoriesNumber, possibleCategories));
+        somethingChanged(inputValue, categoriesNumber);
+    }, [categoriesNumber])
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -99,13 +102,10 @@ export function Toolbar({ onChange, onSettings, onReportIssue, onClose }: Toolba
                 <div
                     className={styles.filterItem}
                     onClick={() => {
-                        const newCategoriesNumber = (1 << possibleCategories.length) - 1;
-                        setCategoriesNumber(newCategoriesNumber);
-                        setCategoriesText(getCategoriesText(newCategoriesNumber, possibleCategories));
-                        somethingChanged(inputValue, newCategoriesNumber);
+                        setCategoriesNumber(allCategoriesNumber);
                     }}
                 >
-                    <Checkbox checked={categoriesNumber + 1 === 1 << possibleCategories.length} />
+                    <Checkbox checked={categoriesNumber === allCategoriesNumber} />
                     <label htmlFor="All" className={styles.filterItemLabel}>
                         All
                     </label>
@@ -116,13 +116,11 @@ export function Toolbar({ onChange, onSettings, onReportIssue, onClose }: Toolba
                             key={category}
                             className={styles.filterItem}
                             onClick={() => {
-                                const hasCategory = (categoriesNumber & (1 << index)) === 0;
-                                const newCategoriesNumber = hasCategory
-                                    ? categoriesNumber | (1 << index)
-                                    : categoriesNumber & (((1 << possibleCategories.length) - 1) ^ (1 << index));
-                                setCategoriesNumber(newCategoriesNumber);
-                                setCategoriesText(getCategoriesText(newCategoriesNumber, possibleCategories));
-                                somethingChanged(inputValue, newCategoriesNumber);
+                                if (categoriesNumber === allCategoriesNumber) {
+                                    setCategoriesNumber(1 << index);
+                                } else {
+                                    setCategoriesNumber(categoriesNumber ^ (1 << index));
+                                }
                             }}
                         >
                             <Checkbox checked={(categoriesNumber & (1 << index)) !== 0} />
