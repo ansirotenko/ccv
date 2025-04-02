@@ -2,7 +2,7 @@ name: Test
 
 on:
   pull_request:
-    branches: [ "main", "release" ]
+    branches: [ "dev", "main" ]
 
 env:
   CARGO_TERM_COLOR: always
