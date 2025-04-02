@@ -11,12 +11,12 @@
     "format": "prettier --write ./src/**/*.{ts,tsx,css,json}"
   },
   "dependencies": {
-    "@tauri-apps/api": "^2.2.0",
+    "@tauri-apps/api": "^2.4.0",
     "@tauri-apps/plugin-global-shortcut": "^2.2.0",
-    "@tauri-apps/plugin-log": "^2.2.0",
+    "@tauri-apps/plugin-log": "^2.3.1",
     "@tauri-apps/plugin-process": "^2.2.0",
-    "@tauri-apps/plugin-updater": "^2.3.1",
-    "dompurify": "3.2.3",
+    "@tauri-apps/plugin-updater": "^2.6.1",
+    "dompurify": "3.2.4",
     "primeicons": "^7.0.0",
     "primereact": "^10.8.4",
     "react": "^19.0.0",
@@ -26,17 +26,17 @@
     "tauri-plugin-clipboard-api": "^2.1.11"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^2.2.4",
-    "@types/node": "^22.10.6",
-    "@types/react": "^19.0.7",
-    "@types/react-dom": "^19.0.3",
+    "@tauri-apps/cli": "^2.4.0",
+    "@types/node": "^22.13.13",
+    "@types/react": "^19.0.12",
+    "@types/react-dom": "^19.0.4",
     "@vitejs/plugin-react": "^4.3.4",
-    "prettier": "^3.4.2",
+    "prettier": "^3.5.3",
     "rollup-plugin-visualizer": "^5.14.0",
-    "typescript": "^5.7.3",
-    "vite": "^6.0.7"
+    "typescript": "^5.8.2",
+    "vite": "^6.2.3"
   },
   "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "4.9.5"
+    "@rollup/rollup-linux-x64-gnu": "4.37.0"
   }
 }

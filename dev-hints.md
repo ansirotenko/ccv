@@ -35,6 +35,19 @@
     - run `npm run dev`
     - press f5 at vscode
 
+# Update packages
+
+## js
+```bash
+npm install -g npm-check-updates
+ncu
+```
+## rust
+```bash
+cargo install cargo-edit
+cargo-upgrade upgrade
+```
+
 # Build at docker
 Here is recipe how ccv can be build in docker. Unfortunately the only target OS is Linux.
 
