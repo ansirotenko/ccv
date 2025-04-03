@@ -37,7 +37,12 @@ export function Toolbar({ onChange, onSettings, onReportIssue, onClose }: Toolba
     });
     useSubscribeEvent<string>(WINDOW_HIDDEN_EVENT, () => {
         setInputValue(defaultQuery);
-        setCategoriesNumber(defaultCategoriesNumber);
+        if (categoriesNumber !== defaultCategoriesNumber) {
+            setCategoriesNumber(defaultCategoriesNumber);
+        } else {
+            // must provoke rerender explicitly
+            somethingChanged(defaultQuery, categoriesNumber);
+        }
     });
     useEffect(() => {
         setCategoriesText(getCategoriesText(categoriesNumber, possibleCategories));
