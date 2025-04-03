@@ -34,7 +34,7 @@ pub fn insert_copy_item_if_not_found(
     let existed_item = repository.find_by_value(&new_copy_item_value)?;
     if let Some(existed_item) = existed_item {
         let existed_item_updated_last_reuse = repository.update_last_resue(&existed_item.id, Utc::now())?;
-        Ok(InsertIfNotFoundResult {
+        Ok(InsertIfNotFoundResult { 
             copy_item: existed_item_updated_last_reuse,
             already_exist: true,
         })
