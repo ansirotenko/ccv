@@ -25,6 +25,9 @@ export function toCategoriesNumber(initialCategories: CopyCategory[], possibleCa
 }
 
 export function toCategoriesArray(categoriesNumber: number, possibleCategories: CopyCategory[]) {
+    if (categoriesNumber == (1 << possibleCategories.length) - 1) {
+        return possibleCategories;
+    }
     let selectedCategories: CopyCategory[] = [];
     let index = 0;
     while (categoriesNumber !== 0) {

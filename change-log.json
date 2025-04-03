@@ -43,6 +43,7 @@
         "update vendor libraries"
     ],
     "0.2.8": [
-        "update vendor dependencies"
+        "update vendor dependencies",
+        "improve ux"
     ]
 }
